@@ -59,7 +59,7 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
        connectionString: process.env.DATABASE_URI || '',
-       max: process.env.VERCEL ? 1 : 10,
+       max: process.env.VERCEL ? 5 : 10,
        connectionTimeoutMillis: 30_000,
     },
     // Migrations are the source of truth now, so skip schema introspection
