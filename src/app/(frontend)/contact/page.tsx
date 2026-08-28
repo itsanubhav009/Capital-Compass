@@ -3,7 +3,9 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getPageBySlug, getSettings } from '@/lib/queries'
 import { ContactForm } from '@/components/contact-form'
 
-export const revalidate = 3600
+// Rendered on first request rather than at build time, so a slow or sleeping
+// database can never fail a deploy.
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Contact',
