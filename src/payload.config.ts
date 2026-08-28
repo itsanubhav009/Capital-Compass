@@ -60,7 +60,7 @@ export default buildConfig({
     pool: {
        connectionString: process.env.DATABASE_URI || '',
        max: process.env.VERCEL ? 1 : 10,
-       connectionTimeoutMillis: 10_000,
+       connectionTimeoutMillis: 30_000,
     },
     // Migrations are the source of truth now, so skip schema introspection
     // on boot. This is what was causing the endless "Pulling schema" spinner.
