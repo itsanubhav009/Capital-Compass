@@ -12,7 +12,9 @@ import {
 import { InsightCard } from '@/components/site'
 import { KIND_LABEL, shortDate } from '@/lib/format'
 
-export const revalidate = 300
+// Rendered per request, cached at the edge. Keeps the build independent
+// of database availability.
+export const dynamic = 'force-dynamic'
 
 /**
  * One route serves both section archives and static pages.

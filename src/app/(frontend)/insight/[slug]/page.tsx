@@ -8,7 +8,9 @@ import { FlowPanel, ImpactMark, TrendMark } from '@/components/flow'
 import { InsightCard } from '@/components/site'
 import { KIND_LABEL, crore, shortDate } from '@/lib/format'
 
-export const revalidate = 300
+// Rendered per request, cached at the edge. Keeps the build independent
+// of database availability.
+export const dynamic = 'force-dynamic'
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 

@@ -11,7 +11,9 @@ import { AiSearchSlot, InsightCard, NewsletterForm } from '@/components/site'
 import { KIND_LABEL, dayMonth, shortDate } from '@/lib/format'
 
 // Rebuild every 5 minutes; publishing 1–2 posts a day does not need more.
-export const revalidate = 300
+// Rendered per request, cached at the edge. Keeps the build independent
+// of database availability.
+export const dynamic = 'force-dynamic'
 
 const img = (m: any) =>
   m?.url ? { url: m.sizes?.card?.url ?? m.url, alt: m.alt ?? '' } : null

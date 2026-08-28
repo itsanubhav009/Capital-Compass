@@ -4,7 +4,9 @@ import { CONTENT_COLLECTIONS } from '@/payload.config'
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
-export const revalidate = 3600
+// Rendered per request, cached at the edge. Keeps the build independent
+// of database availability.
+export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base: MetadataRoute.Sitemap = [
