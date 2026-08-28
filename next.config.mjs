@@ -4,9 +4,7 @@ import { withPayload } from '@payloadcms/next/withPayload'
 const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
-    remotePatterns: [
-      { protocol: 'https', hostname: 'https://pub-78cd2f72feb743b7bc8c1f93d93b0446.r2.dev' },
-    ],
+    remotePatterns: [{ protocol: 'https', hostname: 'pub-78cd2f72feb743b7bc8c1f93d93b0446.r2.dev' },],
   },
 }
 

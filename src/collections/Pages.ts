@@ -43,10 +43,10 @@ export const Pages: CollectionConfig = {
     {
       name: 'noIndex',
       type: 'checkbox',
+      label: 'Hide from search engines',
       defaultValue: false,
       admin: {
         position: 'sidebar',
-        label: 'Hide from search engines',
       },
     },
   ],
