@@ -164,3 +164,27 @@ export async function getSectorThemes(limit = 4) {
   })
   return res.docs
 }
+// ── APPEND THIS TO src/lib/queries.ts ───────────────────────────────────────
+
+/** Static pages: About, Contact, Disclaimer, Privacy, Terms, Editorial standards. */
+export async function getPageBySlug(slug: string) {
+  const payload = await client()
+  const res = await payload.find({
+    collection: 'pages',
+    where: { slug: { equals: slug }, _status: { equals: 'published' } },
+    limit: 1,
+    depth: 1,
+  })
+  return res.docs[0] ?? null
+}
+
+export async function getPages() {
+  const payload = await client()
+  const res = await payload.find({
+    collection: 'pages',
+    where: { _status: { equals: 'published' }, noIndex: { not_equals: true } },
+    limit: 100,
+    depth: 0,
+  })
+  return res.docs
+}

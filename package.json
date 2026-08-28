@@ -6,14 +6,15 @@
   "engines": { "node": ">=20.9.0" },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "payload migrate && next build",
     "start": "next start",
     "payload": "payload",
     "migrate:create": "payload migrate:create",
     "migrate": "payload migrate",
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
-    "seed": "tsx src/scripts/seed.ts"
+    "seed:pages": "tsx src/scripts/seed-pages.ts"
+
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.88.0",

@@ -2,15 +2,19 @@ import { withPayload } from '@payloadcms/next/withPayload'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    // Serve modern formats; the brief targets 85+ mobile Lighthouse.
-    formats: ['image/avif', 'image/webp'],
-    remotePatterns: [
-      // Add your S3/R2/Cloudflare bucket host here once media storage is live.
-      // { protocol: 'https', hostname: 'media.capitalcompass.com' },
-    ],
-  },
+  iimages: {
+  formats: ['image/avif', 'image/webp'],
+  remotePatterns: [
+    { protocol: 'https', hostname: 'https://pub-78cd2f72feb743b7bc8c1f93d93b0446.r2.dev' },
+  ],
+},
   experimental: { reactCompiler: false },
 }
 
 export default withPayload(nextConfig)
+images: {
+  formats: ['image/avif', 'image/webp'],
+  remotePatterns: [
+    { protocol: 'https', hostname: 'pub-xxxx.r2.dev' },
+  ],
+},

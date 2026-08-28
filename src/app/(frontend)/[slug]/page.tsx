@@ -1,0 +1,201 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { RichText } from '@payloadcms/richtext-lexical/react'
+import {
+  client,
+  getInsights,
+  getPageBySlug,
+  getSectionBySlug,
+  getSections,
+} from '@/lib/queries'
+import { InsightCard } from '@/components/site'
+import { KIND_LABEL, shortDate } from '@/lib/format'
+
+export const revalidate = 300
+
+/**
+ * One route serves both section archives and static pages.
+ *
+ * Sections are checked first, so a page slug can never shadow a menu item.
+ * That means /about, /privacy and /capital-flow-india all live here, and
+ * adding a new page in the admin panel needs no code change.
+ */
+export async function generateStaticParams() {
+  const payload = await client()
+  const [sections, pages] = await Promise.all([
+    getSections(),
+    payload.find({
+      collection: 'pages',
+      where: { _status: { equals: 'published' } },
+      limit: 100,
+      depth: 0,
+    }),
+  ])
+  return [
+    ...sections.map((s: any) => ({ slug: s.slug })),
+    ...pages.docs.map((p: any) => ({ slug: p.slug })),
+  ]
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+
+  const section: any = await getSectionBySlug(slug)
+  if (section) {
+    return {
+      title: section.title,
+      description: section.blurb ?? undefined,
+      alternates: { canonical: `/${section.slug}` },
+      openGraph: { title: section.title, description: section.blurb ?? undefined, type: 'website' },
+    }
+  }
+
+  const page: any = await getPageBySlug(slug)
+  if (!page) return {}
+  return {
+    title: page.title,
+    description: page.standfirst ?? undefined,
+    alternates: { canonical: `/${page.slug}` },
+    robots: page.noIndex ? { index: false, follow: true } : undefined,
+    openGraph: { title: page.title, description: page.standfirst ?? undefined, type: 'article' },
+  }
+}
+
+const img = (m: any) => (m?.url ? { url: m.sizes?.card?.url ?? m.url, alt: m.alt ?? '' } : null)
+
+export default async function SlugPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ page?: string }>
+}) {
+  const { slug } = await params
+
+  const section: any = await getSectionBySlug(slug)
+  if (section) return <SectionArchive section={section} searchParams={searchParams} />
+
+  const page: any = await getPageBySlug(slug)
+  if (!page) notFound()
+
+  return (
+    <article className="mx-auto max-w-6xl px-5 sm:px-8">
+      <header className="border-b border-rule py-12 sm:py-16">
+        <h1 className="max-w-3xl text-[36px] sm:text-[46px]">{page.title}</h1>
+        {page.standfirst && (
+          <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-ink-soft">
+            {page.standfirst}
+          </p>
+        )}
+      </header>
+
+      <div className="prose-cc max-w-[68ch] py-12">
+        <RichText data={page.body} />
+      </div>
+
+      {page.lastReviewed && (
+        <p className="tnum border-t border-rule pb-12 pt-6 text-[11px] uppercase tracking-wider text-ink-faint">
+          Last reviewed {shortDate(page.lastReviewed)}
+        </p>
+      )}
+    </article>
+  )
+}
+
+/* ------------------------------------------------------- section archive --- */
+
+async function SectionArchive({
+  section,
+  searchParams,
+}: {
+  section: any
+  searchParams: Promise<{ page?: string }>
+}) {
+  const { page: pageParam } = await searchParams
+  const page = Math.max(1, Number(pageParam) || 1)
+  const { docs, totalPages } = await getInsights({
+    sectionSlug: section.slug,
+    limit: 12,
+    page,
+  })
+
+  return (
+    <div className="mx-auto max-w-6xl px-5 sm:px-8">
+      <header className="border-b border-rule py-12 sm:py-16">
+        <span className="eyebrow">Section</span>
+        <h1 className="mt-3 text-[36px] sm:text-[46px]">{section.title}</h1>
+        {section.blurb && (
+          <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-ink-soft">
+            {section.blurb}
+          </p>
+        )}
+      </header>
+
+      {docs.length === 0 ? (
+        <div className="py-20 text-center">
+          <p className="font-display text-[22px] text-ink">Nothing published here yet.</p>
+          <p className="mt-2 text-[15px] text-ink-soft">
+            New reports land most weekdays.{' '}
+            <Link href="/#newsletter" className="text-deep underline underline-offset-4">
+              Get them by email
+            </Link>
+            .
+          </p>
+        </div>
+      ) : (
+        <ul className="grid gap-x-10 gap-y-12 py-12 sm:grid-cols-2 lg:grid-cols-3">
+          {docs.map((d) => (
+            <li key={`${d.collection}-${d.id}`}>
+              <InsightCard
+                href={`/insight/${d.slug}`}
+                kind={KIND_LABEL[d.collection] ?? 'Analysis'}
+                title={d.title}
+                standfirst={d.standfirst}
+                date={shortDate(d.publishedAt)}
+                minutes={d.readingMinutes}
+                image={img(d.featuredImage)}
+                accent={section.accent}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {totalPages > 1 && (
+        <nav
+          className="flex items-center justify-between border-t border-rule py-8"
+          aria-label="Pagination"
+        >
+          {page > 1 ? (
+            <Link
+              href={`/${section.slug}?page=${page - 1}`}
+              className="text-[14px] text-deep underline underline-offset-4"
+            >
+              ← Newer
+            </Link>
+          ) : (
+            <span />
+          )}
+          <span className="tnum text-[12px] uppercase tracking-wider text-ink-faint">
+            Page {page} of {totalPages}
+          </span>
+          {page < totalPages ? (
+            <Link
+              href={`/${section.slug}?page=${page + 1}`}
+              className="text-[14px] text-deep underline underline-offset-4"
+            >
+              Older →
+            </Link>
+          ) : (
+            <span />
+          )}
+        </nav>
+      )}
+    </div>
+  )
+}
