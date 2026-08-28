@@ -58,10 +58,9 @@ export default buildConfig({
 
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || '',
-      // One connection per serverless invocation. A larger pool exhausts
-      // Neon's connection limit under any real traffic.
-      max: process.env.VERCEL ? 1 : 10,
+       connectionString: process.env.DATABASE_URI || '',
+       max: process.env.VERCEL ? 1 : 10,
+       connectionTimeoutMillis: 10_000,
     },
     // Migrations are the source of truth now, so skip schema introspection
     // on boot. This is what was causing the endless "Pulling schema" spinner.

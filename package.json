@@ -3,18 +3,20 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=20.9.0" },
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
     "dev": "next dev",
-    "build": "payload migrate && next build",
+    "build": "next build",
     "start": "next start",
     "payload": "payload",
     "migrate:create": "payload migrate:create",
     "migrate": "payload migrate",
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
-    "seed:pages": "tsx src/scripts/seed-pages.ts"
-
+    "seed:pages": "tsx src/scripts/seed-pages.ts",
+    "seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.88.0",
@@ -36,6 +38,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "dotenv": "^16.4.5",
+    "dotenv-cli": "^11.0.0",
     "tailwindcss": "^4.0.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.0"

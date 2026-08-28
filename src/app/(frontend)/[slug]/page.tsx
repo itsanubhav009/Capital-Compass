@@ -22,20 +22,9 @@ export const revalidate = 300
  * adding a new page in the admin panel needs no code change.
  */
 export async function generateStaticParams() {
-  const payload = await client()
-  const [sections, pages] = await Promise.all([
-    getSections(),
-    payload.find({
-      collection: 'pages',
-      where: { _status: { equals: 'published' } },
-      limit: 100,
-      depth: 0,
-    }),
-  ])
-  return [
-    ...sections.map((s: any) => ({ slug: s.slug })),
-    ...pages.docs.map((p: any) => ({ slug: p.slug })),
-  ]
+  // Render on demand instead of at build time. Pages still cache for five
+  // minutes via `revalidate`, and the build no longer depends on the database.
+  return []
 }
 
 export async function generateMetadata({
