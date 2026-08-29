@@ -7,6 +7,7 @@ import {
   sectionField,
   slugField,
 } from '../fields/common'
+import { indexOnChange, deindexOnDelete } from '../hooks/search-index'
 
 export const MacroNotes: CollectionConfig = {
   slug: 'macro-notes',
@@ -17,6 +18,10 @@ export const MacroNotes: CollectionConfig = {
     group: 'Content',
     description: 'Rates, currencies, commodities and the macro backdrop.',
     livePreview: { url: ({ data }) => `/insight/${data?.slug}` },
+  },
+  hooks: {
+    afterChange: [indexOnChange],
+    afterDelete: [deindexOnDelete],
   },
   access: {
     read: () => true,

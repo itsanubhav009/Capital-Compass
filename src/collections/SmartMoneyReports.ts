@@ -8,6 +8,7 @@ import {
   sectionField,
   slugField,
 } from '../fields/common'
+import { indexOnChange, deindexOnDelete } from '../hooks/search-index'
 
 export const SmartMoneyReports: CollectionConfig = {
   slug: 'smart-money-reports',
@@ -20,6 +21,10 @@ export const SmartMoneyReports: CollectionConfig = {
     livePreview: {
       url: ({ data }) => `/insight/${data?.slug}`,
     },
+  },
+  hooks: {
+    afterChange: [indexOnChange],
+    afterDelete: [deindexOnDelete],
   },
   access: {
     read: () => true,

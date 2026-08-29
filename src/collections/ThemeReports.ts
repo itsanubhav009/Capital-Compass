@@ -7,6 +7,7 @@ import {
   sectionField,
   slugField,
 } from '../fields/common'
+import { indexOnChange, deindexOnDelete } from '../hooks/search-index'
 
 export const ThemeReports: CollectionConfig = {
   slug: 'theme-reports',
@@ -17,6 +18,10 @@ export const ThemeReports: CollectionConfig = {
     group: 'Content',
     description: 'Where capital is rotating: AI, defence, renewables, data centres.',
     livePreview: { url: ({ data }) => `/insight/${data?.slug}` },
+  },
+  hooks: {
+    afterChange: [indexOnChange],
+    afterDelete: [deindexOnDelete],
   },
   access: {
     read: () => true,

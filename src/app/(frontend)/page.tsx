@@ -7,8 +7,9 @@ import {
   getSettings,
 } from '@/lib/queries'
 import { FlowTape, ImpactMark, TrendMark } from '@/components/flow'
-import { AiSearchSlot, InsightCard, NewsletterForm } from '@/components/site'
+import { InsightCard, NewsletterForm } from '@/components/site'
 import { KIND_LABEL, dayMonth, shortDate } from '@/lib/format'
+import { AiSearch } from '@/components/ai-search'
 
 // Rebuild every 5 minutes; publishing 1–2 posts a day does not need more.
 // Rendered per request, cached at the edge. Keeps the build independent
@@ -45,7 +46,7 @@ export default async function Homepage() {
 
         {s.showAiSearchPlaceholder && (
           <div className="mt-9 max-w-2xl">
-            <AiSearchSlot />
+            <AiSearch />
           </div>
         )}
       </section>

@@ -6,6 +6,7 @@ import {
   sectionField,
   slugField,
 } from '../fields/common'
+import { indexOnChange, deindexOnDelete } from '../hooks/search-index'
 
 export const WealthArticles: CollectionConfig = {
   slug: 'wealth-articles',
@@ -16,6 +17,10 @@ export const WealthArticles: CollectionConfig = {
     group: 'Content',
     description: 'General editorial: explainers, NRI topics, long reads.',
     livePreview: { url: ({ data }) => `/insight/${data?.slug}` },
+  },
+  hooks: {
+    afterChange: [indexOnChange],
+    afterDelete: [deindexOnDelete],
   },
   access: {
     read: () => true,
