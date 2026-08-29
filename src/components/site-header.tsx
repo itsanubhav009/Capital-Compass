@@ -194,7 +194,7 @@ function TagRail({ tags }: { tags: Tag[] }) {
     setStart((n) => (n + dir * count + tags.length * 2) % tags.length)
 
   return (
-    <div className="ml-auto hidden min-w-0 flex-1 items-center pl-16 pr-[30px] xl:flex">
+    <div className="ml-auto hidden min-w-0 max-w-[28%] flex-1 items-center pl-10 pr-[30px] xl:flex">
       <div ref={box} className="tag-rail min-w-0 flex-1">
         {(widths ? ordered.slice(0, count) : ordered).map((t, i) => (
           <Link
@@ -245,10 +245,16 @@ function NavEntry({
   item,
   previews,
   active,
+  tabbable = true,
+  align = 'left',
 }: {
   item: NavItem
   previews: Preview[]
   active: boolean
+  /** The sticky bar is off-screen until you scroll; its links leave the tab order. */
+  tabbable?: boolean
+  /** Panels open leftwards in the sticky bar, where the menu sits on the right. */
+  align?: 'left' | 'right'
 }) {
   const [open, setOpen] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -273,6 +279,8 @@ function NavEntry({
       ? 'pointer-events-auto translate-y-0 opacity-100'
       : 'pointer-events-none translate-y-[15px] opacity-0'
 
+  const side = align === 'right' ? 'right-0' : 'left-0'
+
   return (
     <li className="relative py-[17px]" onMouseEnter={enter} onMouseLeave={leave}>
       <Link
@@ -288,12 +296,13 @@ function NavEntry({
 
       {hasChildren && (
         <ul
-          className={`absolute left-0 top-full z-50 w-[280px] rounded-b-[5px] bg-[#121418] shadow-[0_2px_35px_0_rgba(0,0,0,0.04)] transition-[opacity,transform] duration-300 ${panel(open)}`}
+          className={`absolute ${side} top-full z-50 w-[280px] rounded-b-[5px] bg-[#121418] shadow-[0_2px_35px_0_rgba(0,0,0,0.04)] transition-[opacity,transform] duration-300 ${panel(open)}`}
         >
           {children.map((c, n) => (
             <li key={c.slug} className={n < children.length - 1 ? 'border-b border-white/[0.07]' : ''}>
               <Link
                 href={`/${c.slug}`}
+                tabIndex={tabbable ? 0 : -1}
                 className="block px-5 py-3 text-[15px] font-medium leading-[1.4] text-white transition-colors duration-300 hover:text-accent"
               >
                 {c.title}
@@ -305,7 +314,7 @@ function NavEntry({
 
       {hasPreviews && (
         <div
-          className={`absolute left-0 top-full z-50 w-[560px] rounded-b-[5px] border border-rule bg-white shadow-[0_2px_35px_0_rgba(0,0,0,0.14)] transition-[opacity,transform] duration-300 ${panel(open)}`}
+          className={`absolute ${side} top-full z-50 w-[560px] rounded-b-[5px] border border-rule bg-white shadow-[0_2px_35px_0_rgba(0,0,0,0.14)] transition-[opacity,transform] duration-300 ${panel(open)}`}
         >
           <div className="flex items-center justify-between border-b border-rule px-5 py-3">
             <span className="kicker">{item.title}</span>
@@ -358,7 +367,18 @@ export function SiteHeader({
 }) {
   const [open, setOpen] = useState(false)
   const [today, setToday] = useState('')
+  const [stuck, setStuck] = useState(false)
   const pathname = usePathname()
+
+  // The reference does not pin the menu row. It hides a second, more compact
+  // bar above the viewport and slides it down once you are past the header,
+  // which is why its sticky bar carries the logo and the menu together.
+  useEffect(() => {
+    const onScroll = () => setStuck(window.scrollY > 260)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   // Rendered on the client so the server's timezone never leaks into the date.
   useEffect(() => {
@@ -431,7 +451,7 @@ export function SiteHeader({
       {/* ---------------------------------------------------- logo row --- */}
       <div className="bg-white">
         <div className="mx-auto flex max-w-[1430px] flex-col items-center gap-[10px] px-[10px] py-[10px] lg:flex-row">
-          <div className="flex w-full items-center gap-6 pl-[10px] lg:w-auto lg:flex-1 lg:gap-[80px]">
+          <div className="flex w-full items-center gap-6 pl-[10px] lg:w-auto lg:shrink-0 lg:gap-[80px]">
             <button
               type="button"
               onClick={() => setOpen(true)}
@@ -450,13 +470,13 @@ export function SiteHeader({
           </div>
 
           {promo && (
-            <div className="hidden min-w-0 max-w-[720px] justify-end lg:flex lg:pr-[10px]">{promo}</div>
+            <div className="hidden min-w-0 flex-1 justify-end lg:flex lg:pl-10 lg:pr-[10px]">{promo}</div>
           )}
         </div>
       </div>
 
       {/* --------------------------------------------------------- nav --- */}
-      <div className="sticky top-0 z-40 bg-bar text-white">
+      <div className="bg-bar text-white">
         <div className="mx-auto flex max-w-[1430px] items-center px-[10px]">
           <nav aria-label="Sections" className="hidden shrink-0 pl-[10px] lg:block">
             <ul className="flex flex-nowrap items-center">
@@ -505,6 +525,80 @@ export function SiteHeader({
               Browse
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* -------------------------------------------------- sticky bar --- */}
+      {/*
+        Fixed and translated out of view until you scroll past the masthead,
+        then slid down on the theme's own easing. It carries the hamburger,
+        the wordmark and the menu, so the whole width stays useful once the
+        masthead is gone.
+      */}
+      <div
+        className={`fixed inset-x-0 top-0 z-50 border-b border-white/[0.06] bg-bar text-white transition-transform duration-500 ease-[cubic-bezier(0.24,0.74,0.58,1)] ${
+          stuck ? 'translate-y-0' : '-translate-y-full'
+        }`}
+        aria-hidden={!stuck}
+      >
+        <div className="mx-auto flex max-w-[1430px] items-center px-[10px]">
+          <div className="flex shrink-0 items-center gap-6 py-2.5 pl-[10px] lg:gap-[80px]">
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-label="Open menu"
+              tabIndex={stuck ? 0 : -1}
+              className="flex h-[45px] w-[45px] shrink-0 items-center justify-center rounded-[5px] border border-white/[0.12] bg-bar-2 text-white transition-colors duration-300 hover:text-accent"
+            >
+              <BurgerIcon />
+            </button>
+            <Link
+              href="/"
+              tabIndex={stuck ? 0 : -1}
+              className="flex shrink-0 items-baseline gap-2 text-[22px] font-bold tracking-tight text-white sm:text-[26px]"
+            >
+              {siteName}
+              <span aria-hidden className="hidden h-2 w-2 rounded-full bg-dot sm:block" />
+            </Link>
+          </div>
+
+          <nav aria-label="Sections" className="ml-auto hidden pr-[10px] lg:block">
+            <ul className="flex flex-nowrap items-center">
+              <li className="py-[17px]">
+                <Link
+                  href="/"
+                  tabIndex={stuck ? 0 : -1}
+                  className={`ml-[24px] flex items-center whitespace-nowrap text-[16px] font-medium leading-[1.4] transition-colors duration-300 xl:ml-[32px] 2xl:ml-[40px] ${
+                    pathname === '/' ? 'text-accent' : 'text-white hover:text-accent'
+                  }`}
+                >
+                  Home
+                </Link>
+              </li>
+              {nav.map((item) => (
+                <NavEntry
+                  key={item.key}
+                  item={item}
+                  previews={item.slug ? (previews[item.slug] ?? []) : []}
+                  active={isActive(item)}
+                  tabbable={stuck}
+                  align="right"
+                />
+              ))}
+
+              <li className="py-[17px]">
+                <Link
+                  href="/contact"
+                  tabIndex={stuck ? 0 : -1}
+                  className={`ml-[24px] flex items-center whitespace-nowrap text-[16px] font-medium leading-[1.4] transition-colors duration-300 xl:ml-[32px] 2xl:ml-[40px] ${
+                    pathname === '/contact' ? 'text-accent' : 'text-white hover:text-accent'
+                  }`}
+                >
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
 

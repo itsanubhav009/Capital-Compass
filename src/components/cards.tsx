@@ -106,46 +106,6 @@ export function Band({
   )
 }
 
-export function SectionHead({
-  title,
-  href,
-  id,
-  dark = false,
-}: {
-  title: string
-  href?: string
-  id?: string
-  dark?: boolean
-}) {
-  return (
-    <div
-      className={`mb-8 flex items-end justify-between gap-4 border-b-2 pb-3 ${
-        dark ? 'border-white/25' : 'border-ink'
-      }`}
-    >
-      <h2
-        id={id}
-        className={`text-[24px] font-semibold leading-[1.25] sm:text-[32px] ${dark ? 'text-white' : ''}`}
-      >
-        {title}
-      </h2>
-      {href && (
-        <Link
-          href={href}
-          className={`group shrink-0 whitespace-nowrap pb-1 text-[13.5px] font-semibold transition-colors ${
-            dark ? 'text-white/70 hover:text-white' : 'text-accent hover:text-ink'
-          }`}
-        >
-          See all
-          <span aria-hidden className="ml-1.5 inline-block transition-transform group-hover:translate-x-1">
-            →
-          </span>
-        </Link>
-      )}
-    </div>
-  )
-}
-
 /* ------------------------------------------------------------- list row */
 
 /**

@@ -189,7 +189,7 @@ export function NewsletterForm({
   body?: string
   cta: string
   finePrint?: string
-  variant?: 'block' | 'inline' | 'footer'
+  variant?: 'block' | 'inline' | 'footer' | 'banner'
 }) {
   const [email, setEmail] = useState('')
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
@@ -218,18 +218,23 @@ export function NewsletterForm({
     }
   }
 
-  const dark = variant === 'block'
+  const dark = variant === 'block' || variant === 'banner'
+
+  // The banner supplies its own heading and ground, so the form drops both.
+  const bare = variant === 'banner'
 
   return (
-    <div id="newsletter" className={dark ? 'bg-deep px-6 py-10 text-paper sm:px-10 sm:py-12' : ''}>
-      <div className={dark ? 'mx-auto max-w-2xl text-center' : ''}>
-        <span className={`eyebrow ${dark ? '!text-brass-soft' : ''}`}>Weekly</span>
-        <h2
-          className={`mt-2 ${dark ? 'text-[28px] sm:text-[34px]' : 'text-[22px]'} ${dark ? 'text-paper' : 'text-ink'}`}
-        >
-          {heading}
-        </h2>
-        {body && (
+    <div id="newsletter" className={dark && !bare ? 'bg-deep px-6 py-10 text-paper sm:px-10 sm:py-12' : ''}>
+      <div className={dark && !bare ? 'mx-auto max-w-2xl text-center' : ''}>
+        {!bare && <span className={`eyebrow ${dark ? '!text-brass-soft' : ''}`}>Weekly</span>}
+        {!bare && (
+          <h2
+            className={`mt-2 ${dark ? 'text-[28px] sm:text-[34px]' : 'text-[22px]'} ${dark ? 'text-paper' : 'text-ink'}`}
+          >
+            {heading}
+          </h2>
+        )}
+        {body && !bare && (
           <p className={`mt-3 text-[15px] ${dark ? 'text-paper/75' : 'text-ink-soft'}`}>{body}</p>
         )}
 
@@ -241,7 +246,7 @@ export function NewsletterForm({
             {message}
           </p>
         ) : (
-          <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:gap-0">
+          <div className={`flex flex-col gap-2 sm:flex-row sm:gap-0 ${bare ? 'max-w-[430px]' : 'mt-6'}`}>
             <label htmlFor={`nl-${variant}`} className="sr-only">
               Email address
             </label>
@@ -258,9 +263,11 @@ export function NewsletterForm({
               onKeyDown={(e) => e.key === 'Enter' && submit()}
               placeholder="you@example.com"
               className={`w-full border px-4 py-3 text-[15px] outline-none ${
-                dark
-                  ? 'border-paper/25 bg-transparent text-paper placeholder:text-paper/40 focus:border-brass-soft'
-                  : 'border-rule-strong bg-surface text-ink placeholder:text-ink-faint focus:border-deep'
+                bare
+                  ? 'rounded-l-[6px] border-white bg-white py-2.5 text-[14px] text-ink placeholder:text-ink-faint sm:border-r-0'
+                  : dark
+                    ? 'border-paper/25 bg-transparent text-paper placeholder:text-paper/40 focus:border-brass-soft'
+                    : 'border-rule-strong bg-surface text-ink placeholder:text-ink-faint focus:border-deep'
               }`}
             />
             <button
@@ -268,7 +275,12 @@ export function NewsletterForm({
               onClick={submit}
               disabled={state === 'sending'}
               className={`shrink-0 px-6 py-3 text-[15px] font-medium transition-colors disabled:opacity-60 ${
-dark ? 'bg-accent text-white hover:bg-accent-soft' : 'bg-ink text-white hover:bg-bar-2'              }`}
+                bare
+                  ? 'rounded-[6px] bg-accent px-5 py-2.5 text-[14px] text-white hover:bg-accent-soft sm:m-[4px]'
+                  : dark
+                    ? 'bg-accent text-white hover:bg-accent-soft'
+                    : 'bg-ink text-white hover:bg-bar-2'
+              }`}
             >
               {state === 'sending' ? 'Sending…' : cta}
             </button>

@@ -113,17 +113,17 @@ export default async function FrontendLayout({ children }: { children: React.Rea
           promo={
             <a
               href="/#newsletter"
-              className="flex w-full items-center justify-between gap-6 rounded-[10px] bg-bar px-8 py-6 text-white transition-colors hover:bg-bar-2"
+              className="flex h-[100px] w-full items-center justify-between gap-6 rounded-[10px] bg-bar px-8 text-white transition-colors hover:bg-bar-2"
             >
               <span>
-                <span className="text-[12px] font-semibold uppercase tracking-wider text-dot">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-dot">
                   Free every Sunday
                 </span>
-                <span className="mt-0.5 block text-[18px] font-bold leading-snug">
+                <span className="mt-0.5 block text-[16px] font-bold leading-snug">
                   The Weekly Capital Flow Report
                 </span>
               </span>
-              <span className="shrink-0 bg-accent px-4 py-2 text-[13px] font-semibold">
+              <span className="shrink-0 rounded-[4px] bg-accent px-4 py-2 text-[13px] font-semibold">
                 Subscribe
               </span>
             </a>
@@ -138,6 +138,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
           disclaimer={s.articleDisclaimer}
           sections={sections as any}
           recent={recent}
+          tags={tags.map((t) => t.title)}
         />
 
         <ScrollTop />

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { crore, dayMonth, direction, flowWord, signed } from '@/lib/format'
-import { SectionHead } from '@/components/cards'
+import { Head } from '@/components/sections'
 
 const TONE = {
   inflow: { bar: 'bg-inflow', text: 'text-inflow' },
@@ -118,7 +118,7 @@ export function FlowPanel({
  *
  * Static grid, not an auto-scrolling ticker: the brief bans tickers, and a
  * moving strip is the single worst thing you can do to a Cumulative Layout
- * Shift score. Styled with the same SectionHead as every other block so it
+ * Shift score. Styled with the same Head as every other block so it
  * does not read as a different design.
  */
 export function FlowTape({ heading, rows }: { heading: string; rows: any[] }) {
@@ -127,7 +127,7 @@ export function FlowTape({ heading, rows }: { heading: string; rows: any[] }) {
   return (
     <section aria-labelledby="flow-tape" className="border-y border-rule bg-white">
       <div className="mx-auto max-w-[1430px] px-[10px] py-[50px] sm:px-5">
-        <SectionHead id="flow-tape" title={heading} href="/capital-flow-india" />
+        <Head id="flow-tape" title={heading} href="/capital-flow-india" />
 
         <ul className="grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map((r) => {

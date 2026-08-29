@@ -197,3 +197,152 @@ export async function getPages() {
   })
   return res.docs
 }
+
+/**
+ * Sections as browsable tiles: name, how many published pieces sit behind it,
+ * and a picture. Sections carry no image of their own, so the tile borrows the
+ * newest article's — which is also what keeps it current.
+ */
+export async function getSectionTiles(): Promise<
+  { id: any; title: string; slug: string; count: number; image?: string | null }[]
+> {
+  const payload = await client()
+  const sections: any[] = await getSections()
+
+  const all = (
+    await Promise.all(
+      CONTENT_COLLECTIONS.map(async (collection) => {
+        const res = await payload.find({
+          collection,
+          where: { _status: { equals: 'published' } },
+          sort: '-publishedAt',
+          limit: 200,
+          depth: 1,
+        })
+        return res.docs
+      }),
+    )
+  )
+    .flat()
+    .sort((a: any, b: any) => +new Date(b.publishedAt ?? 0) - +new Date(a.publishedAt ?? 0))
+
+  return sections.map((s) => {
+    const mine = all.filter(
+      (d: any) => (typeof d.section === 'object' ? d.section?.slug : null) === s.slug,
+    )
+    const m: any = mine[0]?.featuredImage
+    return {
+      id: s.id,
+      title: s.title,
+      slug: s.slug,
+      count: mine.length,
+      image: m?.sizes?.card?.url ?? m?.url ?? null,
+    }
+  })
+}
+
+/** Most-read first. Ties fall back to newest, so a cold archive still sorts. */
+export async function getPopular(limit = 3): Promise<Insight[]> {
+  const payload = await client()
+  const all = (
+    await Promise.all(
+      CONTENT_COLLECTIONS.map(async (collection) => {
+        const res = await payload.find({
+          collection,
+          where: { _status: { equals: 'published' } },
+          sort: '-publishedAt',
+          limit: 60,
+          depth: 1,
+        })
+        return tag(res.docs, collection)
+      }),
+    )
+  ).flat()
+
+  return all
+    .sort(
+      (a: any, b: any) =>
+        (b.views ?? 0) - (a.views ?? 0) ||
+        +new Date(b.publishedAt ?? 0) - +new Date(a.publishedAt ?? 0),
+    )
+    .slice(0, limit)
+}
+
+/**
+ * Everything browsable, as tiles: the five sections first, then the themes.
+ *
+ * Sections alone give five tiles, which is exactly the slider's page size —
+ * nothing would ever move. Themes are real archives too (the section page
+ * filters on `?theme=`), so folding them in gives the rail something to do
+ * and the reader more ways in.
+ */
+export async function getBrowseTiles(): Promise<
+  { id: any; title: string; href: string; count: number; image?: string | null }[]
+> {
+  const payload = await client()
+  const sections: any[] = await getSections()
+
+  const all = (
+    await Promise.all(
+      CONTENT_COLLECTIONS.map(async (collection) => {
+        const res = await payload.find({
+          collection,
+          where: { _status: { equals: 'published' } },
+          sort: '-publishedAt',
+          limit: 200,
+          depth: 1,
+        })
+        return res.docs
+      }),
+    )
+  )
+    .flat()
+    .sort((a: any, b: any) => +new Date(b.publishedAt ?? 0) - +new Date(a.publishedAt ?? 0))
+
+  const shot = (docs: any[]) => {
+    const m: any = docs[0]?.featuredImage
+    return m?.sizes?.card?.url ?? m?.url ?? null
+  }
+
+  const sectionTiles = sections.map((s) => {
+    const mine = all.filter(
+      (d: any) => (typeof d.section === 'object' ? d.section?.slug : null) === s.slug,
+    )
+    return {
+      id: `section-${s.id}`,
+      title: s.title,
+      href: `/${s.slug}`,
+      count: mine.length,
+      image: shot(mine),
+    }
+  })
+
+  const themes = await getThemes(20)
+  const themeTiles = themes
+    .map((t) => {
+      const mine = all.filter(
+        (d: any) => (typeof d.theme === 'object' ? d.theme?.slug : null) === t.slug,
+      )
+      return {
+        id: `theme-${t.slug}`,
+        title: t.title,
+        href: `/sectoral-trends?theme=${t.slug}`,
+        count: mine.length,
+        image: shot(mine),
+      }
+    })
+    .filter((t) => t.count > 0)
+
+  return [...sectionTiles, ...themeTiles]
+}
+
+/** Theme names for the tag rail and the footer tag cloud. */
+export async function getThemes(limit = 20): Promise<{ title: string; slug: string }[]> {
+  const payload = await client()
+  try {
+    const res = await payload.find({ collection: 'themes', limit, sort: 'title', depth: 0 })
+    return res.docs.map((t: any) => ({ title: t.title, slug: t.slug }))
+  } catch {
+    return []
+  }
+}

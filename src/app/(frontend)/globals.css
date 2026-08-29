@@ -325,6 +325,8 @@
   .tag-rail {
     display: flex;
     align-items: center;
+    /* Hugged to the right so the topics sit apart from the menu, with the
+       whole leftover gap between Contact and the first tag. */
     justify-content: flex-end;
     gap: 20px;
     overflow: hidden;

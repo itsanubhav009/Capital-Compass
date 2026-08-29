@@ -117,10 +117,14 @@ type Recent = { slug: string; title: string; image?: string | null; views?: numb
 
 function FooterHead({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="relative pb-4 text-[21px] font-bold text-white">
-      {children}
-      <span aria-hidden className="absolute bottom-0 left-0 h-[3px] w-14 bg-accent" />
-    </h2>
+    <>
+      <h5 className="text-[20px] text-white">{children}</h5>
+      {/* .rs-divider.dot-enable — a short bar with a detached dot after it. */}
+      <span aria-hidden className="mt-3 flex items-center gap-1.5">
+        <span className="block h-[3px] w-[70px] bg-accent" />
+        <span className="block h-[3px] w-[6px] bg-accent" />
+      </span>
+    </>
   )
 }
 
@@ -142,7 +146,7 @@ export function SiteFooter({
   tags?: string[]
 }) {
   return (
-    <footer className="mt-16 bg-bar text-white">
+    <footer className="bg-bar text-white">
       <div className="mx-auto max-w-[1430px] px-4 py-16 sm:px-6">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_0.8fr_1.3fr_1fr]">
           {/* -------------------------------------------------- brand --- */}
@@ -170,7 +174,7 @@ export function SiteFooter({
 
           {/* ----------------------------------------------- sections --- */}
           <div>
-            <FooterHead>Sections</FooterHead>
+            <FooterHead>Top Categories</FooterHead>
             <ul className="mt-6 space-y-3">
               {sections.map((s) => (
                 <li key={s.id}>
@@ -188,12 +192,12 @@ export function SiteFooter({
 
           {/* ------------------------------------------------- recent --- */}
           <div>
-            <FooterHead>Recent</FooterHead>
+            <FooterHead>Recent Post</FooterHead>
             <ul className="mt-6 divide-y divide-white/10">
               {recent.slice(0, 3).map((r) => (
                 <li key={r.slug} className="py-4 first:pt-0">
                   <Link href={`/insight/${r.slug}`} className="group flex gap-4">
-                    <span className="relative block h-16 w-20 shrink-0 overflow-hidden bg-white/5">
+                    <span className="relative block h-16 w-20 shrink-0 overflow-hidden rounded-[6px] bg-white/5">
                       {r.image && <Image src={r.image} alt="" fill sizes="80px" className="object-cover" />}
                     </span>
                     <span className="min-w-0">
@@ -212,13 +216,13 @@ export function SiteFooter({
 
           {/* --------------------------------------------------- tags --- */}
           <div>
-            <FooterHead>Topics</FooterHead>
+            <FooterHead>Tags</FooterHead>
             <div className="mt-6 flex flex-wrap gap-2">
               {(tags.length ? tags : ['FII flows', 'DII', 'Promoters', 'Macro', 'Defence', 'AI', 'Renewables', 'NRI']).map(
                 (t) => (
                   <span
                     key={t}
-                    className="border border-white/15 px-3 py-1.5 text-[13px] text-white/65 transition-colors hover:border-accent hover:text-white"
+                    className="rounded-[4px] bg-white/[0.06] px-3.5 py-2 text-[14px] text-white/70 transition-colors hover:bg-accent hover:text-white"
                   >
                     {t}
                   </span>
