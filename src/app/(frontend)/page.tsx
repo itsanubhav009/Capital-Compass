@@ -7,167 +7,160 @@ import {
   getSettings,
 } from '@/lib/queries'
 import { FlowTape, ImpactMark, TrendMark } from '@/components/flow'
-import { InsightCard, NewsletterForm } from '@/components/site'
+import { HeroCard, ListRow, StackCard, SectionHead } from '@/components/cards'
+import { AiSearch, NewsletterForm } from '@/components/site'
 import { KIND_LABEL, dayMonth, shortDate } from '@/lib/format'
-import { AiSearch } from '@/components/ai-search'
 
-// Rebuild every 5 minutes; publishing 1–2 posts a day does not need more.
-// Rendered per request, cached at the edge. Keeps the build independent
-// of database availability.
 export const revalidate = 300
 
-const img = (m: any) =>
-  m?.url ? { url: m.sizes?.card?.url ?? m.url, alt: m.alt ?? '' } : null
+const cat = (d: any) => d.section?.title ?? KIND_LABEL[d.collection] ?? 'Analysis'
 
 export default async function Homepage() {
-  const [settings, tape, macro, themes, featured, latest] = await Promise.all([
+  const [settings, tape, macro, themes, latest] = await Promise.all([
     getSettings(),
     getFlowTape(6),
     getMacroSnapshot(4),
     getSectorThemes(4),
-    getInsights({ featured: true, limit: 3 }),
-    getInsights({ limit: 6 }),
+    getInsights({ limit: 16 }),
   ])
   const s: any = settings
-  const lead = featured.docs[0] ?? latest.docs[0]
-  const rest = (featured.docs.length > 1 ? featured.docs.slice(1) : latest.docs.slice(1, 4)).slice(0, 3)
+  const docs = latest.docs
+
+  const hero = docs[0]
+  const leftCol = docs.slice(1, 5)
+  const rightCol = docs.slice(5, 9)
+  const grid = docs.slice(9, 15)
 
   return (
     <>
-      {/* ---------------------------------------------------- the thesis --- */}
-      <section className="mx-auto max-w-6xl px-5 pb-10 pt-14 sm:px-8 sm:pt-20">
-        <span className="eyebrow">{s.philosophyEyebrow}</span>
-        <h1 className="mt-4 max-w-4xl text-[34px] leading-[1.08] sm:text-[52px]">
-          {s.philosophyHeading}
-        </h1>
-        <p className="mt-5 max-w-2xl text-[17px] leading-relaxed text-ink-soft">
-          {s.philosophyBody}
-        </p>
+      {/* ------------------------------------------------ hero grid --- */}
+      {hero && (
+        <section className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6" aria-label="Latest">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-7">
+            <div className="order-2 divide-y divide-rule lg:order-1">
+              {leftCol.map((d) => (
+                <ListRow
+                  key={`${d.collection}-${d.id}`}
+                  href={`/insight/${d.slug}`}
+                  category={cat(d)}
+                  title={d.title}
+                  byline={s.siteName}
+                  views={d.views ?? 0}
+                  media={d.featuredImage}
+                />
+              ))}
+            </div>
 
-        {s.showAiSearchPlaceholder && (
-          <div className="mt-9 max-w-2xl">
-            <AiSearch />
+            <div className="order-1 lg:order-2">
+              <HeroCard
+                href={`/insight/${hero.slug}`}
+                category={cat(hero)}
+                title={hero.title}
+                byline={s.siteName}
+                views={hero.views ?? 0}
+                date={shortDate(hero.publishedAt)}
+                media={hero.featuredImage}
+              />
+            </div>
+
+            <div className="order-3 divide-y divide-rule">
+              {rightCol.map((d) => (
+                <ListRow
+                  key={`${d.collection}-${d.id}`}
+                  href={`/insight/${d.slug}`}
+                  category={cat(d)}
+                  title={d.title}
+                  byline={s.siteName}
+                  views={d.views ?? 0}
+                  media={d.featuredImage}
+                />
+              ))}
+            </div>
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
-      {/* --------------------------------- latest institutional activity --- */}
+      {/* ------------------------------------ institutional activity --- */}
       <FlowTape heading={s.flowTapeHeading} rows={tape} />
 
-      {/* ------------------------------------------------ featured lead --- */}
-      {lead && (
-        <section className="mx-auto max-w-6xl px-5 py-14 sm:px-8" aria-labelledby="featured">
-          <h2 id="featured" className="eyebrow">
-            Featured insights
-          </h2>
-
-          <div className="mt-6 grid gap-10 lg:grid-cols-[1.35fr_1fr] lg:gap-12">
-            <InsightCard
-              size="lead"
-              href={`/insight/${lead.slug}`}
-              kind={KIND_LABEL[lead.collection] ?? 'Analysis'}
-              title={lead.title}
-              standfirst={lead.standfirst}
-              date={shortDate(lead.publishedAt)}
-              minutes={lead.readingMinutes}
-              image={img(lead.featuredImage)}
-              accent={lead.section?.accent}
-            />
-
-            <div className="divide-y divide-rule border-t border-rule lg:border-t-0 lg:pt-0">
-              {rest.map((d) => (
-                <div key={`${d.collection}-${d.id}`} className="py-6 first:lg:pt-0">
-                  <InsightCard
-                    href={`/insight/${d.slug}`}
-                    kind={KIND_LABEL[d.collection] ?? 'Analysis'}
-                    title={d.title}
-                    standfirst={d.standfirst}
-                    date={shortDate(d.publishedAt)}
-                    minutes={d.readingMinutes}
-                    accent={d.section?.accent}
-                  />
-                </div>
-              ))}
-            </div>
+      {/* ------------------------------------------------ AI search --- */}
+      {s.showAiSearchPlaceholder && (
+        <section className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6">
+          <SectionHead title="Ask the archive" />
+          <div className="max-w-3xl">
+            <AiSearch />
           </div>
         </section>
       )}
 
-      {/* --------------------------------------------- macro snapshot --- */}
+      {/* -------------------------------------------- macro snapshot --- */}
       {macro.length > 0 && (
-        <section className="border-y border-rule bg-sunken/50" aria-labelledby="macro">
-          <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8">
-            <div className="flex items-baseline justify-between gap-4">
-              <h2 id="macro" className="eyebrow">
-                Macro snapshot
-              </h2>
-              <Link
-                href="/global-macro"
-                className="text-[13px] text-deep underline decoration-brass-soft underline-offset-4"
-              >
-                All macro notes
-              </Link>
-            </div>
-
-            <ul className="mt-6 grid gap-px bg-rule sm:grid-cols-2 lg:grid-cols-4">
-              {macro.map((m: any) => (
-                <li key={m.id} className="bg-paper p-5">
-                  <Link href={`/insight/${m.slug}`} className="group block h-full">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="tnum text-[11px] uppercase tracking-wider text-ink-faint">
-                        {m.region} · {m.assetClass}
-                      </span>
-                    </div>
-                    <h3 className="mt-2.5 text-[19px] leading-snug text-ink group-hover:text-deep">
-                      {m.title}
-                    </h3>
-                    {m.impactNote && (
-                      <p className="mt-2 text-[14px] leading-snug text-ink-soft">{m.impactNote}</p>
-                    )}
-                    <div className="mt-4 flex items-center justify-between border-t border-rule pt-2.5">
-                      <ImpactMark impact={m.impact} />
-                      <span className="tnum text-[11px] text-ink-faint">
-                        {dayMonth(m.publishedAt)}
-                      </span>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <section className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6" aria-labelledby="macro">
+          <SectionHead title="Macro snapshot" href="/global-macro" />
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {macro.map((m: any) => (
+              <li key={m.id} className="border border-rule p-5 transition-colors hover:border-ink">
+                <Link href={`/insight/${m.slug}`} className="group block">
+                  <span className="kicker">
+                    {m.region} · {m.assetClass}
+                  </span>
+                  <h3 className="mt-2 text-[19px] leading-snug transition-colors group-hover:text-accent">
+                    {m.title}
+                  </h3>
+                  {m.impactNote && (
+                    <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">{m.impactNote}</p>
+                  )}
+                  <div className="mt-4 flex items-center justify-between border-t border-rule pt-3">
+                    <ImpactMark impact={m.impact} />
+                    <span className="tnum text-[12px] text-ink-faint">{dayMonth(m.publishedAt)}</span>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 
-      {/* ---------------------------------------------- sector themes --- */}
-      {themes.length > 0 && (
-        <section className="mx-auto max-w-6xl px-5 py-14 sm:px-8" aria-labelledby="themes">
-          <div className="flex items-baseline justify-between gap-4">
-            <h2 id="themes" className="eyebrow">
-              Sector themes
-            </h2>
-            <Link
-              href="/sectoral-trends"
-              className="text-[13px] text-deep underline decoration-brass-soft underline-offset-4"
-            >
-              All themes
-            </Link>
-          </div>
+      {/* --------------------------------------------- latest grid --- */}
+      {grid.length > 0 && (
+        <section className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
+          <SectionHead title="Latest analysis" />
+          <ul className="grid gap-x-7 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
+            {grid.map((d) => (
+              <li key={`${d.collection}-${d.id}`}>
+                <StackCard
+                  href={`/insight/${d.slug}`}
+                  category={cat(d)}
+                  title={d.title}
+                  standfirst={d.standfirst}
+                  byline={s.siteName}
+                  views={d.views ?? 0}
+                  date={shortDate(d.publishedAt)}
+                  media={d.featuredImage}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
-          <ul className="mt-6 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+      {/* -------------------------------------------- sector themes --- */}
+      {themes.length > 0 && (
+        <section className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
+          <SectionHead title="Sector themes" href="/sectoral-trends" />
+          <ul className="grid gap-x-7 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
             {themes.map((t: any) => (
-              <li key={t.id} className="border-t border-rule pt-4">
+              <li key={t.id} className="border-t-2 border-ink pt-4">
                 <Link href={`/insight/${t.slug}`} className="group block">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="tnum text-[11px] uppercase tracking-wider text-ink-faint">
-                      {t.theme?.title ?? t.industry}
-                    </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="kicker">{t.theme?.title ?? t.industry}</span>
                     <TrendMark trend={t.capitalFlowTrend} />
                   </div>
-                  <h3 className="mt-2.5 text-[20px] leading-snug text-ink group-hover:text-deep">
+                  <h3 className="mt-2.5 text-[19px] leading-snug transition-colors group-hover:text-accent">
                     {t.title}
                   </h3>
                   {t.standfirst && (
-                    <p className="mt-2 line-clamp-3 text-[14px] leading-snug text-ink-soft">
+                    <p className="mt-2 line-clamp-3 text-[14px] leading-relaxed text-ink-soft">
                       {t.standfirst}
                     </p>
                   )}
@@ -178,8 +171,8 @@ export default async function Homepage() {
         </section>
       )}
 
-      {/* ------------------------------------------------- newsletter --- */}
-      <section className="mx-auto max-w-6xl px-5 pb-6 sm:px-8">
+      {/* ---------------------------------------------- newsletter --- */}
+      <section className="mx-auto max-w-[1400px] px-4 pb-12 pt-4 sm:px-6">
         <NewsletterForm
           heading={s.newsletterHeading}
           body={s.newsletterBody}
