@@ -132,6 +132,17 @@ export default buildConfig({
 
   upload: { limits: { fileSize: 8_000_000 } },
 
-  cors: [process.env.NEXT_PUBLIC_SITE_URL || ''].filter(Boolean),
-  csrf: [process.env.NEXT_PUBLIC_SITE_URL || ''].filter(Boolean),
+  // VERCEL_URL is the per-deployment hostname. Without it, admin mutations
+  // return 403 on preview deployments because the Origin header does not
+  // match NEXT_PUBLIC_SITE_URL.
+  cors: [
+    process.env.NEXT_PUBLIC_SITE_URL || '',
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
+    process.env.VERCEL_BRANCH_URL ? `https://${process.env.VERCEL_BRANCH_URL}` : '',
+  ].filter(Boolean),
+  csrf: [
+    process.env.NEXT_PUBLIC_SITE_URL || '',
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
+    process.env.VERCEL_BRANCH_URL ? `https://${process.env.VERCEL_BRANCH_URL}` : '',
+  ].filter(Boolean),
 })
