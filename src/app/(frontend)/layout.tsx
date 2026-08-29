@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { Newsreader, Instrument_Sans, IBM_Plex_Mono } from 'next/font/google'
-import { getSections, getSettings } from '@/lib/queries'
-import { SiteHeader, SiteFooter, NewsletterForm, ExitIntent } from '@/components/site'
+import { getInsights, getSections, getSettings } from '@/lib/queries'
+import { SiteFooter, NewsletterForm, ExitIntent } from '@/components/site'
+import { SiteHeader } from '@/components/site-header'
 import { Analytics, ConsentBanner } from '@/components/analytics'
 import { ServiceWorker, InstallPrompt } from '@/components/pwa'
 import './globals.css'
@@ -72,7 +73,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
-  const [settings, sections] = await Promise.all([getSettings(), getSections()])
+  const [settings, sections, recent] = await Promise.all([
+    getSettings(),
+    getSections(),
+    getInsights({ limit: 1 }),
+  ])
   const s: any = settings
 
   const newsletterProps = {
@@ -101,7 +106,25 @@ export default async function FrontendLayout({ children }: { children: React.Rea
           Skip to content
         </a>
 
-        <SiteHeader siteName={s.siteName} sections={sections as any} />
+        <SiteHeader
+          siteName={s.siteName}
+          sections={sections as any}
+          latest={
+            recent.docs[0]
+              ? { title: recent.docs[0].title, slug: recent.docs[0].slug }
+              : null
+          }
+          promo={
+            <a href="/#newsletter" className="block bg-bar px-6 py-4 text-white">
+              <span className="text-[12px] font-semibold uppercase tracking-wider text-dot">
+                Free every Sunday
+              </span>
+              <p className="mt-0.5 text-[18px] font-bold leading-snug">
+                The Weekly Capital Flow Report
+              </p>
+            </a>
+          }
+        />
         <main id="main">{children}</main>
         <SiteFooter
           siteName={s.siteName}

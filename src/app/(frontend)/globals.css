@@ -27,6 +27,14 @@
   --color-live: #ef2b2b;
   --color-dot: #f0a500;
 
+  /* Legacy aliases. The footer, newsletter block, consent banner and AI
+     search still reference these. Mapped onto the news palette so nothing
+     renders unstyled. Remove once every component is restyled. */
+  --color-deep: #101012;
+  --color-deep-soft: #26262b;
+  --color-brass: #f0a500;
+  --color-brass-soft: #f7c65a;
+
   --color-inflow: #1d7a55;
   --color-outflow: #b4462f;
   --color-flat: #9ca3af;
@@ -112,6 +120,17 @@
   }
   .kicker-light {
     color: rgba(255, 255, 255, 0.92);
+  }
+
+  /* Old label class, still used by the footer, article rail and AI search. */
+  .eyebrow {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-dot);
   }
 
   .meta {
