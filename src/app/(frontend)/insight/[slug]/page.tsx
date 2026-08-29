@@ -10,7 +10,7 @@ import { KIND_LABEL, crore, shortDate } from '@/lib/format'
 
 // Rendered per request, cached at the edge. Keeps the build independent
 // of database availability.
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 

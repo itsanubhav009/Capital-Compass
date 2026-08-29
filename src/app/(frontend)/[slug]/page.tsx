@@ -14,7 +14,7 @@ import { KIND_LABEL, shortDate } from '@/lib/format'
 
 // Rendered per request, cached at the edge. Keeps the build independent
 // of database availability.
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 /**
  * One route serves both section archives and static pages.
