@@ -17,7 +17,12 @@ export const WealthArticles: CollectionConfig = {
     description: 'General editorial: explainers, NRI topics, long reads.',
     livePreview: { url: ({ data }) => `/insight/${data?.slug}` },
   },
-  access: { read: () => true },
+  access: {
+    read: () => true,
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
+  },
   versions: { drafts: { autosave: { interval: 800 } } },
   defaultSort: '-publishedAt',
   fields: [

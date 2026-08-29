@@ -17,7 +17,12 @@ export const Sections: CollectionConfig = {
     group: 'Structure',
     description: 'The site menu. Reorder with Nav order.',
   },
-  access: anyoneCanRead,
+  access: {
+    read: () => true,
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
+  },
   defaultSort: 'navOrder',
   fields: [
     { name: 'title', type: 'text', required: true },
@@ -59,7 +64,12 @@ export const Sections: CollectionConfig = {
 export const Sectors: CollectionConfig = {
   slug: 'sectors',
   admin: { useAsTitle: 'title', group: 'Structure' },
-  access: anyoneCanRead,
+  access: {
+    read: () => true,
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
+  },
   fields: [{ name: 'title', type: 'text', required: true }, slugField()],
 }
 
@@ -70,7 +80,12 @@ export const Themes: CollectionConfig = {
     group: 'Structure',
     description: 'AI, Defence, Renewable Energy, Infrastructure, and so on.',
   },
-  access: anyoneCanRead,
+  access: {
+    read: () => true,
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
+  },
   fields: [
     { name: 'title', type: 'text', required: true },
     slugField(),

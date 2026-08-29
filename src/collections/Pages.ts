@@ -19,7 +19,12 @@ export const Pages: CollectionConfig = {
     description: 'About, Contact, and the legal pages linked in the footer.',
     livePreview: { url: ({ data }) => `/${data?.slug}` },
   },
-  access: { read: () => true },
+  access: {
+    read: () => true,
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
+  },
   versions: { drafts: { autosave: { interval: 800 } } },
   fields: [
     { name: 'title', type: 'text', required: true },

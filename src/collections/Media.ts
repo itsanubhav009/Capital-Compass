@@ -3,7 +3,14 @@ import type { CollectionConfig } from 'payload'
 export const Media: CollectionConfig = {
   slug: 'media',
   admin: { group: 'Structure' },
-  access: { read: () => true },
+  access: {
+    // Public read so images render for visitors; write requires a logged-in
+    // user. Without the last three, uploads return 403 even for the owner.
+    read: () => true,
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
+  },
   upload: {
     // Sharp generates these on upload, so the client never resizes anything.
     imageSizes: [
