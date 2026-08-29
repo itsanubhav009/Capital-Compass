@@ -56,6 +56,7 @@ export async function POST(req: Request) {
 
   try {
     const payload = await client()
+
     await payload.create({
       collection: 'contact-submissions',
       data: {
@@ -69,6 +70,34 @@ export async function POST(req: Request) {
       },
       overrideAccess: true,
     })
+
+    // Notify the owner. The message is already saved by this point, so a mail
+    // failure logs and is swallowed rather than losing the enquiry. Requires
+    // contactEmail under Site Settings -> Brand & SEO.
+    try {
+      const settings: any = await payload.findGlobal({ slug: 'site-settings' })
+      if (settings?.contactEmail) {
+        await payload.sendEmail({
+          to: settings.contactEmail,
+          replyTo: email,
+          subject: `Contact form: ${subject}`,
+          text: [
+            `From: ${name} <${email}>`,
+            `Topic: ${topic}`,
+            '',
+            message,
+            '',
+            '--',
+            'Sent from the Capital Compass contact form.',
+          ].join('\n'),
+        })
+      } else {
+        console.warn('[contact] no contactEmail in Site Settings — notification skipped')
+      }
+    } catch (err) {
+      console.error('[contact] saved, but notification failed', err)
+    }
+
     return NextResponse.json({ ok: true })
   } catch (err) {
     console.error('[contact] failed to store submission', err)

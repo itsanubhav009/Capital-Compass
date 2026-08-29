@@ -3,6 +3,7 @@ import { Newsreader, Instrument_Sans, IBM_Plex_Mono } from 'next/font/google'
 import { getSections, getSettings } from '@/lib/queries'
 import { SiteHeader, SiteFooter, NewsletterForm, ExitIntent } from '@/components/site'
 import { Analytics, ConsentBanner } from '@/components/analytics'
+import { ServiceWorker, InstallPrompt } from '@/components/pwa'
 import './globals.css'
 
 const display = Newsreader({
@@ -25,6 +26,12 @@ const mono = IBM_Plex_Mono({
 })
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
+// themeColor must be a separate viewport export in the App Router.
+// Inside generateMetadata it is deprecated and silently ignored.
+export const viewport = {
+  themeColor: '#123A2E',
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const s: any = await getSettings()
@@ -49,6 +56,15 @@ export async function generateMetadata(): Promise<Metadata> {
       description: s.defaultMetaDescription,
     },
     robots: { index: true, follow: true },
+    appleWebApp: {
+      capable: true,
+      title: 'Compass',
+      statusBarStyle: 'default' as const,
+    },
+    icons: {
+      icon: '/icons/favicon-32.png',
+      apple: '/icons/apple-touch-icon.png',
+    },
     verification: process.env.GOOGLE_SITE_VERIFICATION
       ? { google: process.env.GOOGLE_SITE_VERIFICATION }
       : undefined,
@@ -107,6 +123,8 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         />
         <Analytics />
         <ConsentBanner />
+        <ServiceWorker />
+        <InstallPrompt />
       </body>
     </html>
   )
