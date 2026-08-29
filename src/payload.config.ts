@@ -5,6 +5,7 @@ import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { s3Storage } from '@payloadcms/storage-s3'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 import { Sections, Sectors, Themes } from './collections/Taxonomies'
 import { SmartMoneyReports } from './collections/SmartMoneyReports'
@@ -30,6 +31,7 @@ export const CONTENT_COLLECTIONS = [
 // keeps writing to disk, which is fine because that disk survives a restart.
 // On Vercel it does not, so S3_BUCKET must be set in production.
 const useS3 = Boolean(process.env.S3_BUCKET)
+const useEmail = Boolean(process.env.SMTP_HOST)
 
 export default buildConfig({
   admin: {
@@ -101,6 +103,28 @@ export default buildConfig({
         ]
       : []),
   ],
+
+
+  // Without this, password reset silently writes to the server log instead of
+  // sending. Enabled only when SMTP credentials are present, so local
+  // development keeps logging to console.
+  ...(useEmail
+    ? {
+        email: nodemailerAdapter({
+          defaultFromAddress: process.env.EMAIL_FROM || 'noreply@capitalcompass.com',
+          defaultFromName: 'Capital Compass',
+          transportOptions: {
+            host: process.env.SMTP_HOST,
+            port: Number(process.env.SMTP_PORT || 587),
+            secure: Number(process.env.SMTP_PORT) === 465,
+            auth: {
+              user: process.env.SMTP_USER,
+              pass: process.env.SMTP_PASS,
+            },
+          },
+        }),
+      }
+    : {}),
 
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },

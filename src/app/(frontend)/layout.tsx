@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Newsreader, Instrument_Sans, IBM_Plex_Mono } from 'next/font/google'
 import { getSections, getSettings } from '@/lib/queries'
 import { SiteHeader, SiteFooter, NewsletterForm, ExitIntent } from '@/components/site'
+import { Analytics, ConsentBanner } from '@/components/analytics'
 import './globals.css'
 
 const display = Newsreader({
@@ -48,6 +49,9 @@ export async function generateMetadata(): Promise<Metadata> {
       description: s.defaultMetaDescription,
     },
     robots: { index: true, follow: true },
+    verification: process.env.GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+      : undefined,
   }
 }
 
@@ -101,6 +105,8 @@ export default async function FrontendLayout({ children }: { children: React.Rea
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
         />
+        <Analytics />
+        <ConsentBanner />
       </body>
     </html>
   )
