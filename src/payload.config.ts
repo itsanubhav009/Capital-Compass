@@ -87,7 +87,16 @@ export default buildConfig({
     ...(useS3
       ? [
           s3Storage({
-            collections: { media: true },
+            collections: {
+              // Serve directly from R2's public hostname rather than proxying
+              // through the app. Without generateFileURL, Payload returns
+              // /api/media/file/... and every image view costs a serverless
+              // invocation plus Vercel bandwidth.
+              media: {
+                generateFileURL: ({ filename }: { filename: string }) =>
+                  `${process.env.S3_PUBLIC_URL}/${filename}`,
+              },
+            },
             bucket: process.env.S3_BUCKET as string,
             config: {
               endpoint: process.env.S3_ENDPOINT,
