@@ -8,7 +8,8 @@ import {
 } from '@/lib/queries'
 import { FlowTape, ImpactMark, TrendMark } from '@/components/flow'
 import { HeroCard, ListRow, StackCard, SectionHead } from '@/components/cards'
-import { AiSearch, NewsletterForm } from '@/components/site'
+import { NewsletterForm } from '@/components/site'
+import { AiSearch } from '@/components/ai-search'
 import { KIND_LABEL, dayMonth, shortDate } from '@/lib/format'
 
 export const revalidate = 300
