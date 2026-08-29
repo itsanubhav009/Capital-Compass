@@ -14,7 +14,10 @@ import { KIND_LABEL, shortDate } from '@/lib/format'
 
 // Rendered per request, cached at the edge. Keeps the build independent
 // of database availability.
-export const revalidate = 300
+// This route reads searchParams for pagination, which is inherently
+// dynamic. Pairing that with `revalidate` throws DYNAMIC_SERVER_USAGE,
+// so the route opts out of static caching entirely.
+export const dynamic = 'force-dynamic'
 
 /**
  * One route serves both section archives and static pages.
