@@ -51,7 +51,7 @@ export default async function Homepage() {
               tallest, which is what keeps the three-column block square
               rather than letting the side rails overhang the hero. */}
           <div className="grid gap-[30px] lg:grid-cols-[29fr_42fr_29fr]">
-            <div className="order-2 flex flex-col lg:order-1">
+            <div className="order-2 flex h-full flex-col justify-between lg:order-1">
               {leftCol.map((d) => (
                 <ListRow
                   key={`${d.collection}-${d.id}`}
@@ -79,7 +79,7 @@ export default async function Homepage() {
               />
             </div>
 
-            <div className="order-3 flex flex-col">
+            <div className="order-3 flex h-full flex-col justify-between">
               {rightCol.map((d) => (
                 <ListRow
                   key={`${d.collection}-${d.id}`}

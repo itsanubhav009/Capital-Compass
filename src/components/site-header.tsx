@@ -3,13 +3,17 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type Preview = { slug: string; title: string; image?: string | null; date?: string }
 type NavChild = { title: string; slug: string }
 type NavItem = { key: string; title: string; slug?: string; children?: NavChild[] }
 type Tag = { title: string; slug: string }
 type Headline = { title: string; slug: string }
+
+// Tag rail metrics, kept in step with the .tag-rail rules in globals.css.
+const GAP = 20
+const LEAD_TRIM = 21 // the leading tag loses its 20px indent and 1px rule
 
 /* --------------------------------------------------------------- icons */
 
@@ -137,30 +141,75 @@ function Ticker({ headlines }: { headlines: Headline[] }) {
 
 /* -------------------------------------------------------------- tag rail */
 
-/** Themes, scrolled a page at a time by the two arrows on its right. */
+/**
+ * Themes, paged by the two arrows on the right.
+ *
+ * The rail shows whole tags only. It measures each one on mount, then renders
+ * as many as fit and pages through the rest, rather than letting a scroll
+ * container cut a word in half against the menu.
+ */
 function TagRail({ tags }: { tags: Tag[] }) {
-  const rail = useRef<HTMLDivElement>(null)
+  const box = useRef<HTMLDivElement>(null)
+  const [widths, setWidths] = useState<number[] | null>(null)
+  const [avail, setAvail] = useState(0)
+  const [start, setStart] = useState(0)
 
-  const nudge = useCallback((dir: 1 | -1) => {
-    const el = rail.current
-    if (el) el.scrollBy({ left: dir * Math.max(160, el.clientWidth * 0.6), behavior: 'smooth' })
+  useEffect(() => {
+    const el = box.current
+    if (!el) return
+    const read = () => {
+      setAvail(el.clientWidth)
+      setWidths((prev) =>
+        prev ?? Array.from(el.children).map((c) => (c as HTMLElement).offsetWidth),
+      )
+    }
+    read()
+    const ro = new ResizeObserver(read)
+    ro.observe(el)
+    return () => ro.disconnect()
   }, [])
 
   if (!tags.length) return null
 
+  // Rotating the list rather than clamping an index lets the arrows wrap
+  // around the way the reference's looping slider does.
+  const ordered = [...tags.slice(start), ...tags.slice(0, start)]
+
+  let count = tags.length
+  if (widths && avail) {
+    const w = [...widths.slice(start), ...widths.slice(0, start)]
+    let used = 0
+    count = 0
+    for (let i = 0; i < w.length; i++) {
+      // GAP between tags; the leading tag drops its rule and its indent.
+      const cost = i === 0 ? w[i] - LEAD_TRIM : w[i] + GAP
+      if (used + cost > avail) break
+      used += cost
+      count++
+    }
+    count = Math.max(1, count)
+  }
+
+  const page = (dir: 1 | -1) =>
+    setStart((n) => (n + dir * count + tags.length * 2) % tags.length)
+
   return (
-    <div className="ml-auto hidden min-w-0 flex-1 items-center overflow-hidden pl-10 pr-[30px] xl:flex">
-      <div ref={rail} className="tag-rail min-w-0 flex-1">
-        {tags.map((t) => (
-          <Link key={t.slug} href={`/sectoral-trends?theme=${t.slug}`}>
+    <div className="ml-auto hidden min-w-0 flex-1 items-center pl-16 pr-[30px] xl:flex">
+      <div ref={box} className="tag-rail min-w-0 flex-1">
+        {(widths ? ordered.slice(0, count) : ordered).map((t, i) => (
+          <Link
+            key={t.slug}
+            href={`/sectoral-trends?theme=${t.slug}`}
+            data-lead={widths && i === 0 ? 'true' : undefined}
+          >
             {t.title}
           </Link>
         ))}
       </div>
-      <div className="ml-3 flex shrink-0 items-center gap-2">
+      <div className="ml-4 flex shrink-0 items-center gap-2">
         <button
           type="button"
-          onClick={() => nudge(-1)}
+          onClick={() => page(-1)}
           aria-label="Previous topics"
           className="text-white/90 transition-colors hover:text-accent"
         >
@@ -170,7 +219,7 @@ function TagRail({ tags }: { tags: Tag[] }) {
         </button>
         <button
           type="button"
-          onClick={() => nudge(1)}
+          onClick={() => page(1)}
           aria-label="Next topics"
           className="text-white/90 transition-colors hover:text-accent"
         >

@@ -320,25 +320,18 @@
     opacity: 0;
   }
 
-  /* Tag rail. Scrolls horizontally; the arrows nudge it a page at a time. */
+  /* Tag rail. The component decides how many tags fit; this only styles them.
+     Metrics here are mirrored by GAP and LEAD_TRIM in site-header.tsx. */
   .tag-rail {
     display: flex;
     align-items: center;
-    overflow-x: auto;
-    scrollbar-width: none;
-    scroll-behavior: smooth;
-    /* Snapping keeps the leading tag whole. Without it a nudge can leave a
-       word cut down the middle against the menu. */
-    scroll-snap-type: x mandatory;
-  }
-  .tag-rail::-webkit-scrollbar {
-    display: none;
+    justify-content: flex-end;
+    gap: 20px;
+    overflow: hidden;
   }
   .tag-rail > a {
     flex: none;
-    scroll-snap-align: start;
     padding-left: 20px;
-    margin-left: 20px;
     font-size: 14px;
     font-weight: 400;
     line-height: 16px;
@@ -347,9 +340,9 @@
     transition: color 0.3s ease;
     white-space: nowrap;
   }
-  .tag-rail > a:first-child {
+  /* The leading tag drops its rule so the rail does not open with a divider. */
+  .tag-rail > a[data-lead='true'] {
     padding-left: 0;
-    margin-left: 0;
     border-left: 0;
   }
   .tag-rail > a:hover {
