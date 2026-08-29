@@ -16,9 +16,11 @@
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
     "seed:pages": "tsx src/scripts/seed-pages.ts",
+    "seed:images": "tsx src/scripts/seed-images.ts",
     "seed": "tsx src/scripts/seed.ts",
     "search:setup": "tsx src/scripts/setup-vector.ts",
-    "search:backfill": "tsx src/scripts/backfill-embeddings.ts"
+    "search:backfill": "tsx src/scripts/backfill-embeddings.ts",
+    "seed:dedupe": "tsx src/scripts/dedupe.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.88.0",

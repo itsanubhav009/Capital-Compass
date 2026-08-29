@@ -67,7 +67,7 @@ export default async function SlugPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; theme?: string }>
 }) {
   const { slug } = await params
 
@@ -108,15 +108,17 @@ async function SectionArchive({
   searchParams,
 }: {
   section: any
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; theme?: string }>
 }) {
-  const { page: pageParam } = await searchParams
+  const { page: pageParam, theme } = await searchParams
   const page = Math.max(1, Number(pageParam) || 1)
   const { docs, totalPages } = await getInsights({
     sectionSlug: section.slug,
+    themeSlug: theme,
     limit: 12,
     page,
   })
+  const qs = theme ? `&theme=${encodeURIComponent(theme)}` : ''
 
   return (
     <div className="mx-auto max-w-6xl px-5 sm:px-8">
@@ -126,6 +128,18 @@ async function SectionArchive({
         {section.blurb && (
           <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-ink-soft">
             {section.blurb}
+          </p>
+        )}
+        {theme && (
+          <p className="mt-5 flex items-center gap-3 text-[14px] text-ink-soft">
+            Filtered by theme
+            <Link
+              href={`/${section.slug}`}
+              className="inline-flex items-center gap-2 rounded-full bg-sunken px-3 py-1 text-[13px] font-medium text-ink hover:text-accent"
+            >
+              {theme.replace(/-/g, ' ')}
+              <span aria-hidden>×</span>
+            </Link>
           </p>
         )}
       </header>
@@ -167,7 +181,7 @@ async function SectionArchive({
         >
           {page > 1 ? (
             <Link
-              href={`/${section.slug}?page=${page - 1}`}
+              href={`/${section.slug}?page=${page - 1}${qs}`}
               className="text-[14px] text-deep underline underline-offset-4"
             >
               ← Newer
@@ -180,7 +194,7 @@ async function SectionArchive({
           </span>
           {page < totalPages ? (
             <Link
-              href={`/${section.slug}?page=${page + 1}`}
+              href={`/${section.slug}?page=${page + 1}${qs}`}
               className="text-[14px] text-deep underline underline-offset-4"
             >
               Older →

@@ -268,8 +268,7 @@ export function NewsletterForm({
               onClick={submit}
               disabled={state === 'sending'}
               className={`shrink-0 px-6 py-3 text-[15px] font-medium transition-colors disabled:opacity-60 ${
-                dark ? 'bg-brass text-ink hover:bg-brass-soft' : 'bg-deep text-paper hover:bg-deep-soft'
-              }`}
+dark ? 'bg-accent text-white hover:bg-accent-soft' : 'bg-ink text-white hover:bg-bar-2'              }`}
             >
               {state === 'sending' ? 'Sending…' : cta}
             </button>

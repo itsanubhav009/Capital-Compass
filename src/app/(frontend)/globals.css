@@ -1,50 +1,43 @@
 @import 'tailwindcss';
 
 /* ------------------------------------------------------------------
-   Capital Compass — news magazine layout
-
-   Palette taken from the Nerio reference: near-black utility and nav
-   bars, white content ground, blue for interactive state, amber as the
-   category marker. Inflow/outflow green and rust are retained from the
-   original system because they carry meaning — they are the only two
-   colours on the site that indicate direction of money, and they must
-   not be reused decoratively.
+   Tokens read directly from the theme's stylesheet, recovered from the
+   MHTML archive. Where a value is commented with its source variable
+   name, it is the theme's own — do not "tidy" those.
    ------------------------------------------------------------------ */
 @theme {
   --color-paper: #ffffff;
   --color-surface: #ffffff;
-  --color-sunken: #f6f7f8;
+  --color-sunken: #f7f7f7; /* --e-global-color-f69366a */
 
-  --color-bar: #101012;
-  --color-bar-2: #18181b;
+  --color-bar: #121213; /* --e-global-color-secondary */
+  --color-bar-2: #171a1e; /* --e-global-color-7c24774 */
 
-  --color-ink: #111318;
-  --color-ink-soft: #6b7280;
-  --color-ink-faint: #9ca3af;
+  --color-ink: #121213;
+  --color-ink-soft: #616c74; /* --e-global-color-text */
+  --color-ink-faint: #98a1a8;
 
-  --color-accent: #1b6ef3;
-  --color-accent-soft: #2e8bff;
-  --color-live: #ef2b2b;
-  --color-dot: #f0a500;
-
-  /* Legacy aliases. The footer, newsletter block, consent banner and AI
-     search still reference these. Mapped onto the news palette so nothing
-     renders unstyled. Remove once every component is restyled. */
-  --color-deep: #101012;
-  --color-deep-soft: #26262b;
-  --color-brass: #f0a500;
-  --color-brass-soft: #f7c65a;
+  --color-accent: #0073ff; /* --e-global-color-primary */
+  --color-accent-soft: #005bca; /* --e-global-color-99b6f14 */
+  --color-live: #ff3a3a;
+  --color-dot: #facd7f; /* .post-cat::before */
 
   --color-inflow: #1d7a55;
   --color-outflow: #b4462f;
-  --color-flat: #9ca3af;
+  --color-flat: #98a1a8;
 
-  --color-rule: #e6e8ea;
+  --color-rule: #e5e5e5; /* --e-global-color-4f49e74 */
   --color-rule-strong: #d1d5db;
 
-  --font-display: 'Figtree', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  /* Legacy aliases; some components still reference these. */
+  --color-deep: #121213;
+  --color-deep-soft: #171a1e;
+  --color-brass: #facd7f;
+  --color-brass-soft: #ffe0a8;
+
+  --font-display: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 }
 
 @layer base {
@@ -54,22 +47,90 @@
 
   body {
     background: var(--color-paper);
-    color: var(--color-ink);
+    color: var(--color-ink-soft);
     font-family: var(--font-sans);
     font-size: 16px;
-    line-height: 1.6;
+    font-weight: 400;
+    line-height: 1.65; /* theme body */
     -webkit-font-smoothing: antialiased;
   }
 
+  /* The theme sets every heading to 600, not 700. This is the single
+     largest reason a copy of it reads as heavier than the original. */
   h1,
   h2,
   h3,
-  h4 {
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: -0.021em;
-    line-height: 1.16;
-    text-wrap: balance;
+    font-weight: 600;
+    color: var(--color-ink);
+    letter-spacing: 0.3px;
+    line-height: 1.25;
+    margin: 0;
+  }
+
+  /* The theme's own type scale, lifted from elementor-kit-4659. Sizes step
+     down at 1024 and 767 exactly as the original does. */
+  h1 {
+    font-size: 40px;
+  }
+  h2 {
+    font-size: 32px;
+  }
+  h3 {
+    font-size: 28px;
+    line-height: 1.3;
+  }
+  h4 {
+    font-size: 22px;
+    line-height: 1.2;
+  }
+  h5 {
+    font-size: 20px;
+    line-height: 1.44;
+  }
+  h6 {
+    font-size: 18px;
+    line-height: 1.44;
+  }
+
+  @media (max-width: 1024px) {
+    h1 {
+      font-size: 38px;
+      line-height: 1.2;
+    }
+    h2 {
+      font-size: 30px;
+    }
+    h3 {
+      font-size: 24px;
+    }
+    h4 {
+      font-size: 20px;
+    }
+    h5 {
+      font-size: 20px;
+    }
+    h6 {
+      font-size: 16px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    h1 {
+      font-size: 34px;
+    }
+    h2 {
+      font-size: 24px;
+    }
+    h5 {
+      font-size: 18px;
+    }
+    h6 {
+      font-size: 16px;
+    }
   }
 
   .tnum {
@@ -98,17 +159,19 @@
 }
 
 @layer components {
-  /* Category label: amber dot, uppercase tracked text. The signature
-     card element in this layout. */
+  /* Category label. inline-flex is load-bearing: the dot is a ::before
+     pseudo-element and needs flex to sit on the baseline correctly. */
   .kicker {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 10px;
     font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
+    font-weight: 500;
+    letter-spacing: 0;
     text-transform: uppercase;
     color: var(--color-ink-soft);
+    line-height: 22px;
+    transition: color 0.3s ease;
   }
   .kicker::before {
     content: '';
@@ -119,10 +182,9 @@
     flex: none;
   }
   .kicker-light {
-    color: rgba(255, 255, 255, 0.92);
+    color: rgba(255, 255, 255, 0.9);
   }
 
-  /* Old label class, still used by the footer, article rail and AI search. */
   .eyebrow {
     display: block;
     font-family: var(--font-mono);
@@ -130,28 +192,29 @@
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--color-dot);
+    color: var(--color-ink-soft);
   }
 
   .meta {
-    font-size: 13.5px;
+    font-size: 14px;
     color: var(--color-ink-soft);
   }
 
   /* Article body */
   .prose-cc {
-    font-size: 17.5px;
+    font-size: 17px;
     line-height: 1.75;
+    color: var(--color-ink-soft);
   }
   .prose-cc > * + * {
-    margin-top: 1.1em;
+    margin-top: 1.15em;
   }
   .prose-cc h2 {
-    font-size: 1.45em;
+    font-size: 1.5em;
     margin-top: 1.9em;
   }
   .prose-cc h3 {
-    font-size: 1.18em;
+    font-size: 1.2em;
     margin-top: 1.6em;
   }
   .prose-cc a {
@@ -185,5 +248,111 @@
     50% {
       opacity: 0.35;
     }
+  }
+}
+
+/* ------------------------------------------------------------------
+   Header chrome. These mirror the theme's own widgets: the live-news
+   ticker, the weather readout, the date pill and the tag rail that
+   rides the right-hand side of the menu bar.
+   ------------------------------------------------------------------ */
+@layer components {
+  /* .fpg-popup-circle — an 8px dot with a 35px ring pulsing out of it. */
+  .ticker-dot {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e40101;
+    flex: none;
+  }
+  .ticker-dot::after {
+    content: '';
+    position: absolute;
+    top: -13.5px;
+    left: -13.5px;
+    width: 35px;
+    height: 35px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: #e40101;
+    animation: ticker-pulse 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  }
+  @keyframes ticker-pulse {
+    0% {
+      transform: scale(0.33);
+    }
+    80%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* Headlines slide up and out, one at a time, in a 30px-tall window. */
+  .ticker-window {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    /* flex-1 with a zero minimum: without it the window sizes to the longest
+       headline and pushes the whole page wider than the viewport. */
+    flex: 1 1 0%;
+    min-width: 0;
+    height: 22px;
+  }
+  .ticker-line {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease 0s;
+  }
+  .ticker-line[data-state='active'] {
+    position: relative;
+    top: 0;
+    z-index: 1;
+    opacity: 1;
+    pointer-events: all;
+  }
+  .ticker-line[data-state='leaving'] {
+    top: -30px;
+    opacity: 0;
+  }
+
+  /* Tag rail. Scrolls horizontally; the arrows nudge it a page at a time. */
+  .tag-rail {
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    /* Snapping keeps the leading tag whole. Without it a nudge can leave a
+       word cut down the middle against the menu. */
+    scroll-snap-type: x mandatory;
+  }
+  .tag-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .tag-rail > a {
+    flex: none;
+    scroll-snap-align: start;
+    padding-left: 20px;
+    margin-left: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 16px;
+    color: rgba(255, 255, 255, 0.6);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    transition: color 0.3s ease;
+    white-space: nowrap;
+  }
+  .tag-rail > a:first-child {
+    padding-left: 0;
+    margin-left: 0;
+    border-left: 0;
+  }
+  .tag-rail > a:hover {
+    color: var(--color-accent);
   }
 }

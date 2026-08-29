@@ -1,37 +1,36 @@
 import type { Metadata } from 'next'
-import { Newsreader, Instrument_Sans, IBM_Plex_Mono } from 'next/font/google'
-import { getInsights, getSections, getSettings } from '@/lib/queries'
-import { SiteFooter, NewsletterForm, ExitIntent } from '@/components/site'
+import { Inter_Tight, IBM_Plex_Mono } from 'next/font/google'
+import { getSettings } from '@/lib/queries'
+import { getNavData } from '@/lib/nav-data'
 import { SiteHeader } from '@/components/site-header'
+import { SiteFooter, RouteProgress, ScrollTop } from '@/components/site-footer'
+import { NewsletterForm, ExitIntent } from '@/components/site'
 import { Analytics, ConsentBanner } from '@/components/analytics'
 import { ServiceWorker, InstallPrompt } from '@/components/pwa'
 import './globals.css'
 
-const display = Newsreader({
+const sans = Inter_Tight({
   subsets: ['latin'],
-  weight: ['400', '500'],
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
-  variable: '--font-newsreader',
+  variable: '--font-inter-tight',
+  fallback: ['system-ui', 'sans-serif'],
 })
-const sans = Instrument_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  display: 'swap',
-  variable: '--font-instrument',
-})
+
 const mono = IBM_Plex_Mono({
   subsets: ['latin'],
   weight: ['400', '500'],
   display: 'swap',
   variable: '--font-plex-mono',
+  fallback: ['ui-monospace', 'monospace'],
 })
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
-// themeColor must be a separate viewport export in the App Router.
-// Inside generateMetadata it is deprecated and silently ignored.
+// themeColor must be a separate viewport export in the App Router. Inside
+// generateMetadata it is deprecated and silently ignored.
 export const viewport = {
-  themeColor: '#123A2E',
+  themeColor: '#101012',
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -57,6 +56,9 @@ export async function generateMetadata(): Promise<Metadata> {
       description: s.defaultMetaDescription,
     },
     robots: { index: true, follow: true },
+    verification: process.env.GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+      : undefined,
     appleWebApp: {
       capable: true,
       title: 'Compass',
@@ -66,19 +68,13 @@ export async function generateMetadata(): Promise<Metadata> {
       icon: '/icons/favicon-32.png',
       apple: '/icons/apple-touch-icon.png',
     },
-    verification: process.env.GOOGLE_SITE_VERIFICATION
-      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
-      : undefined,
   }
 }
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
-  const [settings, sections, recent] = await Promise.all([
-    getSettings(),
-    getSections(),
-    getInsights({ limit: 1 }),
-  ])
+  const [settings, nav] = await Promise.all([getSettings(), getNavData()])
   const s: any = settings
+  const { sections, nav: navTree, previews, recent, headlines, tags } = nav
 
   const newsletterProps = {
     heading: s.newsletterHeading,
@@ -97,42 +93,54 @@ export default async function FrontendLayout({ children }: { children: React.Rea
   }
 
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-deep focus:px-4 focus:py-2 focus:text-paper"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[80] focus:bg-accent focus:px-4 focus:py-2 focus:text-white"
         >
           Skip to content
         </a>
 
+        <RouteProgress />
+
         <SiteHeader
           siteName={s.siteName}
-          sections={sections as any}
-          latest={
-            recent.docs[0]
-              ? { title: recent.docs[0].title, slug: recent.docs[0].slug }
-              : null
-          }
+          nav={navTree}
+          headlines={headlines}
+          previews={previews}
+          tags={tags}
           promo={
-            <a href="/#newsletter" className="block bg-bar px-6 py-4 text-white">
-              <span className="text-[12px] font-semibold uppercase tracking-wider text-dot">
-                Free every Sunday
+            <a
+              href="/#newsletter"
+              className="flex w-full items-center justify-between gap-6 rounded-[10px] bg-bar px-8 py-6 text-white transition-colors hover:bg-bar-2"
+            >
+              <span>
+                <span className="text-[12px] font-semibold uppercase tracking-wider text-dot">
+                  Free every Sunday
+                </span>
+                <span className="mt-0.5 block text-[18px] font-bold leading-snug">
+                  The Weekly Capital Flow Report
+                </span>
               </span>
-              <p className="mt-0.5 text-[18px] font-bold leading-snug">
-                The Weekly Capital Flow Report
-              </p>
+              <span className="shrink-0 bg-accent px-4 py-2 text-[13px] font-semibold">
+                Subscribe
+              </span>
             </a>
           }
         />
+
         <main id="main">{children}</main>
+
         <SiteFooter
           siteName={s.siteName}
           legalName={s.footerLegalName}
           disclaimer={s.articleDisclaimer}
           sections={sections as any}
-          newsletter={<NewsletterForm {...newsletterProps} variant="footer" />}
+          recent={recent}
         />
+
+        <ScrollTop />
 
         {s.exitIntentEnabled && (
           <ExitIntent>
@@ -140,14 +148,15 @@ export default async function FrontendLayout({ children }: { children: React.Rea
           </ExitIntent>
         )}
 
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
-        />
         <Analytics />
         <ConsentBanner />
         <ServiceWorker />
         <InstallPrompt />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+        />
       </body>
     </html>
   )

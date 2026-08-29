@@ -41,3 +41,18 @@ export const KIND_LABEL: Record<string, string> = {
   'theme-reports': 'Theme Report',
   'wealth-articles': 'Analysis',
 }
+
+/**
+ * The label that goes above a card headline.
+ *
+ * The reference theme runs one-word categories — FINANCE, STARTUPS, WORLD —
+ * and the whole grid is built around a kicker that never wraps. Section names
+ * here are three and four words, so the card takes only the part after the
+ * dash: "Capital Flow – India" reads as INDIA on the card while the menu keeps
+ * the full name.
+ */
+export const cardCategory = (title?: string | null): string => {
+  if (!title) return ''
+  const parts = title.split(/\s+[–—-]\s+/)
+  return (parts.length > 1 ? parts[parts.length - 1] : title).trim()
+}

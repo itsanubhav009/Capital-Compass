@@ -30,6 +30,7 @@ const tag = (docs: any[], collection: ContentSlug): Insight[] =>
  */
 export async function getInsights(opts: {
   sectionSlug?: string
+  themeSlug?: string
   featured?: boolean
   collections?: ContentSlug[]
   limit?: number
@@ -73,9 +74,17 @@ export async function getInsights(opts: {
     }),
   )
 
-  const merged = results
+  let merged = results
     .flat()
     .sort((a, b) => +new Date(b.publishedAt ?? 0) - +new Date(a.publishedAt ?? 0))
+
+  // Theme lives on only one collection, so filtering it in the database would
+  // mean dropping the other three from the union entirely. Filtering after the
+  // merge keeps one code path for both the plain and the filtered archive.
+  if (opts.themeSlug) {
+    const t = opts.themeSlug
+    merged = merged.filter((d: any) => (typeof d.theme === 'object' ? d.theme?.slug : null) === t)
+  }
 
   const start = (page - 1) * limit
   return {

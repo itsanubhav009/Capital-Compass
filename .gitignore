@@ -10,3 +10,6 @@ node_modules
 *.zip
 APPLY.md
 FIX.sh
+
+# Reference archive of the Nerio theme; 19MB, kept locally only.
+*.mhtml
