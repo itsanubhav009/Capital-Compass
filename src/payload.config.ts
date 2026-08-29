@@ -31,6 +31,12 @@ export const CONTENT_COLLECTIONS = [
 // keeps writing to disk, which is fine because that disk survives a restart.
 // On Vercel it does not, so S3_BUCKET must be set in production.
 const useS3 = Boolean(process.env.S3_BUCKET)
+
+// Enabling S3 without a public URL yields image src values of
+// "undefined/filename.webp", which fails silently in the browser.
+if (useS3 && !process.env.S3_PUBLIC_URL) {
+  throw new Error('S3_BUCKET is set but S3_PUBLIC_URL is missing')
+}
 const useEmail = Boolean(process.env.SMTP_HOST)
 
 export default buildConfig({
