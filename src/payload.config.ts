@@ -40,6 +40,25 @@ if (useS3 && !process.env.S3_PUBLIC_URL) {
 }
 const useEmail = Boolean(process.env.SMTP_HOST)
 
+const vercelHost = (v?: string) => (v ? `https://${v}` : '')
+
+const allowedOrigins = Array.from(
+  new Set(
+    [
+      process.env.NEXT_PUBLIC_SITE_URL || '',
+      vercelHost(process.env.VERCEL_PROJECT_PRODUCTION_URL),
+      vercelHost(process.env.VERCEL_URL),
+      vercelHost(process.env.VERCEL_BRANCH_URL),
+      ...(process.env.ADDITIONAL_ORIGINS ?? '')
+        .split(',')
+        .map((o) => o.trim())
+        .filter(Boolean),
+    ]
+      .filter(Boolean)
+      .map((o) => o.replace(/\/$/, '')),
+  ),
+)
+
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -172,17 +191,20 @@ export default buildConfig({
 
   upload: { limits: { fileSize: 8_000_000 } },
 
-  // VERCEL_URL is the per-deployment hostname. Without it, admin mutations
-  // return 403 on preview deployments because the Origin header does not
-  // match NEXT_PUBLIC_SITE_URL.
-  cors: [
-    process.env.NEXT_PUBLIC_SITE_URL || '',
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
-    process.env.VERCEL_BRANCH_URL ? `https://${process.env.VERCEL_BRANCH_URL}` : '',
-  ].filter(Boolean),
-  csrf: [
-    process.env.NEXT_PUBLIC_SITE_URL || '',
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
-    process.env.VERCEL_BRANCH_URL ? `https://${process.env.VERCEL_BRANCH_URL}` : '',
-  ].filter(Boolean),
+  // Every hostname the app is actually served on.
+  //
+  // Payload only honours cookie auth when the request Origin is on this list,
+  // so a host that is missing makes every admin write — including every
+  // autosave and every image upload — fail with "You are not allowed to
+  // perform this action". That is not a permissions problem and no amount of
+  // access-control reading finds it.
+  //
+  // NEXT_PUBLIC_SITE_URL alone is not enough: a Vercel project answers on its
+  // production alias, its per-deployment hostname and its branch hostname,
+  // and NEXT_PUBLIC_SITE_URL can only name one of them.
+  // VERCEL_PROJECT_PRODUCTION_URL is the canonical production alias, which is
+  // the one an editor actually types. ADDITIONAL_ORIGINS covers custom domains
+  // — comma-separated, each with its scheme.
+  cors: allowedOrigins,
+  csrf: allowedOrigins,
 })
