@@ -42,6 +42,9 @@ const useEmail = Boolean(process.env.SMTP_HOST)
 export default buildConfig({
   admin: {
     user: Users.slug,
+    // Sidebar order. Payload lists groups in the order their collections are
+    // registered, so this is set by the `collections` array below rather than
+    // here — the grouping is: Content, Library, Taxonomy, Inbox, Settings.
     meta: { titleSuffix: ' · Capital Compass' },
     components: {
       beforeDashboard: ['/admin/WhereItAppears#default'],
@@ -62,16 +65,21 @@ export default buildConfig({
   },
 
   collections: [
+    // Content
     SmartMoneyReports,
     MacroNotes,
     ThemeReports,
     WealthArticles,
     Pages,
-    ContactSubmissions,
+    // Library
+    Media,
+    // Taxonomy
     Sections,
     Sectors,
     Themes,
-    Media,
+    // Inbox
+    ContactSubmissions,
+    // Settings
     Users,
   ],
 

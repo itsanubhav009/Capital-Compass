@@ -18,8 +18,9 @@ export const Sections: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'navOrder', 'showInNav'],
-    group: 'Structure',
-    description: 'The site menu. Reorder with Nav order.',
+    group: 'Taxonomy',
+    description:
+      'The site menu, top to bottom. Lower Nav order comes first. Two sections sharing a prefix before a dash — "Capital Flow – India" and "Capital Flow – International" — collapse into one menu item with a dropdown.',
   },
   hooks: {
     afterChange: [revalidateEverything],
@@ -71,7 +72,12 @@ export const Sections: CollectionConfig = {
 
 export const Sectors: CollectionConfig = {
   slug: 'sectors',
-  admin: { useAsTitle: 'title', group: 'Structure' },
+  admin: {
+    useAsTitle: 'title',
+    defaultColumns: ['title', 'slug', 'updatedAt'],
+    group: 'Taxonomy',
+    description: 'Industry labels for Smart Money Reports — Banking, IT, Pharma and so on.',
+  },
   hooks: {
     afterChange: [revalidateEverything],
     afterDelete: [revalidateEverythingOnDelete],
@@ -89,8 +95,10 @@ export const Themes: CollectionConfig = {
   slug: 'themes',
   admin: {
     useAsTitle: 'title',
-    group: 'Structure',
-    description: 'AI, Defence, Renewable Energy, Infrastructure, and so on.',
+    defaultColumns: ['title', 'slug', 'updatedAt'],
+    group: 'Taxonomy',
+    description:
+      'Cross-cutting subjects: AI, Defence, Renewable Energy, Infrastructure. These become the topic rail in the menu bar and the tiles in Explore Categories, so a theme with no published pieces behind it is hidden automatically.',
   },
   hooks: {
     afterChange: [revalidateEverything],

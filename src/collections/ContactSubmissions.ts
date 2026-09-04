@@ -3,9 +3,15 @@ import type { CollectionConfig } from 'payload'
 /**
  * Contact form submissions.
  *
- * Created only by the server route at /api/contact, never through the admin
- * panel — create/update are locked so a stray click can't fabricate an entry.
- * The owner reads and deletes.
+ * Created by the server route at /api/contact, which writes with
+ * overrideAccess so the public form works without public write access.
+ *
+ * Create used to be denied outright. That was the only forbidden action
+ * anywhere in the panel, and the admin still offers a "Create New" control
+ * for it, so the one thing a signed-in user could do here was trigger
+ * "You are not allowed to perform this action". Signed-in create is allowed
+ * now — it was never a security boundary, since the fields are read-only and
+ * an owner who wants a junk row can already make one by using the form.
  */
 export const ContactSubmissions: CollectionConfig = {
   slug: 'contact-submissions',
@@ -14,11 +20,12 @@ export const ContactSubmissions: CollectionConfig = {
     useAsTitle: 'subject',
     defaultColumns: ['subject', 'name', 'email', 'handled', 'createdAt'],
     group: 'Inbox',
-    description: 'Messages sent through the contact form.',
+    description:
+      'Everything sent through the contact form on the site. Tick Handled once you have replied. Nothing here is public.',
   },
   access: {
     read: ({ req }) => Boolean(req.user),
-    create: () => false,
+    create: ({ req }) => Boolean(req.user),
     update: ({ req }) => Boolean(req.user),
     delete: ({ req }) => Boolean(req.user),
   },

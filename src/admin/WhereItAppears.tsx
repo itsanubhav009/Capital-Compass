@@ -67,6 +67,33 @@ export default function WhereItAppears() {
         </a>{' '}
         on the next load. Drafts never appear there — only in preview.
       </p>
+
+      <div
+        style={{
+          marginTop: 20,
+          paddingTop: 16,
+          borderTop: '1px solid var(--theme-elevation-100)',
+          display: 'grid',
+          gap: 8,
+          fontSize: 13,
+          color: 'var(--theme-elevation-700)',
+        }}
+      >
+        <strong style={{ fontSize: 13, color: 'var(--theme-elevation-800)' }}>Good to know</strong>
+        <span>
+          <strong>Images.</strong> Alt text is filled in from the filename if you leave it blank, so
+          an upload never fails on it — but it is worth rewriting. Holding a link instead of a file?
+          Use <em>Add from URL</em> at the top of Images.
+        </span>
+        <span>
+          <strong>Drafts.</strong> Everything autosaves as a draft. Readers see nothing until you
+          press Publish changes, however long it sits there.
+        </span>
+        <span>
+          <strong>Menu changes.</strong> Editing Sections, Sectors or Themes moves the navigation and
+          the topic tiles, so it refreshes the whole site rather than one page.
+        </span>
+      </div>
     </div>
   )
 }
