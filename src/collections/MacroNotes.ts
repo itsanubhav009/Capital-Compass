@@ -1,4 +1,6 @@
 import type { CollectionConfig } from 'payload'
+import { previewOptions } from '../fields/preview'
+import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate'
 import {
   chartsField,
   heroFields,
@@ -17,11 +19,11 @@ export const MacroNotes: CollectionConfig = {
     defaultColumns: ['title', 'region', 'assetClass', 'publishedAt', '_status'],
     group: 'Content',
     description: 'Rates, currencies, commodities and the macro backdrop.',
-    livePreview: { url: ({ data }) => `/insight/${data?.slug}` },
+    ...previewOptions('macro-notes'),
   },
   hooks: {
-    afterChange: [indexOnChange],
-    afterDelete: [deindexOnDelete],
+    afterChange: [indexOnChange, revalidateAfterChange],
+    afterDelete: [deindexOnDelete, revalidateAfterDelete],
   },
   access: {
     read: () => true,

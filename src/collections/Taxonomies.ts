@@ -1,4 +1,8 @@
 import type { CollectionConfig } from 'payload'
+import {
+  revalidateEverything,
+  revalidateEverythingOnDelete,
+} from '../hooks/revalidate'
 import { slugField } from '../fields/common'
 
 const anyoneCanRead = { read: () => true }
@@ -16,6 +20,10 @@ export const Sections: CollectionConfig = {
     defaultColumns: ['title', 'navOrder', 'showInNav'],
     group: 'Structure',
     description: 'The site menu. Reorder with Nav order.',
+  },
+  hooks: {
+    afterChange: [revalidateEverything],
+    afterDelete: [revalidateEverythingOnDelete],
   },
   access: {
     read: () => true,
@@ -64,6 +72,10 @@ export const Sections: CollectionConfig = {
 export const Sectors: CollectionConfig = {
   slug: 'sectors',
   admin: { useAsTitle: 'title', group: 'Structure' },
+  hooks: {
+    afterChange: [revalidateEverything],
+    afterDelete: [revalidateEverythingOnDelete],
+  },
   access: {
     read: () => true,
     create: ({ req }) => Boolean(req.user),
@@ -79,6 +91,10 @@ export const Themes: CollectionConfig = {
     useAsTitle: 'title',
     group: 'Structure',
     description: 'AI, Defence, Renewable Energy, Infrastructure, and so on.',
+  },
+  hooks: {
+    afterChange: [revalidateEverything],
+    afterDelete: [revalidateEverythingOnDelete],
   },
   access: {
     read: () => true,

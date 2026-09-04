@@ -1,4 +1,6 @@
 import type { CollectionConfig } from 'payload'
+import { previewOptions } from '../fields/preview'
+import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate'
 import { slugField } from '../fields/common'
 
 /**
@@ -17,7 +19,11 @@ export const Pages: CollectionConfig = {
     defaultColumns: ['title', 'slug', 'updatedAt', '_status'],
     group: 'Content',
     description: 'About, Contact, and the legal pages linked in the footer.',
-    livePreview: { url: ({ data }) => `/${data?.slug}` },
+    ...previewOptions('pages'),
+  },
+  hooks: {
+    afterChange: [revalidateAfterChange],
+    afterDelete: [revalidateAfterDelete],
   },
   access: {
     read: () => true,

@@ -1,4 +1,6 @@
 import type { CollectionConfig } from 'payload'
+import { previewOptions } from '../fields/preview'
+import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate'
 import {
   chartsField,
   flowScore,
@@ -18,13 +20,11 @@ export const SmartMoneyReports: CollectionConfig = {
     defaultColumns: ['title', 'ticker', 'section', 'publishedAt', '_status'],
     group: 'Content',
     description: 'Institutional and promoter activity in a single company.',
-    livePreview: {
-      url: ({ data }) => `/insight/${data?.slug}`,
-    },
+    ...previewOptions('smart-money-reports'),
   },
   hooks: {
-    afterChange: [indexOnChange],
-    afterDelete: [deindexOnDelete],
+    afterChange: [indexOnChange, revalidateAfterChange],
+    afterDelete: [deindexOnDelete, revalidateAfterDelete],
   },
   access: {
     read: () => true,

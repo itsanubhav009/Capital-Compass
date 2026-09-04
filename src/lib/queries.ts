@@ -1,3 +1,4 @@
+import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { CONTENT_COLLECTIONS } from '@/payload.config'
@@ -5,6 +6,31 @@ import { CONTENT_COLLECTIONS } from '@/payload.config'
 export type ContentSlug = (typeof CONTENT_COLLECTIONS)[number]
 
 export const client = async () => getPayload({ config })
+
+/**
+ * Whether this render is a preview.
+ *
+ * `draftMode()` throws outside a request scope — during `generateStaticParams`,
+ * for instance — so a failure here means "not previewing" rather than an
+ * error. Reads then stay on published content, which is the safe default.
+ */
+export async function isPreview(): Promise<boolean> {
+  try {
+    return (await draftMode()).isEnabled
+  } catch {
+    return false
+  }
+}
+
+/**
+ * The `_status` filter, dropped while previewing.
+ *
+ * Published-only is the whole site's default. In preview we want the newest
+ * version of everything, published or not, which is what `draft: true` on the
+ * find gives us — but only if we stop filtering the column first.
+ */
+const statusFilter = (preview: boolean): Record<string, any> =>
+  preview ? {} : { _status: { equals: 'published' } }
 
 export type Insight = {
   id: string | number
@@ -38,6 +64,7 @@ export async function getInsights(opts: {
   excludeSlug?: string
 }): Promise<{ docs: Insight[]; totalDocs: number; totalPages: number }> {
   const payload = await client()
+  const preview = await isPreview()
   const collections = opts.collections ?? [...CONTENT_COLLECTIONS]
   const limit = opts.limit ?? 12
   const page = opts.page ?? 1
@@ -54,7 +81,7 @@ export async function getInsights(opts: {
     sectionId = found.docs[0].id
   }
 
-  const where: any = { _status: { equals: 'published' } }
+  const where: any = { ...statusFilter(preview) }
   if (sectionId !== undefined) where.section = { equals: sectionId }
   if (opts.featured) where.featured = { equals: true }
   if (opts.excludeSlug) where.slug = { not_equals: opts.excludeSlug }
@@ -69,6 +96,7 @@ export async function getInsights(opts: {
         limit: limit * page + limit,
         sort: '-publishedAt',
         depth: 1,
+        draft: preview,
       })
       return tag(res.docs, collection)
     }),
@@ -97,12 +125,14 @@ export async function getInsights(opts: {
 /** Resolve one article by slug across all four content types. */
 export async function getInsightBySlug(slug: string): Promise<Insight | null> {
   const payload = await client()
+  const preview = await isPreview()
   for (const collection of CONTENT_COLLECTIONS) {
     const res = await payload.find({
       collection,
-      where: { slug: { equals: slug }, _status: { equals: 'published' } },
+      where: { slug: { equals: slug }, ...statusFilter(preview) },
       limit: 1,
       depth: 2,
+      draft: preview,
     })
     if (res.docs.length) return { ...res.docs[0], collection } as Insight
   }
@@ -140,36 +170,42 @@ export async function getSettings() {
 /** Most recent flow figures, for the homepage tape. */
 export async function getFlowTape(limit = 6) {
   const payload = await client()
+  const preview = await isPreview()
   const res = await payload.find({
     collection: 'smart-money-reports',
-    where: { _status: { equals: 'published' } },
+    where: { ...statusFilter(preview) },
     sort: '-publishedAt',
     limit,
     depth: 1,
+    draft: preview,
   })
   return res.docs
 }
 
 export async function getMacroSnapshot(limit = 4) {
   const payload = await client()
+  const preview = await isPreview()
   const res = await payload.find({
     collection: 'macro-notes',
-    where: { _status: { equals: 'published' } },
+    where: { ...statusFilter(preview) },
     sort: '-publishedAt',
     limit,
     depth: 1,
+    draft: preview,
   })
   return res.docs
 }
 
 export async function getSectorThemes(limit = 4) {
   const payload = await client()
+  const preview = await isPreview()
   const res = await payload.find({
     collection: 'theme-reports',
-    where: { _status: { equals: 'published' } },
+    where: { ...statusFilter(preview) },
     sort: '-publishedAt',
     limit,
     depth: 2,
+    draft: preview,
   })
   return res.docs
 }
@@ -178,11 +214,13 @@ export async function getSectorThemes(limit = 4) {
 /** Static pages: About, Contact, Disclaimer, Privacy, Terms, Editorial standards. */
 export async function getPageBySlug(slug: string) {
   const payload = await client()
+  const preview = await isPreview()
   const res = await payload.find({
     collection: 'pages',
-    where: { slug: { equals: slug }, _status: { equals: 'published' } },
+    where: { slug: { equals: slug }, ...statusFilter(preview) },
     limit: 1,
     depth: 1,
+    draft: preview,
   })
   return res.docs[0] ?? null
 }
@@ -244,15 +282,17 @@ export async function getSectionTiles(): Promise<
 /** Most-read first. Ties fall back to newest, so a cold archive still sorts. */
 export async function getPopular(limit = 3): Promise<Insight[]> {
   const payload = await client()
+  const preview = await isPreview()
   const all = (
     await Promise.all(
       CONTENT_COLLECTIONS.map(async (collection) => {
         const res = await payload.find({
           collection,
-          where: { _status: { equals: 'published' } },
+          where: { ...statusFilter(preview) },
           sort: '-publishedAt',
           limit: 60,
           depth: 1,
+          draft: preview,
         })
         return tag(res.docs, collection)
       }),

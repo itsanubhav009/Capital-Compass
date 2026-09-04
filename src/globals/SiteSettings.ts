@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { revalidateGlobal } from '../hooks/revalidate'
 
 /**
  * Everything the owner might want to reword without a developer.
@@ -9,6 +10,7 @@ export const SiteSettings: GlobalConfig = {
   label: 'Site settings',
   admin: { group: 'Settings' },
   access: { read: () => true },
+  hooks: { afterChange: [revalidateGlobal] },
   fields: [
     {
       type: 'tabs',

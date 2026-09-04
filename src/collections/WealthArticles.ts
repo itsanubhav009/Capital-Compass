@@ -1,4 +1,6 @@
 import type { CollectionConfig } from 'payload'
+import { previewOptions } from '../fields/preview'
+import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate'
 import {
   heroFields,
   publishingFields,
@@ -16,11 +18,11 @@ export const WealthArticles: CollectionConfig = {
     defaultColumns: ['title', 'section', 'publishedAt', '_status'],
     group: 'Content',
     description: 'General editorial: explainers, NRI topics, long reads.',
-    livePreview: { url: ({ data }) => `/insight/${data?.slug}` },
+    ...previewOptions('wealth-articles'),
   },
   hooks: {
-    afterChange: [indexOnChange],
-    afterDelete: [deindexOnDelete],
+    afterChange: [indexOnChange, revalidateAfterChange],
+    afterDelete: [deindexOnDelete, revalidateAfterDelete],
   },
   access: {
     read: () => true,

@@ -1,12 +1,14 @@
 import type { Metadata } from 'next'
 import { Inter_Tight, IBM_Plex_Mono } from 'next/font/google'
-import { getSettings } from '@/lib/queries'
+import { getSettings, isPreview } from '@/lib/queries'
 import { getNavData } from '@/lib/nav-data'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter, RouteProgress, ScrollTop } from '@/components/site-footer'
 import { NewsletterForm, ExitIntent } from '@/components/site'
 import { Analytics, ConsentBanner } from '@/components/analytics'
 import { ServiceWorker, InstallPrompt } from '@/components/pwa'
+import { PreviewBridge } from '@/components/preview-bridge'
+import { PreviewBar } from '@/components/preview-bar'
 import './globals.css'
 
 const sans = Inter_Tight({
@@ -72,7 +74,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
-  const [settings, nav] = await Promise.all([getSettings(), getNavData()])
+  const [settings, nav, preview] = await Promise.all([getSettings(), getNavData(), isPreview()])
   const s: any = settings
   const { sections, nav: navTree, previews, recent, headlines, tags } = nav
 
@@ -103,6 +105,10 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         </a>
 
         <RouteProgress />
+
+        {/* Only mounted while previewing: it opens a message channel to the
+            admin panel, which idle readers have no use for. */}
+        {preview && <PreviewBridge serverURL={SITE} />}
 
         <SiteHeader
           siteName={s.siteName}
@@ -148,6 +154,8 @@ export default async function FrontendLayout({ children }: { children: React.Rea
             <NewsletterForm {...newsletterProps} variant="block" />
           </ExitIntent>
         )}
+
+        {preview && <PreviewBar />}
 
         <Analytics />
         <ConsentBanner />

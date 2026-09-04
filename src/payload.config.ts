@@ -43,7 +43,22 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     meta: { titleSuffix: ' · Capital Compass' },
-    components: {},
+    components: {
+      beforeDashboard: ['/admin/WhereItAppears#default'],
+    },
+    // Component paths above are resolved from here. Without it they resolve
+    // from the project root and the generated import map cannot find them.
+    importMap: { baseDir: path.resolve(dirname) },
+    // Shared by every collection's Live Preview tab, so the device sizes match
+    // the breakpoints the site is actually built against.
+    livePreview: {
+      breakpoints: [
+        { name: 'mobile', label: 'Mobile', width: 390, height: 844 },
+        { name: 'tablet', label: 'Tablet', width: 768, height: 1024 },
+        { name: 'laptop', label: 'Laptop', width: 1366, height: 800 },
+        { name: 'desktop', label: 'Desktop', width: 1580, height: 900 },
+      ],
+    },
   },
 
   collections: [
