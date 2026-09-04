@@ -45,6 +45,7 @@ export const Pages: CollectionConfig = {
     {
       name: 'lastReviewed',
       type: 'date',
+      label: 'Last reviewed',
       admin: {
         position: 'sidebar',
         date: { pickerAppearance: 'dayOnly' },

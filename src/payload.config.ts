@@ -14,6 +14,7 @@ import { ThemeReports } from './collections/ThemeReports'
 import { WealthArticles } from './collections/WealthArticles'
 import { Pages } from './collections/Pages'
 import { ContactSubmissions } from './collections/ContactSubmissions'
+import { Subscribers } from './collections/Subscribers'
 import { Media } from './collections/Media'
 import { Users } from './collections/Users'
 import { SiteSettings } from './globals/SiteSettings'
@@ -79,6 +80,7 @@ export default buildConfig({
     Themes,
     // Inbox
     ContactSubmissions,
+    Subscribers,
     // Settings
     Users,
   ],

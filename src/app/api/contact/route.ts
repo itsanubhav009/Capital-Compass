@@ -47,8 +47,19 @@ export async function POST(req: Request) {
     ? body.topic
     : 'general'
 
-  if (!name || !subject || message.length < 20) {
-    return NextResponse.json({ error: 'Please fill in every field.' }, { status: 400 })
+  if (!name) {
+    return NextResponse.json({ error: 'Please add your name.' }, { status: 400 })
+  }
+  if (!subject) {
+    return NextResponse.json({ error: 'Please add a subject.' }, { status: 400 })
+  }
+  if (message.length < 20) {
+    return NextResponse.json(
+      {
+        error: `Please write a little more — ${message.length} of the 20 characters needed so far.`,
+      },
+      { status: 400 },
+    )
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     return NextResponse.json({ error: 'That email address does not look right.' }, { status: 400 })

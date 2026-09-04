@@ -75,7 +75,10 @@ export async function POST(req: Request) {
   }
 
   if (question.length < 3) {
-    return NextResponse.json({ error: 'Ask a longer question.' }, { status: 400 })
+    return NextResponse.json(
+      { error: 'Ask a fuller question — a few words at least.' },
+      { status: 400 },
+    )
   }
 
   let found: any[] = []
@@ -127,7 +130,10 @@ export async function POST(req: Request) {
 
     if (!res.ok) {
       console.error('[search] generateContent failed', res.status, await res.text())
-      return NextResponse.json({ error: 'Search is unavailable right now.' }, { status: 502 })
+      return NextResponse.json(
+        { error: 'The assistant is busy at the moment. Try that again in a few seconds.' },
+        { status: 502 },
+      )
     }
 
     const data = await res.json()
@@ -148,6 +154,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ answer, sources })
   } catch (err) {
     console.error('[search] request failed', err)
-    return NextResponse.json({ error: 'Search is unavailable right now.' }, { status: 502 })
+    return NextResponse.json(
+      { error: 'The assistant is busy at the moment. Try that again in a few seconds.' },
+      { status: 502 },
+    )
   }
 }

@@ -20,11 +20,13 @@ export const slugify = (input: string): string =>
 export const slugField = (): Field => ({
   name: 'slug',
   type: 'text',
+  label: 'Web address',
   index: true,
   unique: true,
   admin: {
     position: 'sidebar',
-    description: 'Leave blank and this fills itself in from the title.',
+    description:
+      'The last part of the link, e.g. /insight/foreign-funds-in-august. Leave blank and it writes itself from the title. Changing it after publishing breaks any existing links.',
   },
   hooks: { beforeValidate: [formatSlug] },
 })
@@ -43,7 +45,7 @@ export const sectionField = (): Field => ({
   index: true,
   admin: {
     position: 'sidebar',
-    description: 'Which menu section this appears under.',
+    description: 'Which menu section this appears under. Required — it decides where readers find it.',
   },
 })
 
@@ -51,11 +53,14 @@ export const publishingFields = (): Field[] => [
   {
     name: 'publishedAt',
     type: 'date',
+    label: 'Publish date',
     index: true,
     defaultValue: () => new Date().toISOString(),
     admin: {
       position: 'sidebar',
       date: { pickerAppearance: 'dayAndTime' },
+      description:
+        'Orders the homepage — newest first. Defaults to now. This is a date shown to readers, not a schedule: it does not publish anything on its own.',
     },
   },
   {
@@ -64,14 +69,18 @@ export const publishingFields = (): Field[] => [
     defaultValue: false,
     admin: {
       position: 'sidebar',
-      description: 'Show this in Featured Insights on the homepage.',
+      description: 'Adds it to Featured Insights on the homepage.',
     },
   },
   {
     name: 'readingMinutes',
     type: 'number',
+    label: 'Reading time',
     min: 1,
-    admin: { position: 'sidebar', description: 'Optional. Shown as "6 min read".' },
+    admin: {
+      position: 'sidebar',
+      description: 'Optional, in minutes. Shown to readers as "6 min read". Leave blank to hide it.',
+    },
   },
 ]
 
@@ -79,17 +88,22 @@ export const heroFields = (): Field[] => [
   {
     name: 'standfirst',
     type: 'textarea',
+    label: 'Summary line',
     maxLength: 240,
     admin: {
       description:
-        'One or two sentences under the headline. This is also what shows on cards and in Google results.',
+        'One or two sentences under the headline. Does triple duty: under the title, on homepage cards, and as the description in Google results. 240 characters maximum.',
     },
   },
   {
     name: 'featuredImage',
     type: 'upload',
     relationTo: 'media',
-    admin: { description: 'Landscape, at least 1600px wide.' },
+    label: 'Main image',
+    admin: {
+      description:
+        'Landscape, at least 1600px wide. Used on the homepage, in the article and when the link is shared. Choose an existing image or upload a new one — every size is made for you.',
+    },
   },
 ]
 
@@ -110,7 +124,9 @@ export const flowScore = (name: string, label: string, help: string): Field => (
   admin: {
     width: '33%',
     step: 1,
-    description: help,
+    // Spelling out the scale on every one of these. A bare -100 to 100 box
+    // gives no clue which end means buying, and the sign is the whole point.
+    description: `${help} −100 heavy selling · 0 flat · +100 heavy buying. Leave blank if you have no read.`,
   },
   label,
 })
@@ -120,7 +136,8 @@ export const referencesField = (): Field => ({
   type: 'array',
   labels: { singular: 'Source', plural: 'Sources' },
   admin: {
-    description: 'Where the numbers came from. Shown at the foot of the article.',
+    description:
+      'Where the numbers came from. Listed at the foot of the article. Add one row per source.',
   },
   fields: [
     { name: 'label', type: 'text', required: true },

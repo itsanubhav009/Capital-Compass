@@ -8,6 +8,7 @@ import {
   sectionField,
   slugField,
 } from '../fields/common'
+import { viewsField } from './views-field'
 import { indexOnChange, deindexOnDelete } from '../hooks/search-index'
 
 export const WealthArticles: CollectionConfig = {
@@ -37,12 +38,16 @@ export const WealthArticles: CollectionConfig = {
     slugField(),
     sectionField(),
     ...publishingFields(),
+    viewsField(),
     ...heroFields(),
     {
       name: 'tags',
       type: 'text',
       hasMany: true,
-      admin: { description: 'Press Enter after each tag.' },
+      admin: {
+        description:
+          'Optional keywords. Type one and press Enter, then the next. These are for your own filtering — they do not appear on the site.',
+      },
     },
     { name: 'body', type: 'richText', required: true },
     referencesField(),

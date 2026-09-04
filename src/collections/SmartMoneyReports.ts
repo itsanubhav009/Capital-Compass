@@ -10,6 +10,7 @@ import {
   sectionField,
   slugField,
 } from '../fields/common'
+import { viewsField } from './views-field'
 import { indexOnChange, deindexOnDelete } from '../hooks/search-index'
 
 export const SmartMoneyReports: CollectionConfig = {
@@ -39,6 +40,7 @@ export const SmartMoneyReports: CollectionConfig = {
     slugField(),
     sectionField(),
     ...publishingFields(),
+    viewsField(),
 
     {
       type: 'tabs',
@@ -49,7 +51,13 @@ export const SmartMoneyReports: CollectionConfig = {
             {
               type: 'row',
               fields: [
-                { name: 'stockName', type: 'text', required: true, admin: { width: '50%' } },
+                {
+                  name: 'stockName',
+                  type: 'text',
+                  label: 'Company name',
+                  required: true,
+                  admin: { width: '50%', description: 'As readers know it, e.g. HDFC Bank.' },
+                },
                 {
                   name: 'ticker',
                   type: 'text',

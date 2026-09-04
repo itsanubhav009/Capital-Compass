@@ -9,6 +9,7 @@ import {
   sectionField,
   slugField,
 } from '../fields/common'
+import { viewsField } from './views-field'
 import { indexOnChange, deindexOnDelete } from '../hooks/search-index'
 
 export const MacroNotes: CollectionConfig = {
@@ -38,6 +39,7 @@ export const MacroNotes: CollectionConfig = {
     slugField(),
     sectionField(),
     ...publishingFields(),
+    viewsField(),
     {
       type: 'row',
       fields: [
@@ -51,6 +53,7 @@ export const MacroNotes: CollectionConfig = {
         {
           name: 'assetClass',
           type: 'select',
+          label: 'What it is about',
           required: true,
           admin: { width: '50%' },
           options: ['Equities', 'Interest rates', 'Currencies', 'Commodities', 'Credit', 'Cross-asset'],
@@ -72,6 +75,7 @@ export const MacroNotes: CollectionConfig = {
     {
       name: 'impactNote',
       type: 'text',
+      label: 'One-line reason',
       maxLength: 120,
       admin: { description: 'One line explaining the marker. Shown on the homepage.' },
     },

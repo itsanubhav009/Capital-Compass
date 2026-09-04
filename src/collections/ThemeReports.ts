@@ -9,6 +9,7 @@ import {
   sectionField,
   slugField,
 } from '../fields/common'
+import { viewsField } from './views-field'
 import { indexOnChange, deindexOnDelete } from '../hooks/search-index'
 
 export const ThemeReports: CollectionConfig = {
@@ -38,6 +39,7 @@ export const ThemeReports: CollectionConfig = {
     slugField(),
     sectionField(),
     ...publishingFields(),
+    viewsField(),
     {
       type: 'row',
       fields: [
@@ -48,12 +50,20 @@ export const ThemeReports: CollectionConfig = {
           required: true,
           admin: { width: '50%' },
         },
-        { name: 'industry', type: 'text', admin: { width: '50%' } },
+        {
+          name: 'industry',
+          type: 'text',
+          admin: {
+            width: '50%',
+            description: 'Optional narrower label, e.g. "Semiconductors" inside the AI theme.',
+          },
+        },
       ],
     },
     {
       name: 'capitalFlowTrend',
       type: 'select',
+      label: 'Where the money is going',
       required: true,
       defaultValue: 'steady',
       options: [
@@ -68,6 +78,7 @@ export const ThemeReports: CollectionConfig = {
     {
       name: 'keyStocks',
       type: 'array',
+      label: 'Companies to watch',
       labels: { singular: 'Company', plural: 'Companies mentioned' },
       admin: {
         description:

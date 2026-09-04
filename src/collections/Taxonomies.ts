@@ -20,7 +20,7 @@ export const Sections: CollectionConfig = {
     defaultColumns: ['title', 'navOrder', 'showInNav'],
     group: 'Taxonomy',
     description:
-      'The site menu, top to bottom. Lower Nav order comes first. Two sections sharing a prefix before a dash — "Capital Flow – India" and "Capital Flow – International" — collapse into one menu item with a dropdown.',
+      'The site menu, top to bottom. Lower Menu position comes first. Two sections sharing a prefix before a dash — "Capital Flow – India" and "Capital Flow – International" — collapse into one menu item with a dropdown.',
   },
   hooks: {
     afterChange: [revalidateEverything],
@@ -39,8 +39,11 @@ export const Sections: CollectionConfig = {
     {
       name: 'blurb',
       type: 'textarea',
+      label: 'Section intro',
       maxLength: 200,
-      admin: { description: 'Sits under the heading on the section page.' },
+      admin: {
+        description: 'One or two sentences under the heading on the section page. Optional.',
+      },
     },
     {
       name: 'accent',
@@ -53,19 +56,27 @@ export const Sections: CollectionConfig = {
         { label: 'Outflow rust', value: 'outflow' },
         { label: 'Ink', value: 'ink' },
       ],
-      admin: { description: 'Colour tag used on cards for this section.' },
+      admin: { description: 'Colour tag on cards from this section.' },
     },
     {
       name: 'navOrder',
+      label: 'Menu position',
       type: 'number',
       defaultValue: 100,
-      admin: { position: 'sidebar' },
+      admin: {
+        position: 'sidebar',
+        description: 'Lower numbers sit further left in the menu. 10, 20, 30 leaves room to insert.',
+      },
     },
     {
       name: 'showInNav',
+      label: 'Show in the menu',
       type: 'checkbox',
       defaultValue: true,
-      admin: { position: 'sidebar' },
+      admin: {
+        position: 'sidebar',
+        description: 'Untick to hide the section from the menu. Its articles stay published.',
+      },
     },
   ],
 }
