@@ -18,9 +18,9 @@ export const Sections: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'navOrder', 'showInNav'],
-    group: 'Taxonomy',
+    group: 'Menu & Labels',
     description:
-      'The site menu, top to bottom. Lower Menu position comes first. Two sections sharing a prefix before a dash — "Capital Flow – India" and "Capital Flow – International" — collapse into one menu item with a dropdown.',
+      'The links across the top of the site. Every article belongs to exactly one, and that is how readers find it. Lower Menu position sits further left. Two sections that share a prefix before a dash — "Capital Flow – India" and "Capital Flow – International" — become one menu link with a dropdown.',
   },
   hooks: {
     afterChange: [revalidateEverything],
@@ -86,8 +86,9 @@ export const Sectors: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
-    group: 'Taxonomy',
-    description: 'Industry labels for Smart Money Reports — Banking, IT, Pharma and so on.',
+    group: 'Menu & Labels',
+    description:
+      'Industry labels for the companies you write about in Smart Money Reports — Banking, IT, Pharma. Used for filing, not shown as its own page.',
   },
   hooks: {
     afterChange: [revalidateEverything],
@@ -107,9 +108,9 @@ export const Themes: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
-    group: 'Taxonomy',
+    group: 'Menu & Labels',
     description:
-      'Cross-cutting subjects: AI, Defence, Renewable Energy, Infrastructure. These become the topic rail in the menu bar and the tiles in Explore Categories, so a theme with no published pieces behind it is hidden automatically.',
+      'Subjects that cut across the report types: AI, Defence, Renewable Energy, Infrastructure. Each becomes a tile in the Explore Categories row and a link in the strip beside the menu. A theme with nothing published behind it hides itself, so adding one early does no harm.',
   },
   hooks: {
     afterChange: [revalidateEverything],

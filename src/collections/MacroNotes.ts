@@ -19,7 +19,7 @@ export const MacroNotes: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'region', 'assetClass', 'publishedAt', '_status'],
     group: 'Content',
-    description: 'Rates, currencies, commodities and the macro backdrop.',
+    description: 'Rates, currencies, commodities and the wider backdrop — the context behind the company stories.',
     ...previewOptions('macro-notes'),
   },
   hooks: {

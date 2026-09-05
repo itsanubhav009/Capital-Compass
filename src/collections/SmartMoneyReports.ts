@@ -20,7 +20,8 @@ export const SmartMoneyReports: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'ticker', 'section', 'publishedAt', '_status'],
     group: 'Content',
-    description: 'Institutional and promoter activity in a single company.',
+    description:
+      'One company at a time: who is buying, who is selling, and what the numbers say. These are the only pieces that feed the flow figures row on the homepage.',
     ...previewOptions('smart-money-reports'),
   },
   hooks: {

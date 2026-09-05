@@ -18,7 +18,7 @@ export const WealthArticles: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'section', 'publishedAt', '_status'],
     group: 'Content',
-    description: 'General editorial: explainers, NRI topics, long reads.',
+    description: 'Everything that is not tied to one company or one number: explainers, NRI topics, long reads.',
     ...previewOptions('wealth-articles'),
   },
   hooks: {
