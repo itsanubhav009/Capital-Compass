@@ -1,7 +1,5 @@
 import type { CollectionAdminOptions } from 'payload'
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-
 /** Where a document of this collection lives on the public site. */
 export const publicPath = (collection: string, slug?: string | null) =>
   collection === 'pages' ? `/${slug ?? ''}` : `/insight/${slug ?? ''}`
@@ -20,14 +18,26 @@ export const publicPath = (collection: string, slug?: string | null) =>
 export const previewOptions = (
   collection: string,
 ): Pick<CollectionAdminOptions, 'preview' | 'livePreview'> => {
+  /**
+   * Relative on purpose.
+   *
+   * Built from NEXT_PUBLIC_SITE_URL this pointed at whichever hostname that
+   * variable named, which is not necessarily the one the admin is open on. A
+   * Vercel project answers on several. When they differ, the Live Preview
+   * iframe is cross-origin, the site's `X-Frame-Options: SAMEORIGIN` blocks
+   * it, and the panel reads "refused to connect".
+   *
+   * A relative URL resolves against the admin's own origin, so preview always
+   * follows the reader to whatever host they signed in on.
+   */
   const url = (data: any) => {
-    if (!data?.slug) return SITE
+    if (!data?.slug) return '/'
     const q = new URLSearchParams({
       secret: process.env.PREVIEW_SECRET ?? '',
       collection,
       slug: String(data.slug),
     })
-    return `${SITE}/api/preview?${q.toString()}`
+    return `/api/preview?${q.toString()}`
   }
 
   return {

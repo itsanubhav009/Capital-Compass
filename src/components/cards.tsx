@@ -148,8 +148,20 @@ export function ListRow({
             className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
           />
         ) : (
-          <span className="absolute inset-0 grid place-items-center text-[10px] uppercase tracking-wider text-ink-faint">
-            No image
+          <span className="absolute inset-0 grid place-items-center text-ink-faint/50">
+            <svg
+              viewBox="0 0 24 24"
+              width="22"
+              height="22"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              aria-hidden
+            >
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <circle cx="8.5" cy="10" r="1.5" />
+              <path d="M21 15l-5-5L5 19" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </span>
         )}
       </Link>
@@ -266,8 +278,20 @@ export function StackCard({
             className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
           />
         ) : (
-          <span className="absolute inset-0 grid place-items-center text-[10px] uppercase tracking-wider text-ink-faint">
-            No image
+          <span className="absolute inset-0 grid place-items-center text-ink-faint/50">
+            <svg
+              viewBox="0 0 24 24"
+              width="22"
+              height="22"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              aria-hidden
+            >
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <circle cx="8.5" cy="10" r="1.5" />
+              <path d="M21 15l-5-5L5 19" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </span>
         )}
       </Link>

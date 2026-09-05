@@ -197,8 +197,28 @@ export function SiteFooter({
               {recent.slice(0, 3).map((r) => (
                 <li key={r.slug} className="py-4 first:pt-0">
                   <Link href={`/insight/${r.slug}`} className="group flex gap-4">
-                    <span className="relative block h-16 w-20 shrink-0 overflow-hidden rounded-[6px] bg-white/5">
-                      {r.image && <Image src={r.image} alt="" fill sizes="80px" className="object-cover" />}
+                    {/* An article with no image left a dark rectangle with
+                        nothing in it, which reads as a picture that failed to
+                        load. A mark makes it plainly deliberate. */}
+                    <span className="relative grid h-16 w-20 shrink-0 place-items-center overflow-hidden rounded-[6px] bg-white/5">
+                      {r.image ? (
+                        <Image src={r.image} alt="" fill sizes="80px" className="object-cover" />
+                      ) : (
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="18"
+                          height="18"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          aria-hidden
+                          className="text-white/20"
+                        >
+                          <rect x="3" y="5" width="18" height="14" rx="2" />
+                          <circle cx="8.5" cy="10" r="1.5" />
+                          <path d="M21 15l-5-5L5 19" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
                     </span>
                     <span className="min-w-0">
                       <span className="line-clamp-2 text-[15px] font-semibold leading-snug text-white/90 transition-colors group-hover:text-accent-soft">
