@@ -71,3 +71,18 @@ export const revalidateGlobal: GlobalAfterChangeHook = async ({ doc }) => {
   await bust(['/', '/sitemap.xml'])
   return doc
 }
+
+/**
+ * A comment only ever changes one page: the article it was left on. Approving
+ * one has to clear that page immediately, or the reader who just posted sees
+ * a cached copy without their comment for the next five minutes.
+ */
+export const revalidateComment: CollectionAfterChangeHook = async ({ doc }) => {
+  if (doc?.articleSlug) await bust([`/insight/${doc.articleSlug}`])
+  return doc
+}
+
+export const revalidateCommentOnDelete: CollectionAfterDeleteHook = async ({ doc }) => {
+  if (doc?.articleSlug) await bust([`/insight/${doc.articleSlug}`])
+  return doc
+}

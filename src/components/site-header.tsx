@@ -355,6 +355,7 @@ export function SiteHeader({
   nav,
   headlines = [],
   previews = {},
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   tags = [],
   promo,
 }: {
@@ -362,6 +363,7 @@ export function SiteHeader({
   nav: NavItem[]
   headlines?: Headline[]
   previews?: Record<string, Preview[]>
+  /** Still accepted, currently unused — the topic rail is commented out below. */
   tags?: Tag[]
   promo?: React.ReactNode
 }) {
@@ -470,7 +472,9 @@ export function SiteHeader({
           </div>
 
           {promo && (
-            <div className="hidden min-w-0 flex-1 justify-end lg:flex lg:pl-10 lg:pr-[10px]">{promo}</div>
+            <div className="flex w-full min-w-0 flex-1 justify-end lg:pl-10 lg:pr-[10px]">
+              {promo}
+            </div>
           )}
         </div>
       </div>
@@ -513,7 +517,15 @@ export function SiteHeader({
             </ul>
           </nav>
 
+          {/* ------------------------------------------- topic rail ---
+              Removed on request: the sector tags (Defence, AI, Renewables …)
+              that rode the right-hand end of the menu bar. The TagRail
+              component above is left intact — put this line back to restore
+              them, nothing else is needed.
+
           <TagRail tags={tags} />
+
+              --------------------------------------------------------- */}
 
           <div className="flex w-full items-center justify-between py-3 lg:hidden">
             <span className="text-[13px] font-medium text-white/70">Sections</span>
@@ -568,7 +580,7 @@ export function SiteHeader({
                 <Link
                   href="/"
                   tabIndex={stuck ? 0 : -1}
-                  className={`ml-[24px] flex items-center whitespace-nowrap text-[16px] font-medium leading-[1.4] transition-colors duration-300 xl:ml-[32px] 2xl:ml-[40px] ${
+                  className={`mr-[30px] flex items-center whitespace-nowrap text-[16px] font-medium leading-[1.4] transition-colors duration-300 xl:mr-[40px] 2xl:mr-[48px] ${
                     pathname === '/' ? 'text-accent' : 'text-white hover:text-accent'
                   }`}
                 >
@@ -590,7 +602,7 @@ export function SiteHeader({
                 <Link
                   href="/contact"
                   tabIndex={stuck ? 0 : -1}
-                  className={`ml-[24px] flex items-center whitespace-nowrap text-[16px] font-medium leading-[1.4] transition-colors duration-300 xl:ml-[32px] 2xl:ml-[40px] ${
+                  className={`flex items-center whitespace-nowrap text-[16px] font-medium leading-[1.4] transition-colors duration-300 ${
                     pathname === '/contact' ? 'text-accent' : 'text-white hover:text-accent'
                   }`}
                 >

@@ -15,6 +15,7 @@ import { WealthArticles } from './collections/WealthArticles'
 import { Pages } from './collections/Pages'
 import { ContactSubmissions } from './collections/ContactSubmissions'
 import { Subscribers } from './collections/Subscribers'
+import { Comments } from './collections/Comments'
 import { Media } from './collections/Media'
 import { Users } from './collections/Users'
 import { SiteSettings } from './globals/SiteSettings'
@@ -100,6 +101,7 @@ export default buildConfig({
     // Inbox
     ContactSubmissions,
     Subscribers,
+    Comments,
     // Settings
     Users,
   ],

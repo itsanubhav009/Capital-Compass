@@ -2,6 +2,7 @@
 
 import Script from 'next/script'
 import { useEffect, useState } from 'react'
+import { DISCLAIMER_ACCEPTED, hasAcceptedDisclaimer } from '@/components/legal-gate'
 
 const KEY = 'cc-consent'
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID
@@ -85,12 +86,24 @@ export function Analytics() {
 export function ConsentBanner() {
   const [visible, setVisible] = useState(false)
 
+  // Two notices at once is one too many, and the disclaimer is the blocking
+  // one — so this waits behind it rather than stacking underneath.
   useEffect(() => {
     if (!GA_ID) return
     const stored = localStorage.getItem(KEY)
-    if (stored !== 'granted' && stored !== 'denied') {
-      const t = setTimeout(() => setVisible(true), 1200)
-      return () => clearTimeout(t)
+    if (stored === 'granted' || stored === 'denied') return
+
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const show = () => {
+      timer = setTimeout(() => setVisible(true), 1200)
+    }
+
+    if (hasAcceptedDisclaimer()) show()
+    window.addEventListener(DISCLAIMER_ACCEPTED, show)
+
+    return () => {
+      if (timer) clearTimeout(timer)
+      window.removeEventListener(DISCLAIMER_ACCEPTED, show)
     }
   }, [])
 

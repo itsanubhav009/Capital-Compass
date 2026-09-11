@@ -1,18 +1,22 @@
 import Link from 'next/link'
 import {
-  getFlowTape,
+  // getFlowTape — the "Latest institutional activity" tape is switched off.
+  // See the commented block further down before deleting this import.
+  // getFlowTape,
   getInsights,
   getPopular,
+  // getSectionTiles — fed the "Explore Categories" panel in the right-hand
+  // rail. That position now carries the ad banner, so the query is off too.
+  // getSectionTiles,
   getBrowseTiles,
-  getSectionTiles,
   getSectorThemes,
   getSettings,
 } from '@/lib/queries'
-import { FlowTape } from '@/components/flow'
+// import { FlowTape } from '@/components/flow'
 import { Band, ListRow, StackCard } from '@/components/cards'
 import {
   BigGroup,
-  CategoryTiles,
+  // CategoryTiles,
   FollowCards,
   Head,
   LatestStories,
@@ -20,14 +24,15 @@ import {
   PopularList,
   RoundStrip,
   SubscribeBanner,
-  WideRow,
+  // WideRow,
 } from '@/components/sections'
-import { HighlightSlider } from '@/components/highlight-slider'
+// import { HighlightSlider } from '@/components/highlight-slider'
 import { CategorySlider } from '@/components/category-slider'
 import { Reveal } from '@/components/reveal'
 import { HeroCarousel } from '@/components/hero-carousel'
 import { NewsletterForm } from '@/components/site'
 import { AiSearch } from '@/components/ai-search'
+import { AdSlot } from '@/components/ad-slot'
 import { KIND_LABEL, cardCategory, dayMonth, shortDate } from '@/lib/format'
 
 export const revalidate = 300
@@ -41,12 +46,15 @@ const heroTitle = (t: string) => {
 }
 
 export default async function Homepage() {
-  const [settings, tape, themes, latest, tiles, popular, browse] = await Promise.all([
+  const [settings, themes, latest, macro, popular, browse] = await Promise.all([
     getSettings(),
-    getFlowTape(6),
+    // getFlowTape(6),
     getSectorThemes(4),
     getInsights({ limit: 36 }),
-    getSectionTiles(),
+    // The Global Macro block is fed from the Global Macro section itself
+    // rather than from the rolling cursor, so the heading means what it says.
+    getInsights({ sectionSlug: 'global-macro', limit: 4 }),
+    // getSectionTiles(),
     getPopular(3),
     getBrowseTiles(),
   ])
@@ -73,11 +81,17 @@ export default async function Homepage() {
   const leftCol = take(4)
   const rightCol = take(4)
   const strip = take(3)
-  const video = take(4)
-  const videoLead = video[0]
-  const videoRest = video.slice(1)
-  const deepDive = take(5)
-  const highlight = take(5)
+
+  // Global Macro: the section's own four newest pieces, falling back to the
+  // rolling cursor while that section is still thin.
+  const macroDocs = macro.docs.length >= 2 ? macro.docs : take(4)
+  const macroLead = macroDocs[0]
+  const macroRest = macroDocs.slice(1, 4)
+
+  // ── Switched off; see the commented sections below ──────────────────────
+  // const deepDive = take(5)   // In depth
+  // const highlight = take(5)  // Highlight Stories
+
   const storyLead = take(1)[0]
   const storyRail = take(3)
   const storyRow = take(3)
@@ -158,22 +172,40 @@ export default async function Homepage() {
       {/* ------------------------------------------- in focus strip --- */}
       <RoundStrip backdrop={backdrop} items={strip.map(withMeta)} />
 
-      {/* --------------------------------- institutional activity --- */}
+      {/* --------------------------------- institutional activity ---
+          Removed on request. The tape of latest institutional activity used
+          to sit here, between the in-focus strip and Global Macro. To bring
+          it back, restore the getFlowTape import and query above and
+          uncomment this:
+
       <FlowTape heading={s.flowTapeHeading} rows={tape} />
 
-      {/* -------------------------------------------- video news --- */}
-      {videoLead && (
+          ------------------------------------------------------------- */}
+
+      {/* ------------------------------------------- global macro ---
+          Was "Video News". Same shape — one large picture with the headline
+          over it, three smaller stories stacked down the right — but fed
+          from the Global Macro section. */}
+      {macroLead && (
         <section className="bg-bar-2">
           <div className="mx-auto max-w-[1430px] px-[10px] pb-20 pt-[70px] sm:px-5">
-            <Head title="Video News" href="/global-macro" tone="light" />
+            <Head title="Global Macro" href="/global-macro" tone="light" />
             <Reveal>
-              <BigGroup lead={withMeta(videoLead)} rest={videoRest.map(withMeta)} />
+              <BigGroup lead={withMeta(macroLead)} rest={macroRest.map(withMeta)} />
             </Reveal>
           </div>
         </section>
       )}
 
-      {/* -------------------------------------- deep dive + sidebar --- */}
+      {/* -------------------------------------- deep dive + sidebar ---
+          "In depth" is hidden until the archive is deep enough to justify a
+          five-article block — revisit in six to twelve months. The sidebar
+          that lived beside it (Popular News, Follow Us) has moved down to
+          Latest Stories, with the ad banner where Explore Categories was.
+          To bring this back, restore the getSectionTiles import and query,
+          the WideRow and CategoryTiles imports, `const deepDive = take(5)`,
+          and uncomment:
+
       {deepDive.length > 0 && (
         <Band tone="tint" labelledBy="deepdive">
           <Head id="deepdive" title="In depth" href="/smart-money-insights" />
@@ -194,8 +226,6 @@ export default async function Homepage() {
               ))}
             </Reveal>
 
-            {/* Sticky below the menu bar, which is 57px tall plus breathing
-                room, matching the reference's 125px offset. */}
             <Reveal
               direction="right"
               delay={80}
@@ -219,25 +249,34 @@ export default async function Homepage() {
         </Band>
       )}
 
-      {/* ----------------------------------------- highlight stories --- */}
+          ------------------------------------------------------------- */}
+
+      {/* ----------------------------------------- highlight stories ---
+          Hidden alongside "In depth" for the same reason: a five-slide
+          carousel of a thin archive shows the same pieces twice. Restore the
+          HighlightSlider import and `const highlight = take(5)` above, then
+          uncomment:
+
       {highlight.length > 0 && (
         <Band tone="dark" labelledBy="highlight">
           <Head id="highlight" title="Highlight Stories" href="/smart-money-insights" tone="light" />
           <Reveal>
             <HighlightSlider
               slides={highlight.map((d) => ({
-              slug: d.slug,
-              category: cat(d),
-              title: d.title,
-              byline,
-              views: d.views ?? 0,
-              date: shortDate(d.publishedAt),
+                slug: d.slug,
+                category: cat(d),
+                title: d.title,
+                byline,
+                views: d.views ?? 0,
+                date: shortDate(d.publishedAt),
                 image: pic(d),
               }))}
             />
           </Reveal>
         </Band>
       )}
+
+          ------------------------------------------------------------- */}
 
       {/* -------------------------------------------- ask the archive --- */}
       {s.showAiSearchPlaceholder && (
@@ -253,13 +292,38 @@ export default async function Homepage() {
       {storyLead && (
         <Band tone="white" labelledBy="latest">
           <Head id="latest" title="Latest Stories" href="/global-macro" />
-          <Reveal>
-            <LatestStories
-              featured={withMeta(storyLead)}
-              rail={storyRail.map(withMeta)}
-              row={storyRow.map(withMeta)}
-            />
-          </Reveal>
+          <div className="flex flex-col gap-[30px] lg:flex-row lg:items-start">
+            <Reveal direction="left" className="min-w-0 flex-1">
+              <LatestStories
+                featured={withMeta(storyLead)}
+                rail={storyRail.map(withMeta)}
+                row={storyRow.map(withMeta)}
+              />
+            </Reveal>
+
+            {/* The right-hand rail. The ad banner takes the position the
+                Explore Categories panel used to hold; that block still runs
+                full width higher up the page, so nothing is lost by giving
+                the slot to advertising. Sticky below the menu bar, which is
+                57px tall plus breathing room. */}
+            <Reveal
+              direction="right"
+              delay={80}
+              className="flex w-full flex-col gap-[30px] lg:sticky lg:top-[125px] lg:w-[350px] xl:w-[400px]"
+            >
+              <AdSlot variant="rail" />
+
+              {popular.length > 0 && (
+                <Panel title="Popular News">
+                  <PopularList items={popular.map(withMeta)} />
+                </Panel>
+              )}
+
+              <Panel title="Follow Us">
+                <FollowCards />
+              </Panel>
+            </Reveal>
+          </div>
         </Band>
       )}
 

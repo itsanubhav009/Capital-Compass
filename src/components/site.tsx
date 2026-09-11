@@ -183,17 +183,23 @@ export function NewsletterForm({
   body,
   cta,
   finePrint,
+  eyebrow = 'Weekly',
   variant = 'block',
 }: {
   heading: string
   body?: string
   cta: string
   finePrint?: string
+  eyebrow?: string
   variant?: 'block' | 'inline' | 'footer' | 'banner'
 }) {
   const [email, setEmail] = useState('')
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
   const [message, setMessage] = useState('')
+  // Signing up is the same undertaking as entering the site, so it carries
+  // the same disclaimer. Unticked by default: a pre-ticked consent box is not
+  // consent, and this audience includes readers covered by the GDPR.
+  const [accepted, setAccepted] = useState(false)
 
   const submit = async () => {
     if (!email.includes('@')) {
@@ -201,12 +207,17 @@ export function NewsletterForm({
       setMessage('That email address is missing an @. Check it and try again.')
       return
     }
+    if (!accepted) {
+      setState('error')
+      setMessage('Please read and accept the disclaimer before subscribing.')
+      return
+    }
     setState('sending')
     try {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: variant }),
+        body: JSON.stringify({ email, source: variant, consent: true }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Subscription failed')
@@ -224,9 +235,14 @@ export function NewsletterForm({
   const bare = variant === 'banner'
 
   return (
-    <div id="newsletter" className={dark && !bare ? 'bg-deep px-6 py-10 text-paper sm:px-10 sm:py-12' : ''}>
+    // One id per page: the /#newsletter anchor points at the homepage banner,
+    // and a second element carrying the same id would steal the jump.
+    <div
+      id={variant === 'banner' ? 'newsletter' : undefined}
+      className={dark && !bare ? 'bg-deep px-6 py-10 text-paper sm:px-10 sm:py-12' : ''}
+    >
       <div className={dark && !bare ? 'mx-auto max-w-2xl text-center' : ''}>
-        {!bare && <span className={`eyebrow ${dark ? '!text-brass-soft' : ''}`}>Weekly</span>}
+        {!bare && <span className={`eyebrow ${dark ? '!text-brass-soft' : ''}`}>{eyebrow}</span>}
         {!bare && (
           <h2
             className={`mt-2 ${dark ? 'text-[28px] sm:text-[34px]' : 'text-[22px]'} ${dark ? 'text-paper' : 'text-ink'}`}
@@ -246,6 +262,7 @@ export function NewsletterForm({
             {message}
           </p>
         ) : (
+          <>
           <div className={`flex flex-col gap-2 sm:flex-row sm:gap-0 ${bare ? 'max-w-[430px]' : 'mt-6'}`}>
             <label htmlFor={`nl-${variant}`} className="sr-only">
               Email address
@@ -285,6 +302,36 @@ export function NewsletterForm({
               {state === 'sending' ? 'Sending…' : cta}
             </button>
           </div>
+
+          {/* Disclaimer acceptance — the same notice the site gates on. */}
+          <label
+            className={`mt-3 flex cursor-pointer items-start gap-2.5 text-left text-[12.5px] leading-relaxed ${
+              dark ? 'text-paper/70' : 'text-ink-soft'
+            } ${bare ? 'max-w-[430px]' : ''}`}
+          >
+            <input
+              type="checkbox"
+              checked={accepted}
+              onChange={(e) => {
+                setAccepted(e.target.checked)
+                if (state === 'error') setState('idle')
+              }}
+              aria-describedby={`nl-consent-${variant}`}
+              className="mt-[3px] h-4 w-4 shrink-0 accent-[#0073ff]"
+            />
+            <span id={`nl-consent-${variant}`}>
+              I have read and accept the{' '}
+              <Link
+                href="/disclaimer"
+                className={`underline underline-offset-4 ${dark ? 'text-paper' : 'text-accent'}`}
+              >
+                legal disclaimer
+              </Link>
+              . I understand these alerts are journalism, not investment advice, and carry no
+              recommendation to buy or sell.
+            </span>
+          </label>
+          </>
         )}
 
         {state === 'error' && (

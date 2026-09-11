@@ -52,6 +52,17 @@ export const Subscribers: CollectionConfig = {
       },
     },
     {
+      name: 'disclaimerAccepted',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Accepted the disclaimer',
+      admin: {
+        readOnly: true,
+        description:
+          'Ticked when the signup form recorded that this reader read and accepted the legal disclaimer. Keep it as the record that they did.',
+      },
+    },
+    {
       name: 'forwarded',
       type: 'checkbox',
       defaultValue: false,

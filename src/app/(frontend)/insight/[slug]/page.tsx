@@ -3,9 +3,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { getInsightBySlug, getInsights, getSettings } from '@/lib/queries'
+import { getComments, getInsightBySlug, getInsights, getSettings } from '@/lib/queries'
 import { FlowPanel, ImpactMark, TrendMark } from '@/components/flow'
 import { InsightCard } from '@/components/site'
+import { Comments } from '@/components/comments'
 import { KIND_LABEL, crore, shortDate } from '@/lib/format'
 
 // Rendered per request, cached at the edge. Keeps the build independent
@@ -48,11 +49,14 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
   if (!doc) notFound()
   const s: any = settings
 
-  const related = await getInsights({
-    sectionSlug: doc.section?.slug,
-    limit: 3,
-    excludeSlug: doc.slug,
-  })
+  const [related, comments] = await Promise.all([
+    getInsights({
+      sectionSlug: doc.section?.slug,
+      limit: 3,
+      excludeSlug: doc.slug,
+    }),
+    getComments(doc.slug),
+  ])
 
   const schema = {
     '@context': 'https://schema.org',
@@ -303,6 +307,9 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
           </ul>
         </section>
       )}
+
+      {/* ----------------------------------------------------- comments --- */}
+      <Comments slug={doc.slug} comments={comments} />
 
       <script
         type="application/ld+json"

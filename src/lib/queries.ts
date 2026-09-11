@@ -386,3 +386,37 @@ export async function getThemes(limit = 20): Promise<{ title: string; slug: stri
     return []
   }
 }
+
+/**
+ * Approved comments on one article, oldest first so a thread reads in order.
+ *
+ * Only the three fields the page actually renders come back. The address a
+ * commenter gave is for the editor, not for the internet, and the surest way
+ * to keep it off the page is never to hand it to the component.
+ */
+export async function getComments(
+  articleSlug: string,
+  limit = 100,
+): Promise<{ id: any; name: string; body: string; createdAt: string }[]> {
+  const payload = await client()
+  try {
+    const res = await payload.find({
+      collection: 'comments',
+      where: { articleSlug: { equals: articleSlug }, approved: { equals: true } },
+      sort: 'createdAt',
+      limit,
+      depth: 0,
+      overrideAccess: true,
+    })
+    return res.docs.map((c: any) => ({
+      id: c.id,
+      name: c.name,
+      body: c.body,
+      createdAt: c.createdAt,
+    }))
+  } catch {
+    // The table is missing until the migration has run. An article without a
+    // comment list still has to render.
+    return []
+  }
+}

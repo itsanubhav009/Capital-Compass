@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { ReviewDisclaimerButton } from '@/components/legal-gate'
 
 /* ------------------------------------------------ route progress bar --- */
 
@@ -252,10 +253,24 @@ export function SiteFooter({
           </div>
         </div>
 
-        {/* ------------------------------------------------- disclaimer --- */}
-        <p className="mt-14 border-t border-white/10 pt-8 text-[12.5px] leading-relaxed text-white/45">
-          {disclaimer}
-        </p>
+        {/* ------------------------------------------------- disclaimer ---
+            The same notice the site gates on, repeated here so it is always
+            one scroll away rather than something the reader clicked past
+            once and can never find again. */}
+        <div className="mt-14 border-t border-white/10 pt-8">
+          <h2 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-white/70">
+            Legal disclaimer
+          </h2>
+          <p className="mt-3 max-w-5xl text-[12.5px] leading-relaxed text-white/45">
+            {disclaimer}
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12.5px]">
+            <Link href="/disclaimer" className="text-white/70 underline underline-offset-4 hover:text-white">
+              Read the full disclaimer
+            </Link>
+            <ReviewDisclaimerButton className="text-white/70 underline underline-offset-4 transition-colors hover:text-white" />
+          </div>
+        </div>
       </div>
 
       <div className="border-t border-white/10">

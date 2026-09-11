@@ -42,6 +42,10 @@ export const SiteSettings: GlobalConfig = {
               name: 'flowTapeHeading',
               type: 'text',
               defaultValue: 'Latest institutional activity',
+              admin: {
+                description:
+                  'Not shown at the moment — the institutional activity strip is switched off on the homepage. Kept so the wording survives if it is turned back on.',
+              },
             },
             {
               name: 'showAiSearchPlaceholder',

@@ -6,6 +6,9 @@ import { SiteHeader } from '@/components/site-header'
 import { SiteFooter, RouteProgress, ScrollTop } from '@/components/site-footer'
 import { NewsletterForm, ExitIntent } from '@/components/site'
 import { Analytics, ConsentBanner } from '@/components/analytics'
+import { AdSlot } from '@/components/ad-slot'
+import { EmailAlertsButton } from '@/components/email-alerts'
+import { DisclaimerGate } from '@/components/legal-gate'
 import { ServiceWorker, InstallPrompt } from '@/components/pwa'
 import { PreviewBridge } from '@/components/preview-bridge'
 import { PreviewBar } from '@/components/preview-bar'
@@ -117,22 +120,19 @@ export default async function FrontendLayout({ children }: { children: React.Rea
           previews={previews}
           tags={tags}
           promo={
-            <a
-              href="/#newsletter"
-              className="flex h-[100px] w-full items-center justify-between gap-6 rounded-[10px] bg-bar px-8 text-white transition-colors hover:bg-bar-2"
-            >
-              <span>
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-dot">
-                  Free every Sunday
-                </span>
-                <span className="mt-0.5 block text-[16px] font-bold leading-snug">
-                  The Weekly Capital Flow Report
-                </span>
-              </span>
-              <span className="shrink-0 rounded-[4px] bg-accent px-4 py-2 text-[13px] font-semibold">
-                Subscribe
-              </span>
-            </a>
+            /* The top banner: advertising across the width of the masthead,
+               with the email-alert signup pinned to its right-hand corner.
+               Both are 100px tall so the row keeps one clean baseline. */
+            <div className="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:gap-4">
+              <AdSlot variant="leaderboard" className="flex-1" />
+              <EmailAlertsButton
+                heading={s.newsletterHeading}
+                body={s.newsletterBody}
+                cta={s.newsletterCta}
+                finePrint={s.newsletterFinePrint}
+                className="w-full sm:w-auto sm:max-w-[280px]"
+              />
+            </div>
           }
         />
 
@@ -156,6 +156,10 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         )}
 
         {preview && <PreviewBar />}
+
+        {/* Has to be accepted before the reader goes any further. Mounted
+            last so it sits above everything else on the page. */}
+        <DisclaimerGate siteName={s.siteName} disclaimer={s.articleDisclaimer} />
 
         <Analytics />
         <ConsentBanner />

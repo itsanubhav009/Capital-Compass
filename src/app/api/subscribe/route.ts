@@ -43,10 +43,14 @@ export async function POST(req: Request) {
 
   let email = ''
   let source = 'site'
+  // Whether the form recorded the reader accepting the disclaimer. Stored as
+  // the record that they did; the form is what enforces it.
+  let consent = false
   try {
     const body = await req.json()
     email = String(body.email ?? '').trim().toLowerCase()
     source = String(body.source ?? 'site')
+    consent = body.consent === true
   } catch {
     return NextResponse.json({ error: 'Malformed request.' }, { status: 400 })
   }
@@ -69,12 +73,12 @@ export async function POST(req: Request) {
       ? ((await payload.update({
           collection: 'subscribers',
           id: existing.docs[0].id,
-          data: { source },
+          data: { source, disclaimerAccepted: consent },
           overrideAccess: true,
         })) as any)
       : ((await payload.create({
           collection: 'subscribers',
-          data: { email, source, forwarded: false },
+          data: { email, source, disclaimerAccepted: consent, forwarded: false },
           overrideAccess: true,
         })) as any)
   } catch (err) {

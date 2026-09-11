@@ -12,7 +12,7 @@ const line = '1px solid var(--theme-elevation-100)'
  * once, newest first. Only two strips are tied to one type, and saying so
  * plainly is the whole point of the table.
  */
-const STRIPS: { name: string; fed: string; who: 'all' | 'one' | 'labels' }[] = [
+const STRIPS: { name: string; fed: string; who: 'all' | 'one' | 'section' | 'labels' | 'none' }[] = [
   {
     name: 'Big story and the two side columns',
     fed: 'The 11 most recent pieces, whatever type they are',
@@ -25,22 +25,34 @@ const STRIPS: { name: string; fed: string; who: 'all' | 'one' | 'labels' }[] = [
   },
   { name: 'The three round photos', fed: 'The next 3 most recent pieces', who: 'all' },
   {
-    name: 'Latest institutional activity',
-    fed: 'Smart Money Reports only — it shows the flow figures you enter',
-    who: 'one',
+    name: 'Global Macro',
+    fed: 'The 4 newest pieces filed under the Global Macro section — one large, three small',
+    who: 'section',
   },
-  { name: 'Video News', fed: 'The next 4 most recent pieces', who: 'all' },
-  { name: 'In depth', fed: 'The next 5 most recent pieces', who: 'all' },
-  { name: 'Highlight Stories', fed: 'The next 5 most recent pieces', who: 'all' },
+  { name: 'Ask the archive', fed: 'Searches everything you have published', who: 'all' },
   { name: 'Latest Stories', fed: 'The next 7 most recent pieces', who: 'all' },
-  { name: 'Sector Themes', fed: 'Theme Reports only', who: 'one' },
   { name: 'Popular News (sidebar)', fed: 'Whatever has the most views', who: 'all' },
+  { name: 'Sector Themes', fed: 'Theme Reports only', who: 'one' },
+  {
+    name: 'Ad banner (top of every page, and beside Latest Stories)',
+    fed: 'Nothing yet — reserved space for advertising',
+    who: 'none',
+  },
+]
+
+/** Sections that are built but switched off. See the comments in page.tsx. */
+const HIDDEN = [
+  ['Latest institutional activity', 'Removed. The flow-figure tape that sat above Global Macro.'],
+  ['In depth', 'Hidden until the archive is deep enough for a five-article block.'],
+  ['Highlight Stories', 'Hidden for the same reason — it repeated pieces shown higher up.'],
 ]
 
 const TAG: Record<string, { label: string; color: string }> = {
   all: { label: 'Any type', color: 'var(--theme-elevation-500)' },
   one: { label: 'One type', color: '#0073ff' },
+  section: { label: 'One section', color: '#0073ff' },
   labels: { label: 'Labels', color: '#8a6516' },
+  none: { label: 'Not content', color: 'var(--theme-elevation-400)' },
 }
 
 export default function WhereItAppears() {
@@ -120,8 +132,9 @@ export default function WhereItAppears() {
       </h4>
       <p style={{ margin: '0 0 12px', fontSize: 13.5, color: muted, maxWidth: '68ch' }}>
         Most strips take whatever is newest, regardless of type — so a Macro Note and a Wealth
-        Article compete for the same slots. Publish date decides the order. Only two strips are
-        tied to one type.
+        Article compete for the same slots. Publish date decides the order. Three strips are
+        narrower than that: Global Macro takes only what is filed under that section, Sector
+        Themes takes only Theme Reports, and the ad banners take nothing at all.
       </p>
 
       <div style={{ overflowX: 'auto' }}>
@@ -172,6 +185,38 @@ export default function WhereItAppears() {
         menu link opens.
       </p>
 
+      {/* ----------------------------------------- switched-off strips --- */}
+      <h4 style={{ margin: '26px 0 4px', fontSize: 15, color: strong }}>
+        Turned off for now
+      </h4>
+      <p style={{ margin: '0 0 12px', fontSize: 13.5, color: muted, maxWidth: '68ch' }}>
+        These strips still exist in the code and can be switched back on once there is more
+        published. Nothing you write is lost by them being off — the same articles simply appear
+        in the strips above instead.
+      </p>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13.5 }}>
+        <tbody>
+          {HIDDEN.map(([name, why]) => (
+            <tr key={name} style={{ borderTop: line }}>
+              <th
+                scope="row"
+                style={{
+                  textAlign: 'left',
+                  padding: '9px 16px 9px 0',
+                  fontWeight: 500,
+                  color: strong,
+                  whiteSpace: 'nowrap',
+                  verticalAlign: 'top',
+                }}
+              >
+                {name}
+              </th>
+              <td style={{ padding: '9px 0', color: 'var(--theme-elevation-700)' }}>{why}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
       {/* ------------------------------------------------- good to know --- */}
       <div
         style={{
@@ -193,6 +238,11 @@ export default function WhereItAppears() {
           <strong>Images are two steps.</strong> Upload to Images, then open the article and pick it
           under <em>Main image</em>. Uploading alone does not attach it to anything. Holding a link
           rather than a file? Use <em>Add from URL</em> at the top of Images.
+        </span>
+        <span>
+          <strong>Comments wait for you.</strong> Readers can comment at the foot of any article,
+          but nothing appears on the site until you tick <em>Approved</em> under Inbox &rarr;
+          Comments. The commenter&rsquo;s email address is never published.
         </span>
         <span>
           <strong>Publishing is immediate.</strong> The pages a piece appears on refresh on their
