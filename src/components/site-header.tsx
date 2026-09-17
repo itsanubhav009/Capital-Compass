@@ -9,7 +9,7 @@ type Preview = { slug: string; title: string; image?: string | null; date?: stri
 type NavChild = { title: string; slug: string }
 type NavItem = { key: string; title: string; slug?: string; children?: NavChild[] }
 type Tag = { title: string; slug: string }
-type Headline = { title: string; slug: string }
+export type Weather = { temperature: number; place: string }
 
 // Tag rail metrics, kept in step with the .tag-rail rules in globals.css.
 const GAP = 20
@@ -19,33 +19,6 @@ const LEAD_TRIM = 21 // the leading tag loses its 20px indent and 1px rule
 
 /* Paths taken from the reference markup so the glyphs are the same shapes,
    not lookalikes. */
-
-const SOCIAL = [
-  {
-    label: 'Facebook',
-    href: '#',
-    box: '0 0 320 512',
-    d: 'M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z',
-  },
-  {
-    label: 'Instagram',
-    href: '#',
-    box: '0 0 448 512',
-    d: 'M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z',
-  },
-  {
-    label: 'LinkedIn',
-    href: '#',
-    box: '0 0 448 512',
-    d: 'M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z',
-  },
-  {
-    label: 'Pinterest',
-    href: '#',
-    box: '0 0 384 512',
-    d: 'M204 6.5C101.4 6.5 0 74.9 0 185.6 0 256 39.6 296 63.6 296c9.9 0 15.6-27.6 15.6-35.4 0-9.3-23.7-29.1-23.7-67.8 0-80.4 61.2-137.4 140.4-137.4 68.1 0 118.5 38.7 118.5 109.8 0 53.1-21.3 152.7-90.3 152.7-24.9 0-46.2-18-46.2-43.8 0-37.8 26.4-74.4 26.4-113.4 0-66.2-93.9-54.2-93.9 25.8 0 16.8 2.1 35.4 9.6 50.7-13.8 59.4-42 147.9-42 209.1 0 18.9 2.7 37.5 4.5 56.4 3.4 3.8 1.7 3.4 6.9 1.5 50.4-69 48.6-82.5 71.4-172.8 12.3 23.4 44.1 36 69.3 36 106.2 0 153.9-103.5 153.9-196.8C384 71.3 298.2 6.5 204 6.5z',
-  },
-]
 
 function CalendarIcon() {
   return (
@@ -84,58 +57,6 @@ function Chevron({ open }: { open: boolean }) {
     >
       <path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z" />
     </svg>
-  )
-}
-
-/* ------------------------------------------------------- headline ticker */
-
-/**
- * The top-bar headline reel.
- *
- * One line is visible at a time; the outgoing line slides up out of a 22px
- * window while the next slides in from below, which is what the theme's
- * `.fpg-ticker-title` transition does.
- */
-function Ticker({ headlines }: { headlines: Headline[] }) {
-  const [i, setI] = useState(0)
-
-  useEffect(() => {
-    if (headlines.length < 2) return
-    const t = setInterval(() => setI((n) => (n + 1) % headlines.length), 4000)
-    return () => clearInterval(t)
-  }, [headlines.length])
-
-  if (!headlines.length) return null
-
-  const prev = (i - 1 + headlines.length) % headlines.length
-
-  return (
-    <div className="flex min-w-0 items-center lg:w-[500px] lg:shrink-0">
-      <div className="flex shrink-0 items-center gap-2">
-        <span aria-hidden className="ticker-dot" />
-        <p className="mr-[10px] border-r border-[rgba(242,242,242,0.5)] pr-[10px] text-[13px] font-medium uppercase leading-none text-[#e40101]">
-          Live News
-        </p>
-      </div>
-      <div className="ticker-window">
-        {headlines.map((h, n) => (
-          <p
-            key={h.slug}
-            className="ticker-line truncate text-[14px] font-normal leading-[22px]"
-            data-state={n === i ? 'active' : n === prev ? 'leaving' : 'idle'}
-            aria-hidden={n !== i}
-          >
-            <Link
-              href={`/insight/${h.slug}`}
-              className="block truncate text-white/85 transition-colors hover:text-white"
-              tabIndex={n === i ? 0 : -1}
-            >
-              {h.title}
-            </Link>
-          </p>
-        ))}
-      </div>
-    </div>
   )
 }
 
@@ -353,18 +274,19 @@ function NavEntry({
 export function SiteHeader({
   siteName,
   nav,
-  headlines = [],
   previews = {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   tags = [],
+  weather,
   promo,
 }: {
   siteName: string
   nav: NavItem[]
-  headlines?: Headline[]
   previews?: Record<string, Preview[]>
   /** Still accepted, currently unused — the topic rail is commented out below. */
   tags?: Tag[]
+  /** Live conditions, read on the server so the client makes no API call. */
+  weather?: Weather | null
   promo?: React.ReactNode
 }) {
   const [open, setOpen] = useState(false)
@@ -409,19 +331,19 @@ export function SiteHeader({
       <div className="bg-bar-2 text-white">
         <div className="mx-auto flex max-w-[1430px] flex-wrap items-center px-[10px]">
           <div className="flex min-w-0 flex-1 items-center gap-5 py-[10px] lg:py-0">
-            <Ticker headlines={headlines} />
-
-            {/* Weather readout. Static in the reference too. */}
-            <div className="hidden items-center gap-[10px] sm:flex">
-              <span className="text-white">
-                <CloudSunIcon />
-              </span>
-              <span className="text-[14px] font-normal text-white/85">
-                28.3
-                <sup className="ml-[2px] text-[10px]">°C</sup>
-              </span>
-              <span className="text-[14px] text-white/85">California</span>
-            </div>
+            {/* Live conditions for California, refreshed by the server. */}
+            {weather && (
+              <div className="flex items-center gap-[10px]">
+                <span className="text-white">
+                  <CloudSunIcon />
+                </span>
+                <span className="text-[14px] font-normal text-white/85">
+                  <span className="tnum">{weather.temperature.toFixed(1)}</span>
+                  <sup className="ml-[2px] text-[10px]">°C</sup>
+                </span>
+                <span className="text-[14px] text-white/85">{weather.place}</span>
+              </div>
+            )}
           </div>
 
           <div className="flex shrink-0 items-center gap-5 py-[10px] pl-[10px]">
@@ -430,22 +352,12 @@ export function SiteHeader({
               <span className="text-[12px] font-medium leading-[22px]">{today || ' '}</span>
             </div>
 
-            <span className="hidden text-[14px] text-white xl:block">Follow Us:</span>
-
-            <div className="hidden items-center gap-[15px] xl:flex">
-              {SOCIAL.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
-                  className="text-white/85 transition-colors duration-300 hover:text-accent"
-                >
-                  <svg viewBox={s.box} width="14" height="14" fill="currentColor" aria-hidden>
-                    <path d={s.d} />
-                  </svg>
-                </a>
-              ))}
-            </div>
+            <Link
+              href="/contact"
+              className="hidden text-[14px] text-white/85 transition-colors duration-300 hover:text-accent xl:block"
+            >
+              Contact us
+            </Link>
           </div>
         </div>
       </div>
@@ -467,7 +379,6 @@ export function SiteHeader({
               <span className="text-[26px] font-bold tracking-tight text-ink sm:text-[30px]">
                 {siteName}
               </span>
-              <span aria-hidden className="hidden h-2 w-2 rounded-full bg-dot sm:block" />
             </Link>
           </div>
 
@@ -570,7 +481,6 @@ export function SiteHeader({
               className="flex shrink-0 items-baseline gap-2 text-[22px] font-bold tracking-tight text-white sm:text-[26px]"
             >
               {siteName}
-              <span aria-hidden className="hidden h-2 w-2 rounded-full bg-dot sm:block" />
             </Link>
           </div>
 

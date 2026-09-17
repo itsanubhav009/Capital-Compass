@@ -40,7 +40,7 @@ const SECTIONS = [
     blurb: 'Where capital is rotating: AI, defence, renewables, infrastructure, data centres.',
   },
   {
-    title: 'Smart Money Insights',
+    title: 'Insights',
     slug: 'smart-money-insights',
     navOrder: 50,
     accent: 'deep',

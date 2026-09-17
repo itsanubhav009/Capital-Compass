@@ -10,7 +10,6 @@ export type Slide = {
   category: string
   title: string
   byline?: string | null
-  views?: number | null
   date?: string
   image?: string | null
   alt?: string
@@ -124,7 +123,7 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
                 </Link>
               </h3>
               <div className="mt-4">
-                <Meta byline={s.byline} views={s.views} date={s.date} light />
+                <Meta byline={s.byline} date={s.date} light />
               </div>
             </div>
           </div>

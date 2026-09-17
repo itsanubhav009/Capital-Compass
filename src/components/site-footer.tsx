@@ -107,14 +107,7 @@ export function ScrollTop() {
 
 /* ------------------------------------------------------------ footer --- */
 
-const SOCIAL = [
-  { label: 'Facebook', href: '#', d: 'M13 10h3l.5-3H13V5.5c0-.9.3-1.5 1.6-1.5H16.6V1.3C16.3 1.2 15.2 1 14 1c-2.5 0-4 1.5-4 4.3V7H7v3h3v8h3v-8z' },
-  { label: 'Instagram', href: '#', d: 'M10 2.7c2.4 0 2.7 0 3.6.05.9.04 1.4.2 1.7.32.43.17.74.37 1.06.7.32.31.52.62.69 1.05.12.31.28.8.32 1.7.04.9.05 1.2.05 3.5s0 2.6-.05 3.5c-.04.9-.2 1.4-.32 1.7-.17.43-.37.74-.7 1.06-.31.32-.62.52-1.05.69-.31.12-.8.28-1.7.32-.9.04-1.2.05-3.6.05s-2.7 0-3.6-.05c-.9-.04-1.4-.2-1.7-.32a2.9 2.9 0 01-1.06-.7 2.9 2.9 0 01-.69-1.05c-.12-.31-.28-.8-.32-1.7C2.7 12.6 2.7 12.3 2.7 10s0-2.6.05-3.5c.04-.9.2-1.4.32-1.7.17-.43.37-.74.7-1.06.31-.32.62-.52 1.05-.69.31-.12.8-.28 1.7-.32.9-.04 1.2-.05 3.5-.05zM10 6.3a3.7 3.7 0 100 7.4 3.7 3.7 0 000-7.4zm0 6.1a2.4 2.4 0 110-4.8 2.4 2.4 0 010 4.8zm4.7-6.2a.86.86 0 11-1.7 0 .86.86 0 011.7 0z' },
-  { label: 'LinkedIn', href: '#', d: 'M5.4 17H2.6V7.8h2.8V17zM4 6.6a1.6 1.6 0 110-3.3 1.6 1.6 0 010 3.3zM17.4 17h-2.8v-4.5c0-1.07-.02-2.44-1.5-2.44-1.5 0-1.73 1.16-1.73 2.36V17H8.6V7.8h2.68v1.26h.04c.37-.7 1.28-1.45 2.64-1.45 2.82 0 3.44 1.86 3.44 4.28V17z' },
-  { label: 'X', href: '#', d: 'M14.9 2h2.6l-5.7 6.5L18.5 18h-5.2l-4.1-5.4L4.5 18H1.9l6.1-7L1.5 2h5.3l3.7 4.9L14.9 2zm-.9 14.4h1.4L6.1 3.5H4.6l9.4 12.9z' },
-]
-
-type Recent = { slug: string; title: string; image?: string | null; views?: number | null }
+type Recent = { slug: string; title: string; image?: string | null }
 
 function FooterHead({ children }: { children: React.ReactNode }) {
   return (
@@ -157,20 +150,17 @@ export function SiteFooter({
               {blurb ??
                 'We track where large investors actually put their money, and explain why in plain English. No tips, no target prices.'}
             </p>
-            <div className="mt-7 flex gap-2.5">
-              {SOCIAL.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
-                  className="grid h-10 w-10 place-items-center border border-white/15 text-white/70 transition-colors hover:border-accent hover:bg-accent hover:text-white"
-                >
-                  <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden>
-                    <path d={s.d} />
-                  </svg>
-                </a>
-              ))}
-            </div>
+            {/* Social accounts removed — the contact page is the one route
+                for questions, so there is nothing to point at yet. */}
+            <Link
+              href="/contact"
+              className="mt-7 inline-flex items-center gap-2 border border-white/15 px-4 py-2.5 text-[14px] text-white/80 transition-colors hover:border-accent hover:bg-accent hover:text-white"
+            >
+              Get in touch
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden>
+                <path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z" />
+              </svg>
+            </Link>
           </div>
 
           {/* ----------------------------------------------- sections --- */}
@@ -225,9 +215,6 @@ export function SiteFooter({
                       <span className="line-clamp-2 text-[15px] font-semibold leading-snug text-white/90 transition-colors group-hover:text-accent-soft">
                         {r.title}
                       </span>
-                      {typeof r.views === 'number' && (
-                        <span className="tnum mt-1.5 block text-[12px] text-white/45">{r.views} views</span>
-                      )}
                     </span>
                   </Link>
                 </li>

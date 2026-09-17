@@ -56,7 +56,7 @@ export function EmailAlertsButton({
         onClick={() => setOpen(true)}
         className={`flex h-[100px] shrink-0 flex-col justify-center gap-1 rounded-[10px] bg-bar px-5 text-left text-white transition-colors hover:bg-bar-2 ${className}`}
       >
-        <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-dot">
+        <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-white/70">
           <BellIcon />
           Email alerts
         </span>

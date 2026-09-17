@@ -3,29 +3,20 @@ import Image from 'next/image'
 
 /* -------------------------------------------------------------- view icon */
 
-function PulseIcon() {
-  return (
-    <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden>
-      <path
-        d="M1 10h3.2l2-5.5 3.4 11L12.6 10H19"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
+/**
+ * Byline and date under a headline.
+ *
+ * View counts used to sit here. They are a newsroom metric, not something a
+ * reader needs, and showing them on a young archive mostly advertises low
+ * numbers. Counting continues — the figure is on each article in the admin,
+ * for whoever wrote it.
+ */
 export function Meta({
   byline,
-  views,
   date,
   light = false,
 }: {
   byline?: string | null
-  views?: number | null
   date?: string
   light?: boolean
 }) {
@@ -33,12 +24,6 @@ export function Meta({
   return (
     <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-[13.5px] ${tone}`}>
       {byline && <span className="whitespace-nowrap">By {byline}</span>}
-      {typeof views === 'number' && (
-        <span className="flex items-center gap-1.5 whitespace-nowrap">
-          <PulseIcon />
-          <span className="tnum">{views.toLocaleString('en-IN')}</span> Views
-        </span>
-      )}
       {date && (
         <span className="flex items-center gap-1.5 whitespace-nowrap">
           <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
@@ -120,14 +105,12 @@ export function ListRow({
   category,
   title,
   byline,
-  views,
   media,
 }: {
   href: string
   category: string
   title: string
   byline?: string | null
-  views?: number | null
   media?: any
 }) {
   const image = img(media, 'thumb')
@@ -173,7 +156,7 @@ export function ListRow({
             {words(title, 6)}
           </Link>
         </h6>
-        <Meta byline={byline} views={views} />
+        <Meta byline={byline} />
       </div>
     </article>
   )
@@ -186,7 +169,6 @@ export function HeroCard({
   category,
   title,
   byline,
-  views,
   date,
   media,
 }: {
@@ -194,7 +176,6 @@ export function HeroCard({
   category: string
   title: string
   byline?: string | null
-  views?: number | null
   date?: string
   media?: any
 }) {
@@ -230,7 +211,7 @@ export function HeroCard({
           </Link>
         </h3>
         <div className="mt-4">
-          <Meta byline={byline} views={views} date={date} light />
+          <Meta byline={byline} date={date} light />
         </div>
       </div>
     </article>
@@ -245,7 +226,6 @@ export function StackCard({
   title,
   standfirst,
   byline,
-  views,
   date,
   media,
   dark = false,
@@ -255,7 +235,6 @@ export function StackCard({
   title: string
   standfirst?: string | null
   byline?: string | null
-  views?: number | null
   date?: string
   media?: any
   dark?: boolean
@@ -312,7 +291,7 @@ export function StackCard({
           </p>
         )}
         <div className="mt-3">
-          <Meta byline={byline} views={views} date={date} light={dark} />
+          <Meta byline={byline} date={date} light={dark} />
         </div>
       </div>
     </article>

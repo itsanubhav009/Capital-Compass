@@ -17,7 +17,6 @@ import { Band, ListRow, StackCard } from '@/components/cards'
 import {
   BigGroup,
   // CategoryTiles,
-  FollowCards,
   Head,
   LatestStories,
   Panel,
@@ -122,7 +121,6 @@ export default async function Homepage() {
                   category={cat(d)}
                   title={d.title}
                   byline={s.siteName}
-                  views={d.views ?? 0}
                   media={d.featuredImage}
                 />
               ))}
@@ -135,7 +133,6 @@ export default async function Homepage() {
                   category: cat(d),
                   title: heroTitle(d.title),
                   byline: s.siteName,
-                  views: d.views ?? 0,
                   date: shortDate(d.publishedAt),
                   image: d.featuredImage?.sizes?.wide?.url ?? d.featuredImage?.url ?? null,
                 }))}
@@ -150,7 +147,6 @@ export default async function Homepage() {
                   category={cat(d)}
                   title={d.title}
                   byline={s.siteName}
-                  views={d.views ?? 0}
                   media={d.featuredImage}
                 />
               ))}
@@ -219,7 +215,6 @@ export default async function Homepage() {
                   title={d.title}
                   standfirst={d.standfirst}
                   byline={byline}
-                  views={d.views ?? 0}
                   date={shortDate(d.publishedAt)}
                   media={d.featuredImage}
                 />
@@ -240,10 +235,6 @@ export default async function Homepage() {
                   <PopularList items={popular.map(withMeta)} />
                 </Panel>
               )}
-
-              <Panel title="Follow Us">
-                <FollowCards />
-              </Panel>
             </Reveal>
           </div>
         </Band>
@@ -267,7 +258,6 @@ export default async function Homepage() {
                 category: cat(d),
                 title: d.title,
                 byline,
-                views: d.views ?? 0,
                 date: shortDate(d.publishedAt),
                 image: pic(d),
               }))}
@@ -318,10 +308,6 @@ export default async function Homepage() {
                   <PopularList items={popular.map(withMeta)} />
                 </Panel>
               )}
-
-              <Panel title="Follow Us">
-                <FollowCards />
-              </Panel>
             </Reveal>
           </div>
         </Band>
@@ -341,7 +327,6 @@ export default async function Homepage() {
                   title={t.title}
                   standfirst={t.standfirst}
                   byline={s.siteName}
-                  views={t.views ?? 0}
                   date={shortDate(t.publishedAt)}
                   media={t.featuredImage}
                 />

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
-import { Inter_Tight, IBM_Plex_Mono } from 'next/font/google'
+import { Inter, Newsreader } from 'next/font/google'
 import { getSettings, isPreview } from '@/lib/queries'
 import { getNavData } from '@/lib/nav-data'
+import { getWeather } from '@/lib/weather'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter, RouteProgress, ScrollTop } from '@/components/site-footer'
 import { NewsletterForm, ExitIntent } from '@/components/site'
@@ -14,20 +15,31 @@ import { PreviewBridge } from '@/components/preview-bridge'
 import { PreviewBar } from '@/components/preview-bar'
 import './globals.css'
 
-const sans = Inter_Tight({
+/**
+ * Headlines are Newsreader; everything else is Inter.
+ *
+ * Newsreader carries an optical-size axis, so the same file works at a 42px
+ * hero and an 18px card headline without looking like two different faces.
+ *
+ * There is no third face any more: figures used to be IBM Plex Mono, which
+ * put a third voice on a page that only needs two. Inter's tabular figures
+ * line up in columns just as well, so `.tnum` now asks Inter for them.
+ */
+const display = Newsreader({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-newsreader',
+  fallback: ['Georgia', 'ui-serif', 'serif'],
+})
+
+const sans = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   display: 'swap',
-  variable: '--font-inter-tight',
+  variable: '--font-inter',
   fallback: ['system-ui', 'sans-serif'],
-})
-
-const mono = IBM_Plex_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  display: 'swap',
-  variable: '--font-plex-mono',
-  fallback: ['ui-monospace', 'monospace'],
 })
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
@@ -77,7 +89,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
-  const [settings, nav, preview] = await Promise.all([getSettings(), getNavData(), isPreview()])
+  const [settings, nav, preview, weather] = await Promise.all([
+    getSettings(),
+    getNavData(),
+    isPreview(),
+    getWeather(),
+  ])
   const s: any = settings
   const { sections, nav: navTree, previews, recent, headlines, tags } = nav
 
@@ -98,7 +115,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
   }
 
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+    <html lang="en" className={`${sans.variable} ${display.variable}`}>
       <body>
         <a
           href="#main"
@@ -116,9 +133,9 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         <SiteHeader
           siteName={s.siteName}
           nav={navTree}
-          headlines={headlines}
           previews={previews}
           tags={tags}
+          weather={weather}
           promo={
             /* The top banner: advertising across the width of the masthead,
                with the email-alert signup pinned to its right-hand corner.

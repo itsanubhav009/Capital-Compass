@@ -12,7 +12,7 @@ export function PreviewBar() {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] flex justify-center p-3 print:hidden">
       <div className="pointer-events-auto flex items-center gap-3 rounded-full bg-ink px-4 py-2 text-[13px] text-white shadow-[0_6px_24px_rgba(0,0,0,0.25)]">
-        <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-dot" />
+        <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-accent" />
         Draft preview — includes unpublished changes
         <Link
           href="/api/exit-preview"

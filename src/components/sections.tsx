@@ -186,7 +186,7 @@ export function RoundStrip({
                         {words(d.title, 8)}
                       </Link>
                     </h6>
-                    <Meta byline={d.byline} views={d.views} light />
+                    <Meta byline={d.byline} light />
                   </div>
                 </article>
               </li>
@@ -207,7 +207,6 @@ export function WideRow({
   title,
   standfirst,
   byline,
-  views,
   date,
   media,
 }: {
@@ -216,7 +215,6 @@ export function WideRow({
   title: string
   standfirst?: string | null
   byline?: string | null
-  views?: number | null
   date?: string
   media?: any
 }) {
@@ -249,7 +247,7 @@ export function WideRow({
         {standfirst && (
           <p className="mb-4 line-clamp-2 text-[16px] leading-[1.65] text-ink-soft">{standfirst}</p>
         )}
-        <Meta byline={byline} views={views} date={date} />
+        <Meta byline={byline} date={date} />
       </div>
     </article>
   )
@@ -293,89 +291,13 @@ export function PopularList({ items }: { items: any[] }) {
                     {words(d.title, 8)}
                   </Link>
                 </h6>
-                <Meta byline={d.byline} views={d.views} />
+                <Meta byline={d.byline} />
               </div>
             </article>
           </li>
         )
       })}
     </ul>
-  )
-}
-
-/* ------------------------------------------------------------ follow us */
-
-const FOLLOW = [
-  {
-    label: 'Facebook',
-    sub: 'Company page',
-    bg: '#2264cb',
-    box: '0 0 320 512',
-    d: 'M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z',
-  },
-  {
-    label: 'Twitter - X',
-    sub: 'Daily flow notes',
-    bg: '#121213',
-    box: '0 0 512 512',
-    d: 'M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z',
-  },
-  {
-    label: 'LinkedIn',
-    sub: 'Long-form posts',
-    bg: '#2c7bb6',
-    box: '0 0 448 512',
-    d: 'M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z',
-  },
-  {
-    label: 'Pinterest',
-    sub: 'Chart boards',
-    bg: '#af091c',
-    box: '0 0 384 512',
-    d: 'M204 6.5C101.4 6.5 0 74.9 0 185.6 0 256 39.6 296 63.6 296c9.9 0 15.6-27.6 15.6-35.4 0-9.3-23.7-29.1-23.7-67.8 0-80.4 61.2-137.4 140.4-137.4 68.1 0 118.5 38.7 118.5 109.8 0 53.1-21.3 152.7-90.3 152.7-24.9 0-46.2-18-46.2-43.8 0-37.8 26.4-74.4 26.4-113.4 0-66.2-93.9-54.2-93.9 25.8 0 16.8 2.1 35.4 9.6 50.7-13.8 59.4-42 147.9-42 209.1 0 18.9 2.7 37.5 4.5 56.4 3.4 3.8 1.7 3.4 6.9 1.5 50.4-69 48.6-82.5 71.4-172.8 12.3 23.4 44.1 36 69.3 36 106.2 0 153.9-103.5 153.9-196.8C384 71.3 298.2 6.5 204 6.5z',
-  },
-  {
-    label: 'Instagram',
-    sub: 'Weekly charts',
-    bg: '#c1338a',
-    box: '0 0 448 512',
-    d: 'M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z',
-  },
-  {
-    label: 'RSS',
-    sub: 'Every new piece',
-    bg: '#e07b39',
-    box: '0 0 448 512',
-    d: 'M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.672 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z',
-  },
-]
-
-export function FollowCards() {
-  return (
-    <div className="flex flex-wrap items-start justify-between gap-2.5">
-      {FOLLOW.map((s) => (
-        <a
-          key={s.label}
-          href="#"
-          className="relative flex min-w-[calc(50%-5px)] flex-1 items-start gap-3 rounded-[6px] pb-[30px] pl-5 pr-3 pt-2.5 text-white transition-opacity hover:opacity-90"
-          style={{ background: s.bg }}
-        >
-          <span className="mt-1 flex h-[22px] w-[20px] shrink-0 items-start justify-start">
-            <svg viewBox={s.box} width="20" height="20" fill="currentColor" aria-hidden>
-              <path d={s.d} />
-            </svg>
-          </span>
-          <span className="min-w-0">
-            <span className="block text-[16px] font-semibold leading-tight xl:text-[18px]">
-              {s.label}
-            </span>
-            <span className="absolute left-[50px] top-[35px] text-[13px] text-white/85 xl:text-[14px]">
-              {s.sub}
-            </span>
-          </span>
-        </a>
-      ))}
-    </div>
   )
 }
 
@@ -491,7 +413,7 @@ export function LatestStories({
             </Link>
           </h3>
           <div className="mt-4">
-            <Meta byline={featured.byline} views={featured.views} />
+            <Meta byline={featured.byline} />
           </div>
           {featured.standfirst && (
             <p className="mt-6 line-clamp-3 text-[16px] leading-[1.65] text-ink-soft">
@@ -527,7 +449,7 @@ export function LatestStories({
                   {words(d.title, 7)}
                 </Link>
               </h6>
-              <Meta byline={d.byline} views={d.views} />
+              <Meta byline={d.byline} />
             </article>
           ))}
         </div>
@@ -565,7 +487,7 @@ export function LatestStories({
                         {words(d.title, 7)}
                       </Link>
                     </h6>
-                    <Meta byline={d.byline} views={d.views} />
+                    <Meta byline={d.byline} />
                   </div>
                 </article>
               </li>
@@ -628,7 +550,7 @@ export function BigGroup({ lead, rest }: { lead: any; rest: any[] }) {
             </Link>
           </h3>
           <div className="mt-4">
-            <Meta byline={lead.byline} views={lead.views} date={lead.date} light />
+            <Meta byline={lead.byline} date={lead.date} light />
           </div>
         </div>
       </article>
@@ -668,7 +590,7 @@ export function BigGroup({ lead, rest }: { lead: any; rest: any[] }) {
                     {words(d.title, 6)}
                   </Link>
                 </h6>
-                <Meta byline={d.byline} views={d.views} light />
+                <Meta byline={d.byline} light />
               </div>
             </article>
           )

@@ -67,7 +67,6 @@ export function Preloader({ siteName = 'Capital Compass' }: { siteName?: string 
             />
           </svg>
           <span className="absolute inset-0 grid place-items-center">
-            <span className="block h-2 w-2 rounded-full bg-dot" />
           </span>
         </div>
         <span className="text-[15px] font-bold tracking-tight text-ink">{siteName}</span>
