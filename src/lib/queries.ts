@@ -167,21 +167,6 @@ export async function getSettings() {
   return payload.findGlobal({ slug: 'site-settings', depth: 1 })
 }
 
-/** Most recent flow figures, for the homepage tape. */
-export async function getFlowTape(limit = 6) {
-  const payload = await client()
-  const preview = await isPreview()
-  const res = await payload.find({
-    collection: 'smart-money-reports',
-    where: { ...statusFilter(preview) },
-    sort: '-publishedAt',
-    limit,
-    depth: 1,
-    draft: preview,
-  })
-  return res.docs
-}
-
 export async function getMacroSnapshot(limit = 4) {
   const payload = await client()
   const preview = await isPreview()

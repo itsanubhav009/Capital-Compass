@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import {
-  // getFlowTape — the "Latest institutional activity" tape is switched off.
   // See the commented block further down before deleting this import.
-  // getFlowTape,
   getInsights,
   getPopular,
   // getSectionTiles — fed the "Explore Categories" panel in the right-hand
@@ -12,7 +10,6 @@ import {
   getSectorThemes,
   getSettings,
 } from '@/lib/queries'
-// import { FlowTape } from '@/components/flow'
 import { Band, ListRow, StackCard } from '@/components/cards'
 import {
   BigGroup,
@@ -47,7 +44,6 @@ const heroTitle = (t: string) => {
 export default async function Homepage() {
   const [settings, themes, latest, macro, popular, browse] = await Promise.all([
     getSettings(),
-    // getFlowTape(6),
     getSectorThemes(4),
     getInsights({ limit: 36 }),
     // The Global Macro block is fed from the Global Macro section itself
@@ -168,15 +164,7 @@ export default async function Homepage() {
       {/* ------------------------------------------- in focus strip --- */}
       <RoundStrip backdrop={backdrop} items={strip.map(withMeta)} />
 
-      {/* --------------------------------- institutional activity ---
-          Removed on request. The tape of latest institutional activity used
-          to sit here, between the in-focus strip and Global Macro. To bring
-          it back, restore the getFlowTape import and query above and
-          uncomment this:
 
-      <FlowTape heading={s.flowTapeHeading} rows={tape} />
-
-          ------------------------------------------------------------- */}
 
       {/* ------------------------------------------- global macro ---
           Was "Video News". Same shape — one large picture with the headline

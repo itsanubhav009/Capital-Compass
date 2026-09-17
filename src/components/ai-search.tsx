@@ -150,7 +150,7 @@ export function AiSearch() {
           )}
 
           <p className="mt-4 border-t border-rule pt-3 text-[12px] leading-relaxed text-ink-faint">
-            Answers are generated from published Capital Compass articles and may contain
+            Answers are generated from published SmartMoney articles and may contain
             errors. This is not investment advice. Check the sources above before relying on
             anything here.
           </p>

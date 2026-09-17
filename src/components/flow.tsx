@@ -63,55 +63,6 @@ export function FlowBar({
   )
 }
 
-/**
- * Homepage strip of latest institutional activity.
- *
- * Static grid, not an auto-scrolling ticker: the brief bans tickers, and a
- * moving strip is the single worst thing you can do to a Cumulative Layout
- * Shift score. Styled with the same Head as every other block so it
- * does not read as a different design.
- */
-export function FlowTape({ heading, rows }: { heading: string; rows: any[] }) {
-  if (!rows?.length) return null
-
-  return (
-    <section aria-labelledby="flow-tape" className="border-y border-rule bg-white">
-      <div className="mx-auto max-w-[1430px] px-[10px] py-[50px] sm:px-5">
-        <Head id="flow-tape" title={heading} href="/capital-flow-india" />
-
-        <ul className="grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
-          {rows.map((r) => {
-            const net = r.flows?.fii ?? 0
-            const tone = TONE[direction(net)]
-            return (
-              <li key={r.id} className="border-t border-rule pt-4">
-                <Link href={`/insight/${r.slug}`} className="group block">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="tnum text-[14px] font-semibold tracking-wide text-ink transition-colors group-hover:text-accent">
-                      {r.ticker || r.stockName}
-                    </span>
-                    <span className={`tnum text-[15px] font-bold ${tone.text}`}>{signed(net)}</span>
-                  </div>
-
-                  {/* showValue false: the figure is already on the row above. */}
-                  <FlowBar label="" value={net} compact showValue={false} />
-
-                  <div className="mt-2 flex items-baseline justify-between gap-3">
-                    <span className="text-[12.5px] text-ink-soft">{flowWord(net)}</span>
-                    <span className="tnum text-[12px] text-ink-faint">
-                      {r.marketCapCr ? crore(r.marketCapCr) : r.marketCapBand}
-                    </span>
-                  </div>
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
-    </section>
-  )
-}
-
 const IMPACT = {
   positive: { mark: '▲', tone: 'text-inflow', word: 'Supportive' },
   neutral: { mark: '■', tone: 'text-ink-faint', word: 'Neutral' },

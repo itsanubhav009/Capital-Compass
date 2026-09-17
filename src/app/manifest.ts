@@ -6,7 +6,7 @@ import type { MetadataRoute } from 'next'
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Capital Compass',
+    name: 'SmartMoney',
     short_name: 'Compass',
     description:
       'Institutional flow analysis for HNI and NRI investors. Where the money actually went.',

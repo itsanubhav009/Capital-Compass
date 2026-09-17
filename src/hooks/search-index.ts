@@ -25,7 +25,6 @@ export const indexOnChange: CollectionAfterChangeHook = async ({
       const body = doc.body ?? doc.commentary ?? doc.outlook
       const parts = [
         doc.standfirst,
-        doc.aiSummary,
         doc.summary,
         doc.impactNote,
         body ? lexicalToText(body) : '',

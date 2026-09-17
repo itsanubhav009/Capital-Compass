@@ -39,15 +39,6 @@ export const SiteSettings: GlobalConfig = {
                 'No tips, no target prices, no calls. Foreign institutions, domestic funds and promoters leave a paper trail every week. We read it, check it, and write up what changed — so you can form your own view in ten minutes rather than an afternoon.',
             },
             {
-              name: 'flowTapeHeading',
-              type: 'text',
-              defaultValue: 'Latest institutional activity',
-              admin: {
-                description:
-                  'Not shown at the moment — the institutional activity strip is switched off on the homepage. Kept so the wording survives if it is turned back on.',
-              },
-            },
-            {
               name: 'showAiSearchPlaceholder',
               type: 'checkbox',
               defaultValue: true,
@@ -94,22 +85,15 @@ export const SiteSettings: GlobalConfig = {
               type: 'textarea',
               required: true,
               defaultValue:
-                'Capital Compass publishes financial journalism, not investment advice. Nothing here is a recommendation to buy or sell any security. Flow indicators describe observed institutional activity over a stated period; they are not ratings and carry no view on future prices. Do your own research or speak to a registered adviser.',
+                'SmartMoney publishes financial journalism, not investment advice. Nothing here is a recommendation to buy or sell any security. Flow indicators describe observed institutional activity over a stated period; they are not ratings and carry no view on future prices. Do your own research or speak to a registered adviser.',
             },
-            {
-              name: 'flowIndicatorExplainer',
-              type: 'textarea',
-              required: true,
-              defaultValue:
-                'Flow indicators run from -100 to +100 and show net direction of activity over the stated period. A positive figure means net buying was observed. It is not a score, a rating, or a forecast.',
-            },
-            { name: 'footerLegalName', type: 'text', defaultValue: 'Capital Compass' },
+            { name: 'footerLegalName', type: 'text', defaultValue: 'SmartMoney' },
           ],
         },
         {
           label: 'Brand & SEO',
           fields: [
-            { name: 'siteName', type: 'text', required: true, defaultValue: 'Capital Compass' },
+            { name: 'siteName', type: 'text', required: true, defaultValue: 'SmartMoney' },
             {
               name: 'tagline',
               type: 'text',

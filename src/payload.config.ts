@@ -66,7 +66,7 @@ export default buildConfig({
     // Sidebar order. Payload lists groups in the order their collections are
     // registered, so this is set by the `collections` array below rather than
     // here — the grouping is: Content, Library, Taxonomy, Inbox, Settings.
-    meta: { titleSuffix: ' · Capital Compass' },
+    meta: { titleSuffix: ' · SmartMoney' },
     components: {
       beforeDashboard: ['/admin/WhereItAppears#default'],
     },
@@ -126,9 +126,9 @@ export default buildConfig({
     seoPlugin({
       collections: [...CONTENT_COLLECTIONS, 'pages'],
       uploadsCollection: 'media',
-      generateTitle: ({ doc }) => `${doc?.title} · Capital Compass`,
+      generateTitle: ({ doc }) => `${doc?.title} · SmartMoney`,
       generateDescription: ({ doc }) =>
-        doc?.standfirst || doc?.summary || doc?.aiSummary || '',
+        doc?.standfirst || doc?.summary || '',
       generateURL: ({ doc, collectionSlug }) =>
         collectionSlug === 'pages'
           ? `${process.env.NEXT_PUBLIC_SITE_URL}/${doc?.slug}`
@@ -173,7 +173,7 @@ export default buildConfig({
     ? {
         email: nodemailerAdapter({
           defaultFromAddress: process.env.EMAIL_FROM || 'noreply@capitalcompass.com',
-          defaultFromName: 'Capital Compass',
+          defaultFromName: 'SmartMoney',
           transportOptions: {
             host: process.env.SMTP_HOST,
             port: Number(process.env.SMTP_PORT || 587),

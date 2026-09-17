@@ -25,7 +25,7 @@ export async function generateMetadata({
   if (!doc) return {}
 
   const description =
-    doc.meta?.description || doc.standfirst || doc.aiSummary || doc.summary || undefined
+    doc.meta?.description || doc.standfirst || doc.summary || undefined
   const image = doc.meta?.image?.url ?? doc.featuredImage?.sizes?.og?.url ?? doc.featuredImage?.url
 
   return {
@@ -62,7 +62,7 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
     '@context': 'https://schema.org',
     '@type': 'AnalysisNewsArticle',
     headline: doc.title,
-    description: doc.standfirst ?? doc.aiSummary ?? doc.summary ?? '',
+    description: doc.standfirst ?? doc.summary ?? '',
     datePublished: doc.publishedAt,
     dateModified: doc.updatedAt ?? doc.publishedAt,
     mainEntityOfPage: `${SITE}/insight/${doc.slug}`,
@@ -141,14 +141,6 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
             </figure>
           )}
 
-          {(doc.aiSummary || doc.summary) && (
-            <div className="mb-9 border-l-2 border-brass bg-sunken/60 py-4 pl-5 pr-4">
-              <h2 className="eyebrow">In short</h2>
-              <p className="mt-2 text-[16px] leading-relaxed text-ink">
-                {doc.aiSummary ?? doc.summary}
-              </p>
-            </div>
-          )}
 
           {/* Macro impact marker */}
           {doc.impact && (
@@ -258,7 +250,7 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
       {related.docs.length > 0 && (
         <section className="border-t border-rule py-12" aria-labelledby="related">
           <h2 id="related" className="eyebrow">
-            More from {doc.section?.title ?? 'Capital Compass'}
+            More from {doc.section?.title ?? 'SmartMoney'}
           </h2>
           <ul className="mt-6 grid gap-x-10 gap-y-8 sm:grid-cols-3">
             {related.docs.map((d) => (

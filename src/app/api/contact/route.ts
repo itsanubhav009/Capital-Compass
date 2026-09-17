@@ -99,7 +99,7 @@ export async function POST(req: Request) {
             message,
             '',
             '--',
-            'Sent from the Capital Compass contact form.',
+            'Sent from the SmartMoney contact form.',
           ].join('\n'),
         })
       } else {

@@ -80,7 +80,7 @@ export function InstallPrompt() {
   return (
     <div
       role="dialog"
-      aria-label="Install Capital Compass"
+      aria-label="Install SmartMoney"
       className="fixed inset-x-3 bottom-3 z-50 border border-rule bg-surface p-4 shadow-[0_2px_16px_rgba(16,26,36,0.10)] sm:left-auto sm:right-5 sm:bottom-5 sm:max-w-sm"
     >
       <div className="flex items-start gap-3">
@@ -93,7 +93,7 @@ export function InstallPrompt() {
         />
         <div className="min-w-0">
           <p className="font-display text-[17px] leading-snug text-ink">
-            Add Capital Compass to your home screen
+            Add SmartMoney to your home screen
           </p>
           <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">
             Opens like an app, and recent articles stay readable without a connection.

@@ -3,7 +3,6 @@ import { previewOptions } from '../fields/preview'
 import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate'
 import {
   chartsField,
-  flowScore,
   heroFields,
   publishingFields,
   referencesField,
@@ -101,65 +100,9 @@ export const SmartMoneyReports: CollectionConfig = {
         },
 
         {
-          label: 'Flow indicators',
-          description:
-            'Signed figures from -100 (heavy net selling) through 0 (flat) to +100 (heavy net buying). These describe observed activity. They are not ratings, scores out of ten, or recommendations, and the template labels them accordingly.',
-          fields: [
-            {
-              name: 'flows',
-              type: 'group',
-              label: false,
-              fields: [
-                {
-                  type: 'row',
-                  fields: [
-                    flowScore('fii', 'FII flow', 'Foreign institutional net direction.'),
-                    flowScore('dii', 'DII flow', 'Domestic institutional net direction.'),
-                    flowScore('promoter', 'Promoter flow', 'Promoter net direction.'),
-                  ],
-                },
-                {
-                  type: 'row',
-                  fields: [
-                    flowScore('technical', 'Technical trend', 'Price/volume trend direction.'),
-                    flowScore('fundamental', 'Fundamental trend', 'Earnings trend direction.'),
-                  ],
-                },
-                {
-                  name: 'asOf',
-                  type: 'date',
-                  label: 'Figures as of',
-                  admin: {
-                    date: { pickerAppearance: 'dayOnly' },
-                    description: 'Shown next to the flow panel so readers know how fresh it is.',
-                  },
-                },
-                {
-                  name: 'basis',
-                  type: 'text',
-                  label: 'Measured over',
-                  defaultValue: 'Trailing 4 weeks',
-                  admin: { description: 'e.g. "Trailing 4 weeks", "Q2 FY26 shareholding".' },
-                },
-              ],
-            },
-          ],
-        },
-
-        {
           label: 'The write-up',
           fields: [
             ...heroFields(),
-            {
-              name: 'aiSummary',
-              type: 'textarea',
-              label: 'Summary',
-              maxLength: 700,
-              admin: {
-                description:
-                  'Three or four sentences a reader could take away on their own. Plain language, no calls.',
-              },
-            },
             { name: 'body', type: 'richText', required: true },
             chartsField(),
             referencesField(),

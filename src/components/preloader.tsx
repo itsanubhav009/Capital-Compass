@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react'
  * bar covers those), and it hides itself after 2s regardless of load state so
  * a slow connection can never trap someone behind a spinner.
  */
-export function Preloader({ siteName = 'Capital Compass' }: { siteName?: string }) {
+export function Preloader({ siteName = 'SmartMoney' }: { siteName?: string }) {
   const [done, setDone] = useState(false)
   const [mounted, setMounted] = useState(false)
 

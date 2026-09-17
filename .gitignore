@@ -13,3 +13,6 @@ FIX.sh
 
 # Reference archive of the Nerio theme; 19MB, kept locally only.
 *.mhtml
+
+# Field exports taken before schema changes — keep locally, not in the repo.
+backups/
