@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getComments, getInsightBySlug, getInsights, getSettings } from '@/lib/queries'
-import { FlowPanel, ImpactMark, TrendMark } from '@/components/flow'
+import { ImpactMark, TrendMark } from '@/components/flow'
 import { InsightCard } from '@/components/site'
 import { Comments } from '@/components/comments'
 import { KIND_LABEL, crore, shortDate } from '@/lib/format'
@@ -118,7 +118,7 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
         </div>
       </header>
 
-      <div className="grid gap-10 py-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-14">
+      <div className="py-10">
         {/* --------------------------------------------------- the body --- */}
         <div className="min-w-0">
           {doc.featuredImage?.url && (
@@ -251,36 +251,6 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
           <p className="mt-12 border-t border-rule pt-6 text-[12px] leading-relaxed text-ink-faint">
             {s.articleDisclaimer}
           </p>
-        </div>
-
-        {/* ------------------------------------------------------ rail --- */}
-        <div className="lg:sticky lg:top-24 lg:self-start">
-          {isReport && (
-            <>
-              <div className="mb-6 border border-rule bg-surface p-5">
-                <h2 className="eyebrow !text-deep">The company</h2>
-                <dl className="mt-3 divide-y divide-rule text-[13px]">
-                  {[
-                    ['Name', doc.stockName],
-                    ['Ticker', doc.ticker],
-                    ['Exchange', doc.exchange],
-                    ['Sector', doc.sector?.title],
-                    ['Band', doc.marketCapBand],
-                    ['Market cap', doc.marketCapCr ? crore(doc.marketCapCr) : null],
-                  ]
-                    .filter(([, v]) => v)
-                    .map(([k, v]) => (
-                      <div key={k as string} className="flex justify-between gap-3 py-2">
-                        <dt className="text-ink-soft">{k}</dt>
-                        <dd className="tnum text-right text-ink">{v as string}</dd>
-                      </div>
-                    ))}
-                </dl>
-              </div>
-
-              <FlowPanel flows={doc.flows} explainer={s.flowIndicatorExplainer} />
-            </>
-          )}
         </div>
       </div>
 

@@ -63,56 +63,6 @@ export function FlowBar({
   )
 }
 
-/** The full five-indicator panel on a Smart Money Report. */
-export function FlowPanel({
-  flows,
-  explainer,
-}: {
-  flows?: Record<string, any> | null
-  explainer: string
-}) {
-  if (!flows) return null
-  const rows = [
-    ['FII flow', flows.fii],
-    ['DII flow', flows.dii],
-    ['Promoter flow', flows.promoter],
-    ['Technical trend', flows.technical],
-    ['Fundamental trend', flows.fundamental],
-  ] as const
-
-  return (
-    <aside className="border border-rule bg-white">
-      <div className="flex items-baseline justify-between gap-4 border-b border-rule bg-sunken px-5 py-3">
-        <span className="kicker">Flow indicators</span>
-        {flows.asOf && (
-          <span className="tnum text-[11px] text-ink-faint">as of {dayMonth(flows.asOf)}</span>
-        )}
-      </div>
-
-      <div className="divide-y divide-rule px-5">
-        {rows.map(([label, value]) => (
-          <FlowBar key={label} label={label} value={value} />
-        ))}
-      </div>
-
-      <div className="flex items-center justify-between border-t border-rule px-5 py-2.5">
-        <span className="text-[11px] text-ink-faint">Net selling</span>
-        <span className="text-[11px] text-ink-faint">Net buying</span>
-      </div>
-
-      {flows.basis && (
-        <p className="border-t border-rule px-5 py-2.5 text-[12px] text-ink-soft">
-          Measured over <span className="tnum">{flows.basis}</span>
-        </p>
-      )}
-
-      <p className="border-t border-rule px-5 py-3 text-[12px] leading-relaxed text-ink-faint">
-        {explainer}
-      </p>
-    </aside>
-  )
-}
-
 /**
  * Homepage strip of latest institutional activity.
  *
