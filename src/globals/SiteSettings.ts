@@ -87,13 +87,13 @@ export const SiteSettings: GlobalConfig = {
               defaultValue:
                 'SmartMoney publishes financial journalism, not investment advice. Nothing here is a recommendation to buy or sell any security. Flow indicators describe observed institutional activity over a stated period; they are not ratings and carry no view on future prices. Do your own research or speak to a registered adviser.',
             },
-            { name: 'footerLegalName', type: 'text', defaultValue: 'SmartMoney' },
+            { name: 'footerLegalName', type: 'text', defaultValue: 'SmartMoney Express' },
           ],
         },
         {
           label: 'Brand & SEO',
           fields: [
-            { name: 'siteName', type: 'text', required: true, defaultValue: 'SmartMoney' },
+            { name: 'siteName', type: 'text', required: true, defaultValue: 'SmartMoney Express' },
             {
               name: 'tagline',
               type: 'text',

@@ -161,7 +161,6 @@ export default async function FrontendLayout({ children }: { children: React.Rea
           disclaimer={s.articleDisclaimer}
           sections={sections as any}
           recent={recent}
-          tags={tags.map((t) => t.title)}
         />
 
         <ScrollTop />

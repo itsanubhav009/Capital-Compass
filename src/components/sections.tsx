@@ -121,78 +121,124 @@ export function CategoryTiles({ tiles }: { tiles: (Tile & { href?: string })[] }
 /* ---------------------------------------------------------- round strip */
 
 /**
- * The band that sits over a photograph: circular 133px thumbnails, white
- * headlines, hairline rules above and below each card.
+ * Latest Stories, over a photograph.
  *
- * The picture is the section's background with a transparent-to-#121213
- * gradient over it, so the cards read against solid colour while the top of
- * the image stays clean.
+ * A lead story with its picture and standfirst, then the rest as a row of
+ * round-thumbnail cards beneath — so the block has a point of entry rather
+ * than reading as six equal items in a line.
+ *
+ * The picture is the section's background under a transparent-to-#121213
+ * gradient, so the cards sit on solid colour while the top of the image
+ * stays clean.
  */
 export function RoundStrip({
   backdrop,
+  heading,
+  lead,
   items,
 }: {
   backdrop?: string | null
+  heading?: string
+  lead?: any | null
   items: any[]
 }) {
-  if (!items.length) return null
+  if (!lead && !items.length) return null
+  const leadImage = lead ? img(lead.featuredImage, 'wide') : null
+
   return (
     <section className="relative bg-bar-2">
       {backdrop && (
-        <Image
-          src={backdrop}
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover object-bottom"
-          priority={false}
-        />
+        <Image src={backdrop} alt="" fill sizes="100vw" className="object-cover object-bottom" />
       )}
       <span
         aria-hidden
         className="absolute inset-0"
-        style={{ backgroundImage: 'linear-gradient(rgba(2,1,1,0) 5%, #121213 91%)' }}
+        style={{ backgroundImage: 'linear-gradient(rgba(2,1,1,0.45) 0%, #121213 78%)' }}
       />
-      <div className="relative mx-auto max-w-[1430px] px-[10px] pb-[60px] pt-[220px] sm:px-5 lg:pt-[320px]">
-        <ul className="grid gap-[30px] lg:grid-cols-3">
-          {items.map((d) => {
-            const image = img(d.featuredImage, 'thumb')
-            const href = `/insight/${d.slug}`
-            return (
-              <li key={`${d.collection}-${d.id}`}>
-                <article className="group flex items-center gap-5 border-y border-white/15 py-2.5">
-                  <Link
-                    href={href}
-                    tabIndex={-1}
-                    aria-hidden
-                    className="relative block h-[110px] w-[110px] shrink-0 overflow-hidden rounded-full bg-white/10 2xl:h-[133px] 2xl:w-[133px]"
-                  >
-                    {image && (
-                      <Image
-                        src={image.url}
-                        alt=""
-                        fill
-                        sizes="133px"
-                        className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
-                      />
-                    )}
-                  </Link>
-                  <div className="min-w-0 flex-1">
-                    <span className="kicker text-[#adadad]">
-                      <span className="truncate">{d.category}</span>
-                    </span>
-                    <h6 className="mb-[8px] mt-[5px] line-clamp-2 text-[16px] leading-[1.44] text-white 2xl:text-[18px]">
-                      <Link href={href} className="transition-colors duration-300 group-hover:text-accent">
-                        {words(d.title, 8)}
-                      </Link>
-                    </h6>
-                    <Meta byline={d.byline} light />
-                  </div>
-                </article>
-              </li>
-            )
-          })}
-        </ul>
+      <div className="relative mx-auto max-w-[1430px] px-[10px] pb-[60px] pt-[70px] sm:px-5">
+        {heading && <Head title={heading} tone="light" />}
+
+        {lead && (
+          <article className="group mb-10 grid gap-7 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center">
+            <Link
+              href={`/insight/${lead.slug}`}
+              tabIndex={-1}
+              aria-hidden
+              className="relative block h-[240px] overflow-hidden rounded-[10px] bg-white/10 sm:h-[320px] lg:h-[380px]"
+            >
+              {leadImage && (
+                <Image
+                  src={leadImage.url}
+                  alt=""
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 780px"
+                  className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                />
+              )}
+            </Link>
+            <div className="min-w-0">
+              <Kicker tone="light">{lead.category}</Kicker>
+              <h3 className="mt-3 text-[26px] leading-[1.25] text-white sm:text-[32px]">
+                <Link
+                  href={`/insight/${lead.slug}`}
+                  className="transition-colors duration-300 hover:text-accent"
+                >
+                  {words(lead.title, 12)}
+                </Link>
+              </h3>
+              {lead.standfirst && (
+                <p className="mt-4 line-clamp-3 text-[16px] leading-[1.65] text-white/70">
+                  {lead.standfirst}
+                </p>
+              )}
+              <div className="mt-5">
+                <Meta byline={lead.byline} date={lead.date} light />
+              </div>
+            </div>
+          </article>
+        )}
+
+        {items.length > 0 && (
+          <ul className="grid gap-x-[30px] gap-y-2 lg:grid-cols-3">
+            {items.map((d) => {
+              const image = img(d.featuredImage, 'thumb')
+              const href = `/insight/${d.slug}`
+              return (
+                <li key={`${d.collection}-${d.id}`}>
+                  <article className="group flex items-center gap-5 border-t border-white/15 py-4">
+                    <Link
+                      href={href}
+                      tabIndex={-1}
+                      aria-hidden
+                      className="relative block h-[86px] w-[86px] shrink-0 overflow-hidden rounded-full bg-white/10"
+                    >
+                      {image && (
+                        <Image
+                          src={image.url}
+                          alt=""
+                          fill
+                          sizes="86px"
+                          className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+                        />
+                      )}
+                    </Link>
+                    <div className="min-w-0 flex-1">
+                      <span className="kicker text-[#adadad]">
+                        <span className="truncate">{d.category}</span>
+                      </span>
+                      <h6 className="mb-[6px] mt-[4px] line-clamp-2 text-[16px] leading-[1.44] text-white">
+                        <Link href={href} className="transition-colors duration-300 group-hover:text-accent">
+                          {words(d.title, 8)}
+                        </Link>
+                      </h6>
+                      <Meta byline={d.byline} light />
+                    </div>
+                  </article>
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </div>
     </section>
   )

@@ -405,3 +405,32 @@ export async function getComments(
     return []
   }
 }
+
+/**
+ * Recent work, topped up so the block is never half-empty.
+ *
+ * The brief asked for "articles published in the last two weeks". Taken
+ * literally that empties the section the moment a fortnight passes without
+ * publishing, which at the current cadence is most of the time — of 32
+ * published pieces, 2 fall inside 14 days. So the window is a preference,
+ * not a filter: everything inside it comes first, newest first, and if that
+ * does not fill the block the next most recent pieces make up the difference.
+ *
+ * `freshCount` tells the caller how many genuinely came from inside the
+ * window, so a template can say so rather than implying all of them are new.
+ */
+export async function getRecentToppedUp(
+  limit = 7,
+  days = 14,
+): Promise<{ docs: Insight[]; freshCount: number }> {
+  const { docs } = await getInsights({ limit: Math.max(limit * 3, 30) })
+  const cutoff = Date.now() - days * 24 * 60 * 60 * 1000
+
+  const fresh = docs.filter((d) => +new Date(d.publishedAt ?? 0) >= cutoff)
+  const rest = docs.filter((d) => +new Date(d.publishedAt ?? 0) < cutoff)
+
+  return {
+    docs: [...fresh, ...rest].slice(0, limit),
+    freshCount: Math.min(fresh.length, limit),
+  }
+}

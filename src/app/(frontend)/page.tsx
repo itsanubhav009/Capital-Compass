@@ -2,11 +2,11 @@ import Link from 'next/link'
 import {
   // See the commented block further down before deleting this import.
   getInsights,
+  getRecentToppedUp,
+  getSectionTiles,
   getPopular,
   // getSectionTiles — fed the "Explore Categories" panel in the right-hand
   // rail. That position now carries the ad banner, so the query is off too.
-  // getSectionTiles,
-  getBrowseTiles,
   getSectorThemes,
   getSettings,
 } from '@/lib/queries'
@@ -24,6 +24,7 @@ import {
 } from '@/components/sections'
 // import { HighlightSlider } from '@/components/highlight-slider'
 import { CategorySlider } from '@/components/category-slider'
+import { CardCarousel } from '@/components/card-carousel'
 import { Reveal } from '@/components/reveal'
 import { HeroCarousel } from '@/components/hero-carousel'
 import { NewsletterForm } from '@/components/site'
@@ -42,54 +43,69 @@ const heroTitle = (t: string) => {
 }
 
 export default async function Homepage() {
-  const [settings, themes, latest, macro, popular, browse] = await Promise.all([
-    getSettings(),
-    getSectorThemes(4),
-    getInsights({ limit: 36 }),
-    // The Global Macro block is fed from the Global Macro section itself
-    // rather than from the rolling cursor, so the heading means what it says.
-    getInsights({ sectionSlug: 'global-macro', limit: 4 }),
-    // getSectionTiles(),
-    getPopular(3),
-    getBrowseTiles(),
-  ])
+  const [settings, themes, latest, india, intl, insights, macro, recent, tiles, popular] =
+    await Promise.all([
+      getSettings(),
+      getSectorThemes(12),
+      getInsights({ limit: 24 }),
+      // The hero rails are section-specific now: India on the left,
+      // International on the right, so the split is legible rather than
+      // whatever happened to be newest.
+      getInsights({ sectionSlug: 'capital-flow-india', limit: 4 }),
+      getInsights({ sectionSlug: 'capital-flow-international', limit: 4 }),
+      getInsights({ sectionSlug: 'smart-money-insights', limit: 4 }),
+      getInsights({ sectionSlug: 'global-macro', limit: 7 }),
+      getRecentToppedUp(7, 14),
+      getSectionTiles(),
+      getPopular(3),
+    ])
   const s: any = settings
   const docs = latest.docs
   const byline = s.siteName
 
-  // Blocks are filled from a rolling cursor rather than fixed offsets. Fixed
-  // slices silently render nothing once the archive is shorter than the last
-  // index, which is how the In depth block disappeared and let two sections
-  // run together. Wrapping repeats a piece on a thin archive; an empty
-  // section is the worse failure.
-  let cursor = 0
-  const take = (n: number) => {
-    if (!docs.length) return []
-    const out: any[] = []
-    for (let k = 0; k < n; k++) out.push(docs[(cursor + k) % docs.length])
-    cursor = (cursor + n) % docs.length
+  // Middle of the hero: the three most recently published pieces from any
+  // section, which is what the carousel is for.
+  const heroSlides = docs.slice(0, 3)
+  const hero = heroSlides[0]
+
+  // A section can be thin. Rather than leave a rail short, top it up from the
+  // general list — the alternative is a column with two cards and a hole.
+  const fill = (rows: any[], n: number, used: Set<string>) => {
+    const key = (d: any) => `${d.collection}-${d.id}`
+    const out = rows.filter((d) => !used.has(key(d))).slice(0, n)
+    out.forEach((d) => used.add(key(d)))
+    if (out.length < n) {
+      for (const d of docs) {
+        if (out.length >= n) break
+        if (used.has(key(d))) continue
+        used.add(key(d))
+        out.push(d)
+      }
+    }
     return out
   }
 
-  const heroSlides = take(3)
-  const hero = heroSlides[0]
-  const leftCol = take(4)
-  const rightCol = take(4)
-  const strip = take(3)
+  const spoken = new Set<string>(heroSlides.map((d: any) => `${d.collection}-${d.id}`))
+  const leftCol = fill(india.docs, 4, spoken)
+  const rightCol = fill(intl.docs, 4, spoken)
 
-  // Global Macro: the section's own four newest pieces, falling back to the
-  // rolling cursor while that section is still thin.
-  const macroDocs = macro.docs.length >= 2 ? macro.docs : take(4)
+  // Latest Stories, over the photograph: the last fortnight first, topped up
+  // so the block is never half-built. See getRecentToppedUp.
+  const recentDocs = recent.docs
+  const recentLead = recentDocs[0]
+  const recentRest = recentDocs.slice(1, 7)
+
+  // Insights fills the dark band; Global Macro the block further down. Both
+  // read from their own section so the heading means what it says, and both
+  // reorder themselves as new pieces are published.
+  const insightDocs = insights.docs.length ? insights.docs : docs.slice(0, 4)
+  const insightLead = insightDocs[0]
+  const insightRest = insightDocs.slice(1, 4)
+
+  const macroDocs = macro.docs.length ? macro.docs : docs.slice(0, 7)
   const macroLead = macroDocs[0]
-  const macroRest = macroDocs.slice(1, 4)
-
-  // ── Switched off; see the commented sections below ──────────────────────
-  // const deepDive = take(5)   // In depth
-  // const highlight = take(5)  // Highlight Stories
-
-  const storyLead = take(1)[0]
-  const storyRail = take(3)
-  const storyRow = take(3)
+  const macroRail = macroDocs.slice(1, 4)
+  const macroRow = macroDocs.slice(4, 7)
 
   // The strip and the subscribe banner each sit over a photograph. They take
   // pictures from the far end of the archive so nothing on screen repeats.
@@ -152,30 +168,39 @@ export default async function Homepage() {
       )}
 
       {/* ------------------------------------- explore categories --- */}
-      {browse.length > 0 && (
+      {tiles.length > 0 && (
         <Band tone="white" labelledBy="explore">
-          <Head id="explore" title="Explore Categories" href="/global-macro" />
+          {/* No "View All": the tiles are the full set of sections, so the
+              link had nowhere to go that this row does not already offer. */}
+          <Head id="explore" title="Explore Categories" />
           <Reveal>
-            <CategorySlider tiles={browse} />
+            <CategorySlider
+              tiles={tiles.map((t) => ({ ...t, href: `/${t.slug}` }))}
+            />
           </Reveal>
         </Band>
       )}
 
-      {/* ------------------------------------------- in focus strip --- */}
-      <RoundStrip backdrop={backdrop} items={strip.map(withMeta)} />
+      {/* ----------------------------------------- latest stories --- */}
+      <RoundStrip
+        backdrop={backdrop}
+        heading="Latest Stories"
+        lead={recentLead ? withMeta(recentLead) : null}
+        items={recentRest.map(withMeta)}
+      />
 
 
 
-      {/* ------------------------------------------- global macro ---
-          Was "Video News". Same shape — one large picture with the headline
-          over it, three smaller stories stacked down the right — but fed
-          from the Global Macro section. */}
-      {macroLead && (
+      {/* ----------------------------------------------- insights ---
+          One large picture with the headline over it, three smaller stories
+          stacked down the right — fed from the Insights section, newest
+          first, so it reorders itself as pieces are published. */}
+      {insightLead && (
         <section className="bg-bar-2">
           <div className="mx-auto max-w-[1430px] px-[10px] pb-20 pt-[70px] sm:px-5">
-            <Head title="Global Macro" href="/global-macro" tone="light" />
+            <Head title="Insights" href="/smart-money-insights" tone="light" />
             <Reveal>
-              <BigGroup lead={withMeta(macroLead)} rest={macroRest.map(withMeta)} />
+              <BigGroup lead={withMeta(insightLead)} rest={insightRest.map(withMeta)} />
             </Reveal>
           </div>
         </section>
@@ -266,16 +291,16 @@ export default async function Homepage() {
         </Band>
       )}
 
-      {/* --------------------------------------------- latest stories --- */}
-      {storyLead && (
-        <Band tone="white" labelledBy="latest">
-          <Head id="latest" title="Latest Stories" href="/global-macro" />
+      {/* ----------------------------------------------- global macro --- */}
+      {macroLead && (
+        <Band tone="white" labelledBy="macro">
+          <Head id="macro" title="Global Macro" href="/global-macro" />
           <div className="flex flex-col gap-[30px] lg:flex-row lg:items-start">
             <Reveal direction="left" className="min-w-0 flex-1">
               <LatestStories
-                featured={withMeta(storyLead)}
-                rail={storyRail.map(withMeta)}
-                row={storyRow.map(withMeta)}
+                featured={withMeta(macroLead)}
+                rail={macroRail.map(withMeta)}
+                row={macroRow.map(withMeta)}
               />
             </Reveal>
 
@@ -305,11 +330,13 @@ export default async function Homepage() {
       {themes.length > 0 && (
         <Band tone="white" labelledBy="themes">
           <Head id="themes" title="Sector Themes" href="/sectoral-trends" />
+          {/* Same cards as before, four across — the row can now be paged
+              once there are more than four. */}
           <Reveal>
-            <ul className="grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+            <CardCarousel perView={4} label="sector themes">
               {themes.map((t: any) => (
-              <li key={t.id}>
                 <StackCard
+                  key={t.id}
                   href={`/insight/${t.slug}`}
                   category={cardCategory(t.theme?.title ?? t.industry) || 'Sectoral Trends'}
                   title={t.title}
@@ -318,9 +345,8 @@ export default async function Homepage() {
                   date={shortDate(t.publishedAt)}
                   media={t.featuredImage}
                 />
-                </li>
               ))}
-            </ul>
+            </CardCarousel>
           </Reveal>
         </Band>
       )}
