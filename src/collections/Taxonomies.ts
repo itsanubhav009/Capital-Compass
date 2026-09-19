@@ -84,6 +84,11 @@ export const Sections: CollectionConfig = {
 export const Sectors: CollectionConfig = {
   slug: 'sectors',
   admin: {
+    // Hidden, not deleted. Nothing on the site references Sectors any more,
+    // and Themes is down to one label on a Sector Themes card — but the rows
+    // and the relationship are still real, so taking them off the sidebar is
+    // the change that was wanted and the tables stay intact.
+    hidden: true,
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
     group: 'Menu & Labels',
@@ -106,6 +111,11 @@ export const Sectors: CollectionConfig = {
 export const Themes: CollectionConfig = {
   slug: 'themes',
   admin: {
+    // Hidden, not deleted. Nothing on the site references Sectors any more,
+    // and Themes is down to one label on a Sector Themes card — but the rows
+    // and the relationship are still real, so taking them off the sidebar is
+    // the change that was wanted and the tables stay intact.
+    hidden: true,
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
     group: 'Menu & Labels',
