@@ -31,7 +31,6 @@ const STRIPS: { name: string; fed: string; who: 'all' | 'one' | 'section' | 'lab
   },
   { name: 'Ask the archive', fed: 'Searches everything you have published', who: 'all' },
   { name: 'Latest Stories', fed: 'The next 7 most recent pieces', who: 'all' },
-  { name: 'Popular News (sidebar)', fed: 'Whatever has the most views', who: 'all' },
   { name: 'Sector Themes', fed: 'Theme Reports only', who: 'one' },
   {
     name: 'Ad banner (top of every page, and beside Latest Stories)',

@@ -17,7 +17,7 @@ export const SmartMoneyReports: CollectionConfig = {
   labels: { singular: 'Smart Money Report', plural: 'Smart Money Reports' },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'ticker', 'section', 'publishedAt', '_status'],
+    defaultColumns: ['title', 'section', 'publishedAt', '_status'],
     group: 'Content',
     description:
       'One company at a time: who is buying, who is selling, and what the numbers say. These are the only pieces that feed the flow figures row on the homepage.',
@@ -45,60 +45,6 @@ export const SmartMoneyReports: CollectionConfig = {
     {
       type: 'tabs',
       tabs: [
-        {
-          label: 'The company',
-          fields: [
-            {
-              type: 'row',
-              fields: [
-                {
-                  name: 'stockName',
-                  type: 'text',
-                  label: 'Company name',
-                  required: true,
-                  admin: { width: '50%', description: 'As readers know it, e.g. HDFC Bank.' },
-                },
-                {
-                  name: 'ticker',
-                  type: 'text',
-                  admin: { width: '25%', placeholder: 'RELIANCE' },
-                },
-                {
-                  name: 'exchange',
-                  type: 'select',
-                  defaultValue: 'NSE',
-                  options: ['NSE', 'BSE', 'Both'],
-                  admin: { width: '25%' },
-                },
-              ],
-            },
-            {
-              type: 'row',
-              fields: [
-                {
-                  name: 'sector',
-                  type: 'relationship',
-                  relationTo: 'sectors',
-                  admin: { width: '50%' },
-                },
-                {
-                  name: 'marketCapBand',
-                  type: 'select',
-                  options: ['Large cap', 'Mid cap', 'Small cap'],
-                  admin: { width: '25%' },
-                },
-                {
-                  name: 'marketCapCr',
-                  type: 'number',
-                  label: 'Market cap (₹ crore)',
-                  min: 0,
-                  admin: { width: '25%' },
-                },
-              ],
-            },
-          ],
-        },
-
         {
           label: 'The write-up',
           fields: [

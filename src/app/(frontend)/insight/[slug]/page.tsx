@@ -105,11 +105,6 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
         <div className="tnum mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] uppercase tracking-wider text-ink-faint">
           <span>{shortDate(doc.publishedAt)}</span>
           {doc.readingMinutes && <span>{doc.readingMinutes} min read</span>}
-          {isReport && doc.ticker && (
-            <span className="text-ink">
-              {doc.ticker} · {doc.exchange}
-            </span>
-          )}
           {doc.region && (
             <span>
               {doc.region} · {doc.assetClass}

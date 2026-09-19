@@ -31,27 +31,6 @@ export const indexOnChange: CollectionAfterChangeHook = async ({
         doc.keyStocks?.map((k: any) => `${k.name} ${k.ticker ?? ''} ${k.note ?? ''}`).join('. '),
       ].filter(Boolean)
 
-      // Flow figures are meaningless as prose but very useful as retrievable
-      // facts, so they are written out in words alongside the article text.
-      if (doc.flows) {
-        const f = doc.flows
-        const named: [string, any][] = [
-          ['FII flow', f.fii],
-          ['DII flow', f.dii],
-          ['Promoter flow', f.promoter],
-          ['Technical trend', f.technical],
-          ['Fundamental trend', f.fundamental],
-        ]
-        const described = named
-          .filter(([, v]) => typeof v === 'number')
-          .map(([label, v]) => `${label}: ${v > 0 ? '+' : ''}${v} (${v > 0 ? 'net buying' : v < 0 ? 'net selling' : 'flat'})`)
-        if (described.length) {
-          parts.push(
-            `Flow indicators for ${doc.stockName ?? doc.title}${doc.ticker ? ` (${doc.ticker})` : ''}, measured over ${f.basis ?? 'the stated period'}: ${described.join('; ')}.`,
-          )
-        }
-      }
-
       const text = parts.join('\n\n')
       if (!text.trim()) return
 

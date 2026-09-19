@@ -4,6 +4,7 @@ import * as migration_20260904_190832_add_views_column from './20260904_190832_a
 import * as migration_20260904_192244_add_subscribers from './20260904_192244_add_subscribers';
 import * as migration_20260911_043520_add_comments_and_subscriber_consent from './20260911_043520_add_comments_and_subscriber_consent';
 import * as migration_20260917_135936_remove_flows_and_summary from './20260917_135936_remove_flows_and_summary';
+import * as migration_20260919_053358_remove_company_tab from './20260919_053358_remove_company_tab';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20260917_135936_remove_flows_and_summary.up,
     down: migration_20260917_135936_remove_flows_and_summary.down,
-    name: '20260917_135936_remove_flows_and_summary'
+    name: '20260917_135936_remove_flows_and_summary',
+  },
+  {
+    up: migration_20260919_053358_remove_company_tab.up,
+    down: migration_20260919_053358_remove_company_tab.down,
+    name: '20260919_053358_remove_company_tab'
   },
 ];

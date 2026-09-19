@@ -299,54 +299,6 @@ export function WideRow({
   )
 }
 
-/* ----------------------------------------------------------- popular list */
-
-/** Sidebar list: 120x110 picture, headline clamped to two lines. */
-export function PopularList({ items }: { items: any[] }) {
-  return (
-    <ul>
-      {items.map((d) => {
-        const image = img(d.featuredImage, 'thumb')
-        const href = `/insight/${d.slug}`
-        return (
-          <li
-            key={`${d.collection}-${d.id}`}
-            className="border-b border-rule py-2.5 first:pt-0 last:border-0 last:pb-0"
-          >
-            <article className="group flex items-center gap-4">
-              <Link
-                href={href}
-                tabIndex={-1}
-                aria-hidden
-                className="relative block h-[110px] w-[120px] shrink-0 overflow-hidden rounded-[10px] bg-sunken"
-              >
-                {image && (
-                  <Image
-                    src={image.url}
-                    alt=""
-                    fill
-                    sizes="120px"
-                    className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
-                  />
-                )}
-              </Link>
-              <div className="min-w-0 flex-1">
-                <Kicker>{d.category}</Kicker>
-                <h6 className="mb-[8px] mt-[5px] line-clamp-2 text-[16px] leading-[1.44]">
-                  <Link href={href} className="transition-colors duration-300 group-hover:text-accent">
-                    {words(d.title, 8)}
-                  </Link>
-                </h6>
-                <Meta byline={d.byline} />
-              </div>
-            </article>
-          </li>
-        )
-      })}
-    </ul>
-  )
-}
-
 /* ---------------------------------------------------------- sidebar card */
 
 export function Panel({ title, children }: { title: string; children: React.ReactNode }) {

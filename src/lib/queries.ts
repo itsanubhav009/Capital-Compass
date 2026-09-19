@@ -264,35 +264,6 @@ export async function getSectionTiles(): Promise<
   })
 }
 
-/** Most-read first. Ties fall back to newest, so a cold archive still sorts. */
-export async function getPopular(limit = 3): Promise<Insight[]> {
-  const payload = await client()
-  const preview = await isPreview()
-  const all = (
-    await Promise.all(
-      CONTENT_COLLECTIONS.map(async (collection) => {
-        const res = await payload.find({
-          collection,
-          where: { ...statusFilter(preview) },
-          sort: '-publishedAt',
-          limit: 60,
-          depth: 1,
-          draft: preview,
-        })
-        return tag(res.docs, collection)
-      }),
-    )
-  ).flat()
-
-  return all
-    .sort(
-      (a: any, b: any) =>
-        (b.views ?? 0) - (a.views ?? 0) ||
-        +new Date(b.publishedAt ?? 0) - +new Date(a.publishedAt ?? 0),
-    )
-    .slice(0, limit)
-}
-
 /**
  * Everything browsable, as tiles: the five sections first, then the themes.
  *

@@ -4,7 +4,6 @@ import {
   getInsights,
   getRecentToppedUp,
   getSectionTiles,
-  getPopular,
   // getSectionTiles — fed the "Explore Categories" panel in the right-hand
   // rail. That position now carries the ad banner, so the query is off too.
   getSectorThemes,
@@ -17,7 +16,6 @@ import {
   Head,
   LatestStories,
   Panel,
-  PopularList,
   RoundStrip,
   SubscribeBanner,
   // WideRow,
@@ -43,7 +41,7 @@ const heroTitle = (t: string) => {
 }
 
 export default async function Homepage() {
-  const [settings, themes, latest, india, intl, insights, macro, recent, tiles, popular] =
+  const [settings, themes, latest, india, intl, insights, macro, recent, tiles] =
     await Promise.all([
       getSettings(),
       getSectorThemes(12),
@@ -57,7 +55,6 @@ export default async function Homepage() {
       getInsights({ sectionSlug: 'global-macro', limit: 7 }),
       getRecentToppedUp(7, 14),
       getSectionTiles(),
-      getPopular(3),
     ])
   const s: any = settings
   const docs = latest.docs
@@ -209,8 +206,8 @@ export default async function Homepage() {
       {/* -------------------------------------- deep dive + sidebar ---
           "In depth" is hidden until the archive is deep enough to justify a
           five-article block — revisit in six to twelve months. The sidebar
-          that lived beside it (Popular News, Follow Us) has moved down to
-          Latest Stories, with the ad banner where Explore Categories was.
+          that lived beside it has been removed; the ad banner now sits in
+          the rail where Explore Categories used to.
           To bring this back, restore the getSectionTiles import and query,
           the WideRow and CategoryTiles imports, `const deepDive = take(5)`,
           and uncomment:
@@ -242,12 +239,6 @@ export default async function Homepage() {
               <Panel title="Explore Categories">
                 <CategoryTiles tiles={tiles} />
               </Panel>
-
-              {popular.length > 0 && (
-                <Panel title="Popular News">
-                  <PopularList items={popular.map(withMeta)} />
-                </Panel>
-              )}
             </Reveal>
           </div>
         </Band>
@@ -315,12 +306,6 @@ export default async function Homepage() {
               className="flex w-full flex-col gap-[30px] lg:sticky lg:top-[125px] lg:w-[350px] xl:w-[400px]"
             >
               <AdSlot variant="rail" />
-
-              {popular.length > 0 && (
-                <Panel title="Popular News">
-                  <PopularList items={popular.map(withMeta)} />
-                </Panel>
-              )}
             </Reveal>
           </div>
         </Band>
