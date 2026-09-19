@@ -101,6 +101,13 @@ export const Articles: CollectionConfig = {
     },
 
     ...heroFields(),
+    {
+      // Sits directly under Main image, which is the only place anyone wants
+      // it. Collapsed to a single link until clicked.
+      name: 'addImageFromUrl',
+      type: 'ui',
+      admin: { components: { Field: '/admin/AddImageFromUrl#default' } },
+    },
     { name: 'body', type: 'richText', required: true },
 
     /**

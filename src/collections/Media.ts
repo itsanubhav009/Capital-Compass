@@ -19,12 +19,15 @@ export const Media: CollectionConfig = {
   slug: 'media',
   labels: { singular: 'Image', plural: 'Images' },
   admin: {
+    // Off the sidebar, but very much still in use: every Main image is an
+    // upload pointing here. Hiding a collection removes the nav entry, not
+    // the collection — the picker on an article still lists and uploads.
+    hidden: true,
     group: 'Library',
     useAsTitle: 'alt',
     defaultColumns: ['filename', 'alt', 'credit', 'updatedAt'],
     description:
-      'Drop in JPG, PNG or WebP up to 8MB. Every size the site needs is generated on upload — never resize by hand. To pull one in from another site, use Add from URL.',
-    components: { beforeList: ['/admin/AddImageFromUrl#default'] },
+      'Drop in JPG, PNG or WebP up to 8MB. Every size the site needs is generated on upload — never resize by hand. To pull one in from another site, use the Add from URL link under Main image on an article.',
   },
   access: {
     // Public read so images render for visitors; write requires a logged-in
