@@ -31,7 +31,7 @@ const STRIPS: { name: string; fed: string; who: 'all' | 'one' | 'section' | 'lab
   },
   { name: 'Ask the archive', fed: 'Searches everything you have published', who: 'all' },
   { name: 'Latest Stories', fed: 'The next 7 most recent pieces', who: 'all' },
-  { name: 'Sector Themes', fed: 'Articles with a Theme set under Extras', who: 'one' },
+  { name: 'Sectoral Trends', fed: 'Articles filed under the Sectoral Trends section', who: 'section' },
   {
     name: 'Ad banner (top of every page, and beside Latest Stories)',
     fed: 'Nothing yet — reserved space for advertising',
@@ -99,7 +99,7 @@ export default function WhereItAppears() {
             ],
             [
               'Theme',
-              'A subject that cuts across types — AI, Defence, Renewables. Becomes a tile in Explore Categories and a link in the menu bar. A theme with nothing published behind it hides itself.',
+              'An optional label on a Sectoral Trends card — AI, Defence, Renewables. Set it under Extras on the article.',
             ],
             [
               'Sector',

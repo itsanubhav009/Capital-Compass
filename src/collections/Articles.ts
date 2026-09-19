@@ -91,11 +91,15 @@ export const Articles: CollectionConfig = {
           admin: { description: 'The Insights band or the Global Macro block, whichever fits.' },
         },
         {
+          // Field name kept as-is: renaming it would mean a migration and a
+          // data copy to change a label nobody sees.
           name: 'sectorThemes',
           type: 'checkbox',
-          label: 'Sector Themes',
+          label: 'Sectoral Trends',
           defaultValue: true,
-          admin: { description: 'Only appears if a Theme is set under Extras.' },
+          admin: {
+            description: 'The row near the foot of the homepage. Sectoral Trends pieces only.',
+          },
         },
       ],
     },

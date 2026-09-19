@@ -6,7 +6,7 @@ import {
   getSectionTiles,
   // getSectionTiles — fed the "Explore Categories" panel in the right-hand
   // rail. That position now carries the ad banner, so the query is off too.
-  getSectorThemes,
+  getSectoralTrends,
   getSettings,
 } from '@/lib/queries'
 import { Band, ListRow, StackCard } from '@/components/cards'
@@ -44,7 +44,7 @@ export default async function Homepage() {
   const [settings, themes, latest, india, intl, insights, macro, recent, tiles] =
     await Promise.all([
       getSettings(),
-      getSectorThemes(12),
+      getSectoralTrends(12),
       getInsights({ limit: 24, placement: 'hero' }),
       // The hero rails are section-specific now: India on the left,
       // International on the right, so the split is legible rather than
@@ -314,11 +314,11 @@ export default async function Homepage() {
       {/* ---------------------------------------------- sector themes --- */}
       {themes.length > 0 && (
         <Band tone="white" labelledBy="themes">
-          <Head id="themes" title="Sector Themes" href="/sectoral-trends" />
+          <Head id="themes" title="Sectoral Trends" href="/sectoral-trends" />
           {/* Same cards as before, four across — the row can now be paged
               once there are more than four. */}
           <Reveal>
-            <CardCarousel perView={4} label="sector themes">
+            <CardCarousel perView={4} label="sectoral trends">
               {themes.map((t: any) => (
                 <StackCard
                   key={t.id}

@@ -22,7 +22,7 @@ export const ThemeReports: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'theme', 'capitalFlowTrend', 'publishedAt', '_status'],
     group: 'Content',
-    description: 'Where money is moving as a subject rather than a company: AI, defence, renewables, data centres. These are the only pieces that feed the Sector Themes row.',
+    description: 'Where money is moving as a subject rather than a company: AI, defence, renewables, data centres. Retired — superseded by Articles.',
     ...previewOptions('theme-reports'),
   },
   hooks: {

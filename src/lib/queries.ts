@@ -188,18 +188,30 @@ export async function getMacroSnapshot(limit = 4) {
 }
 
 /**
- * Sector Themes: articles that carry a Theme and are ticked for that block.
- * A piece without a Theme has nothing to label the card with, so it is
- * excluded rather than rendered blank.
+ * The Sectoral Trends row.
+ *
+ * Fed from the Sectoral Trends section, not from "any article carrying a
+ * Theme" as it was when the block was called Sector Themes. Same rule as the
+ * Insights and Global Macro blocks, so the heading says what the block holds,
+ * and a piece filed there still appears when no Theme is set.
  */
-export async function getSectorThemes(limit = 4) {
+export async function getSectoralTrends(limit = 12) {
   const payload = await client()
   const preview = await isPreview()
+
+  const section = await payload.find({
+    collection: 'sections',
+    where: { slug: { equals: 'sectoral-trends' } },
+    limit: 1,
+    depth: 0,
+  })
+  if (!section.docs.length) return []
+
   const res = await payload.find({
     collection: 'articles',
     where: {
       ...statusFilter(preview),
-      theme: { exists: true },
+      section: { equals: section.docs[0].id },
       'placement.sectorThemes': { not_equals: false },
     },
     sort: '-publishedAt',

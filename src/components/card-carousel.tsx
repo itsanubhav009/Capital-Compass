@@ -7,7 +7,7 @@ const GAP = 28
 /**
  * Scrolls a row of cards four at a time.
  *
- * The Sector Themes grid keeps its exact look — same cards, same widths, same
+ * The Sectoral Trends grid keeps its exact look — same cards, same widths, same
  * gaps — and only gains the ability to run past four. It advances by a whole
  * page rather than one card, so the row never comes to rest showing two
  * halves.
