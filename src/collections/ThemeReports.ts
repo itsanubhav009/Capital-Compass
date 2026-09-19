@@ -16,6 +16,9 @@ export const ThemeReports: CollectionConfig = {
   slug: 'theme-reports',
   labels: { singular: 'Theme Report', plural: 'Theme Reports' },
   admin: {
+    // Superseded by Articles. Hidden rather than deleted: the rows are the
+    // fallback if anything went wrong in the copy across.
+    hidden: true,
     useAsTitle: 'title',
     defaultColumns: ['title', 'theme', 'capitalFlowTrend', 'publishedAt', '_status'],
     group: 'Content',

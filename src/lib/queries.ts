@@ -57,6 +57,8 @@ const tag = (docs: any[], collection: ContentSlug): Insight[] =>
 export async function getInsights(opts: {
   sectionSlug?: string
   themeSlug?: string
+  /** Front-page block this is for; only pieces ticked for it come back. */
+  placement?: 'hero' | 'rails' | 'latest' | 'sectionBand' | 'sectorThemes'
   featured?: boolean
   collections?: ContentSlug[]
   limit?: number
@@ -83,6 +85,10 @@ export async function getInsights(opts: {
 
   const where: any = { ...statusFilter(preview) }
   if (sectionId !== undefined) where.section = { equals: sectionId }
+  // Placement is opt-out: a piece appears unless someone unticked the box.
+  // `not_equals: false` rather than `equals: true` so rows written before
+  // the field existed, where it is null, still show.
+  if (opts.placement) where[`placement.${opts.placement}`] = { not_equals: false }
   if (opts.featured) where.featured = { equals: true }
   if (opts.excludeSlug) where.slug = { not_equals: opts.excludeSlug }
 
@@ -181,12 +187,21 @@ export async function getMacroSnapshot(limit = 4) {
   return res.docs
 }
 
+/**
+ * Sector Themes: articles that carry a Theme and are ticked for that block.
+ * A piece without a Theme has nothing to label the card with, so it is
+ * excluded rather than rendered blank.
+ */
 export async function getSectorThemes(limit = 4) {
   const payload = await client()
   const preview = await isPreview()
   const res = await payload.find({
-    collection: 'theme-reports',
-    where: { ...statusFilter(preview) },
+    collection: 'articles',
+    where: {
+      ...statusFilter(preview),
+      theme: { exists: true },
+      'placement.sectorThemes': { not_equals: false },
+    },
     sort: '-publishedAt',
     limit,
     depth: 2,
@@ -394,7 +409,7 @@ export async function getRecentToppedUp(
   limit = 7,
   days = 14,
 ): Promise<{ docs: Insight[]; freshCount: number }> {
-  const { docs } = await getInsights({ limit: Math.max(limit * 3, 30) })
+  const { docs } = await getInsights({ limit: Math.max(limit * 3, 30), placement: 'latest' })
   const cutoff = Date.now() - days * 24 * 60 * 60 * 1000
 
   const fresh = docs.filter((d) => +new Date(d.publishedAt ?? 0) >= cutoff)

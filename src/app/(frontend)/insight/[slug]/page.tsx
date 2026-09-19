@@ -70,7 +70,6 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
     ...(doc.featuredImage?.url ? { image: [`${SITE}${doc.featuredImage.url}`] } : {}),
   }
 
-  const isReport = doc.collection === 'smart-money-reports'
   const richText = doc.body ?? doc.commentary ?? doc.outlook
 
   return (
@@ -78,7 +77,7 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
       {/* ------------------------------------------------------ masthead --- */}
       <header className="border-b border-rule py-10 sm:py-14">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="eyebrow">{KIND_LABEL[doc.collection]}</span>
+          <span className="eyebrow">{doc.section?.title ?? 'Analysis'}</span>
           {doc.section && (
             <>
               <span aria-hidden className="text-rule-strong">

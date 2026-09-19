@@ -45,14 +45,14 @@ export default async function Homepage() {
     await Promise.all([
       getSettings(),
       getSectorThemes(12),
-      getInsights({ limit: 24 }),
+      getInsights({ limit: 24, placement: 'hero' }),
       // The hero rails are section-specific now: India on the left,
       // International on the right, so the split is legible rather than
       // whatever happened to be newest.
-      getInsights({ sectionSlug: 'capital-flow-india', limit: 4 }),
-      getInsights({ sectionSlug: 'capital-flow-international', limit: 4 }),
-      getInsights({ sectionSlug: 'smart-money-insights', limit: 4 }),
-      getInsights({ sectionSlug: 'global-macro', limit: 7 }),
+      getInsights({ sectionSlug: 'capital-flow-india', limit: 4, placement: 'rails' }),
+      getInsights({ sectionSlug: 'capital-flow-international', limit: 4, placement: 'rails' }),
+      getInsights({ sectionSlug: 'smart-money-insights', limit: 4, placement: 'sectionBand' }),
+      getInsights({ sectionSlug: 'global-macro', limit: 7, placement: 'sectionBand' }),
       getRecentToppedUp(7, 14),
       getSectionTiles(),
     ])

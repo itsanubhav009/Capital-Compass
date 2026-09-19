@@ -16,6 +16,9 @@ export const SmartMoneyReports: CollectionConfig = {
   slug: 'smart-money-reports',
   labels: { singular: 'Smart Money Report', plural: 'Smart Money Reports' },
   admin: {
+    // Superseded by Articles. Hidden rather than deleted: the rows are the
+    // fallback if anything went wrong in the copy across.
+    hidden: true,
     useAsTitle: 'title',
     defaultColumns: ['title', 'section', 'publishedAt', '_status'],
     group: 'Content',

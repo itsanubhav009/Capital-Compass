@@ -16,6 +16,9 @@ export const MacroNotes: CollectionConfig = {
   slug: 'macro-notes',
   labels: { singular: 'Macro Note', plural: 'Macro Notes' },
   admin: {
+    // Superseded by Articles. Hidden rather than deleted: the rows are the
+    // fallback if anything went wrong in the copy across.
+    hidden: true,
     useAsTitle: 'title',
     defaultColumns: ['title', 'region', 'assetClass', 'publishedAt', '_status'],
     group: 'Content',

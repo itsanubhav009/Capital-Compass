@@ -15,6 +15,9 @@ export const WealthArticles: CollectionConfig = {
   slug: 'wealth-articles',
   labels: { singular: 'Wealth Article', plural: 'Wealth Articles' },
   admin: {
+    // Superseded by Articles. Hidden rather than deleted: the rows are the
+    // fallback if anything went wrong in the copy across.
+    hidden: true,
     useAsTitle: 'title',
     defaultColumns: ['title', 'section', 'publishedAt', '_status'],
     group: 'Content',

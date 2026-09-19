@@ -20,7 +20,7 @@ const STRIPS: { name: string; fed: string; who: 'all' | 'one' | 'section' | 'lab
   },
   {
     name: 'Explore Categories',
-    fed: 'Your Sections and Themes — not articles',
+    fed: 'Your five Sections — not articles',
     who: 'labels',
   },
   { name: 'The three round photos', fed: 'The next 3 most recent pieces', who: 'all' },
@@ -31,7 +31,7 @@ const STRIPS: { name: string; fed: string; who: 'all' | 'one' | 'section' | 'lab
   },
   { name: 'Ask the archive', fed: 'Searches everything you have published', who: 'all' },
   { name: 'Latest Stories', fed: 'The next 7 most recent pieces', who: 'all' },
-  { name: 'Sector Themes', fed: 'Theme Reports only', who: 'one' },
+  { name: 'Sector Themes', fed: 'Articles with a Theme set under Extras', who: 'one' },
   {
     name: 'Ad banner (top of every page, and beside Latest Stories)',
     fed: 'Nothing yet — reserved space for advertising',
@@ -74,8 +74,9 @@ export default function WhereItAppears() {
         <div style={{ border: line, borderRadius: 6, padding: '14px 16px' }}>
           <strong style={{ fontSize: 14, color: strong }}>Content — what you write</strong>
           <p style={{ margin: '6px 0 0', fontSize: 13.5, color: muted }}>
-            Smart Money Reports, Macro Notes, Theme Reports, Wealth Articles and Pages. Each one is
-            a thing a reader opens and reads. You create these.
+            Articles and Pages. Every piece of writing is an Article — pick its Section to say
+            where it belongs, then tick where it should show on the front page. Pages are the
+            standing ones: About, Contact, the legal notices.
           </p>
         </div>
         <div style={{ border: line, borderRadius: 6, padding: '14px 16px' }}>
@@ -102,7 +103,7 @@ export default function WhereItAppears() {
             ],
             [
               'Sector',
-              'An industry label for the company in a Smart Money Report — Banking, IT, Pharma.',
+              'Left over from the old Smart Money Report form. Nothing references it now — see the note below.',
             ],
           ].map(([k, v]) => (
             <tr key={k} style={{ borderTop: line }}>
@@ -130,10 +131,10 @@ export default function WhereItAppears() {
         The homepage, top to bottom
       </h4>
       <p style={{ margin: '0 0 12px', fontSize: 13.5, color: muted, maxWidth: '68ch' }}>
-        Most strips take whatever is newest, regardless of type — so a Macro Note and a Wealth
-        Article compete for the same slots. Publish date decides the order. Three strips are
-        narrower than that: Global Macro takes only what is filed under that section, Sector
-        Themes takes only Theme Reports, and the ad banners take nothing at all.
+        Placement follows two things: the Section a piece is filed under, and the tick boxes in
+        its <strong>Show on the front page</strong> panel. Every box starts ticked, so a new
+        article behaves the way the section implies until you untick something. Within a block,
+        publish date decides the order.
       </p>
 
       <div style={{ overflowX: 'auto' }}>

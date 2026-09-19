@@ -7,6 +7,7 @@ import { seoPlugin } from '@payloadcms/plugin-seo'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
+import { Articles } from './collections/Articles'
 import { Sections, Sectors, Themes } from './collections/Taxonomies'
 import { SmartMoneyReports } from './collections/SmartMoneyReports'
 import { MacroNotes } from './collections/MacroNotes'
@@ -22,12 +23,16 @@ import { SiteSettings } from './globals/SiteSettings'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
-export const CONTENT_COLLECTIONS = [
-  'smart-money-reports',
-  'macro-notes',
-  'theme-reports',
-  'wealth-articles',
-] as const
+/**
+ * What the public site reads from.
+ *
+ * One entry now. The four old collections were copied into Articles and
+ * dropped from this list, which is what takes them off the site. Their rows
+ * are deliberately still in the database and their definitions still
+ * registered — hidden from the sidebar, not deleted — so this is reversible
+ * until someone decides otherwise.
+ */
+export const CONTENT_COLLECTIONS = ['articles'] as const
 
 // Media goes to object storage only when a bucket is configured. Local dev
 // keeps writing to disk, which is fine because that disk survives a restart.
@@ -87,6 +92,7 @@ export default buildConfig({
 
   collections: [
     // Content
+    Articles,
     SmartMoneyReports,
     MacroNotes,
     ThemeReports,

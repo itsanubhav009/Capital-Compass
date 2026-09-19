@@ -35,7 +35,13 @@ export const dayMonth = (iso?: string | null): string =>
 
 export const readingTime = (words: number): number => Math.max(1, Math.round(words / 230))
 
+/**
+ * Left from when there were four content types. Everything is an Article
+ * now and the section carries the label, so this only answers for rows that
+ * predate the move.
+ */
 export const KIND_LABEL: Record<string, string> = {
+  articles: 'Analysis',
   'smart-money-reports': 'Smart Money Report',
   'macro-notes': 'Macro Note',
   'theme-reports': 'Theme Report',
