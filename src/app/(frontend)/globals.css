@@ -352,3 +352,32 @@
     color: var(--color-accent);
   }
 }
+
+/* ------------------------------------------------------------------
+   Card carousel. How many cards are in view is a viewport question, so
+   it is answered here rather than in the component: the component sets
+   the ceiling, the ladder below picks what actually fits.
+   ------------------------------------------------------------------ */
+@layer components {
+  .card-carousel {
+    --car-per: 1;
+    grid-auto-columns: calc(
+      (100% - var(--car-gap) * (var(--car-per) - 1)) / var(--car-per)
+    );
+  }
+  @media (min-width: 560px) {
+    .card-carousel {
+      --car-per: min(2, var(--car-max));
+    }
+  }
+  @media (min-width: 900px) {
+    .card-carousel {
+      --car-per: min(3, var(--car-max));
+    }
+  }
+  @media (min-width: 1200px) {
+    .card-carousel {
+      --car-per: var(--car-max);
+    }
+  }
+}

@@ -60,12 +60,19 @@ export function CardCarousel({
       <ul
         ref={track}
         onScroll={sync}
-        className="grid snap-x snap-mandatory grid-flow-col overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
-        style={{
-          gap: `${GAP}px`,
-          gridAutoColumns: `calc((100% - ${GAP * (perView - 1)}px) / ${perView})`,
-          scrollbarWidth: 'none',
-        }}
+        className="card-carousel grid snap-x snap-mandatory grid-flow-col overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
+        style={
+          {
+            gap: `${GAP}px`,
+            // The ladder lives in CSS so it can react to the viewport; this is
+            // only its ceiling. Four across is a desktop figure — held to it on
+            // a phone, each card gets about 76px and the headline, byline and
+            // date all collapse into each other.
+            '--car-gap': `${GAP}px`,
+            '--car-max': perView,
+            scrollbarWidth: 'none',
+          } as React.CSSProperties
+        }
       >
         {children.map((child, i) => (
           <li key={i} className="snap-start">
