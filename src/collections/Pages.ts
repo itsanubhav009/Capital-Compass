@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { cleanRichText } from '../hooks/clean-lexical'
 import { previewOptions } from '../fields/preview'
 import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate'
 import { slugField } from '../fields/common'
@@ -41,7 +42,12 @@ export const Pages: CollectionConfig = {
       maxLength: 240,
       admin: { description: 'One or two sentences under the heading. Also used as the meta description.' },
     },
-    { name: 'body', type: 'richText', required: true },
+    {
+      name: 'body',
+      type: 'richText',
+      required: true,
+      hooks: { beforeValidate: [cleanRichText] },
+    },
     {
       name: 'lastReviewed',
       type: 'date',

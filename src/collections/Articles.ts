@@ -4,6 +4,7 @@ import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidat
 import { chartsField, heroFields, publishingFields, referencesField, sectionField, slugField } from '../fields/common'
 import { viewsField } from './views-field'
 import { indexOnChange, deindexOnDelete } from '../hooks/search-index'
+import { cleanRichText } from '../hooks/clean-lexical'
 
 /**
  * Every piece of writing on the site.
@@ -112,7 +113,14 @@ export const Articles: CollectionConfig = {
       type: 'ui',
       admin: { components: { Field: '/admin/AddImageFromUrl#default' } },
     },
-    { name: 'body', type: 'richText', required: true },
+    {
+      name: 'body',
+      type: 'richText',
+      required: true,
+      // Pasted documents bring anchors with no destination; left alone they
+      // make the article impossible to save. See clean-lexical.ts.
+      hooks: { beforeValidate: [cleanRichText] },
+    },
 
     /**
      * The fields the four old types had between them. Collapsed, because most
