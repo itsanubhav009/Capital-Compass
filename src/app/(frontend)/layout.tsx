@@ -175,7 +175,10 @@ export default async function FrontendLayout({ children }: { children: React.Rea
 
         {/* Has to be accepted before the reader goes any further. Mounted
             last so it sits above everything else on the page. */}
-        <DisclaimerGate siteName={s.siteName} disclaimer={s.articleDisclaimer} />
+        {/* Not while previewing: the gate opens inside the Live Preview
+            iframe and hides the article the editor is trying to look at.
+            Readers still meet it — preview is a signed-in view. */}
+        {!preview && <DisclaimerGate siteName={s.siteName} disclaimer={s.articleDisclaimer} />}
 
         <Analytics />
         <ConsentBanner />
