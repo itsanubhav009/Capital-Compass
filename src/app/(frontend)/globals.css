@@ -238,6 +238,37 @@
     margin-top: 0.35em;
   }
 
+  /* Tables.
+
+     Payload's own JSX converter wraps the table in
+     .lexical-table-container and writes border and padding as inline styles
+     on every cell, in a grey that does not belong to this palette. Inline
+     styles cannot be outranked by specificity, so those two properties carry
+     !important and nothing else does — the rest is ordinary CSS over markup
+     that sets no inline value. The container scrolls so a wide table moves
+     inside the column rather than pushing the article sideways on a phone. */
+  .prose-cc .lexical-table-container {
+    overflow-x: auto;
+    margin-top: 1.4em;
+  }
+  .prose-cc .lexical-table {
+    width: 100%;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .prose-cc .lexical-table th,
+  .prose-cc .lexical-table td {
+    border: 1px solid var(--color-rule) !important;
+    padding: 9px 12px !important;
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose-cc .lexical-table th {
+    background: var(--color-sunken);
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
   .live-dot {
     animation: live-pulse 1.8s ease-in-out infinite;
   }

@@ -9,7 +9,6 @@ export type Slide = {
   slug: string
   category: string
   title: string
-  byline?: string | null
   date?: string
   image?: string | null
 }
@@ -93,7 +92,7 @@ export function HighlightSlider({ slides }: { slides: Slide[] }) {
                   </Link>
                 </h5>
                 <div className="mt-3.5">
-                  <Meta byline={s.byline} date={s.date} light />
+                  <Meta date={s.date} light />
                 </div>
               </div>
             </article>

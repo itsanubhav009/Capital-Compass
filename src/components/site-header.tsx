@@ -331,14 +331,14 @@ export function SiteHeader({
       <div className="bg-bar-2 text-white">
         <div className="mx-auto flex max-w-[1430px] flex-wrap items-center px-[10px]">
           <div className="flex min-w-0 flex-1 items-center gap-5 py-[10px] lg:py-0">
-            {/* Live conditions for California, refreshed by the server. */}
+            {/* Live conditions, refreshed by the server. See lib/weather.ts. */}
             {weather && (
               <div className="flex items-center gap-[10px]">
                 <span className="text-white">
                   <CloudSunIcon />
                 </span>
                 <span className="text-[14px] font-normal text-white/85">
-                  <span className="tnum">{weather.temperature.toFixed(1)}</span>
+                  <span className="tnum">{weather.temperature}</span>
                   <sup className="ml-[2px] text-[10px]">°C</sup>
                 </span>
                 <span className="text-[14px] text-white/85">{weather.place}</span>

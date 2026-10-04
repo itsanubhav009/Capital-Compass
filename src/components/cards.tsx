@@ -4,26 +4,27 @@ import Image from 'next/image'
 /* -------------------------------------------------------------- view icon */
 
 /**
- * Byline and date under a headline.
+ * The date under a headline.
  *
- * View counts used to sit here. They are a newsroom metric, not something a
- * reader needs, and showing them on a young archive mostly advertises low
- * numbers. Counting continues — the figure is on each article in the admin,
- * for whoever wrote it.
+ * Two things used to sit here and no longer do. View counts are a newsroom
+ * metric, not something a reader needs, and on a young archive they mostly
+ * advertise low numbers; counting continues, and the figure is on each
+ * article in the admin. The byline came next — every piece carried the same
+ * "By SmartMoney Express", so it distinguished nothing and only crowded the
+ * line. Returns nothing at all when there is no date, so the cards that
+ * passed only a byline do not leave an empty row behind.
  */
 export function Meta({
-  byline,
   date,
   light = false,
 }: {
-  byline?: string | null
   date?: string
   light?: boolean
 }) {
+  if (!date) return null
   const tone = light ? 'text-white/80' : 'text-ink-soft'
   return (
     <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-[13.5px] ${tone}`}>
-      {byline && <span className="whitespace-nowrap">By {byline}</span>}
       {date && (
         <span className="flex items-center gap-1.5 whitespace-nowrap">
           <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
@@ -104,13 +105,11 @@ export function ListRow({
   href,
   category,
   title,
-  byline,
   media,
 }: {
   href: string
   category: string
   title: string
-  byline?: string | null
   media?: any
 }) {
   const image = img(media, 'thumb')
@@ -156,7 +155,7 @@ export function ListRow({
             {words(title, 6)}
           </Link>
         </h6>
-        <Meta byline={byline} />
+        <Meta />
       </div>
     </article>
   )
@@ -168,14 +167,12 @@ export function HeroCard({
   href,
   category,
   title,
-  byline,
   date,
   media,
 }: {
   href: string
   category: string
   title: string
-  byline?: string | null
   date?: string
   media?: any
 }) {
@@ -211,7 +208,7 @@ export function HeroCard({
           </Link>
         </h3>
         <div className="mt-4">
-          <Meta byline={byline} date={date} light />
+          <Meta date={date} light />
         </div>
       </div>
     </article>
@@ -225,7 +222,6 @@ export function StackCard({
   category,
   title,
   standfirst,
-  byline,
   date,
   media,
   dark = false,
@@ -234,7 +230,6 @@ export function StackCard({
   category: string
   title: string
   standfirst?: string | null
-  byline?: string | null
   date?: string
   media?: any
   dark?: boolean
@@ -291,7 +286,7 @@ export function StackCard({
           </p>
         )}
         <div className="mt-3">
-          <Meta byline={byline} date={date} light={dark} />
+          <Meta date={date} light={dark} />
         </div>
       </div>
     </article>

@@ -2,7 +2,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { EXPERIMENTAL_TableFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
@@ -111,7 +111,24 @@ export default buildConfig({
 
   globals: [SiteSettings],
 
-  editor: lexicalEditor({}),
+  /**
+   * Tables.
+   *
+   * The default feature set has no table node, so a table pasted from a
+   * document or a spreadsheet was flattened into loose paragraphs on the way
+   * in — the rows survived as text, the grid did not. Adding the feature
+   * registers the node, which both puts a table control in the toolbar and
+   * lets a pasted table keep its shape. The front end already knew how to
+   * draw one: the RichText renderer ships a table converter and was simply
+   * never handed any tables.
+   *
+   * Payload still marks this experimental, hence the name. It only affects
+   * content written from here on; anything already flattened stays flat and
+   * has to be pasted again.
+   */
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [...defaultFeatures, EXPERIMENTAL_TableFeature()],
+  }),
 
   db: postgresAdapter({
     pool: {

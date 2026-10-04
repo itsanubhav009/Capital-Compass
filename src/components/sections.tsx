@@ -192,7 +192,7 @@ export function RoundStrip({
                 </p>
               )}
               <div className="mt-5">
-                <Meta byline={lead.byline} date={lead.date} light />
+                <Meta date={lead.date} light />
               </div>
             </div>
           </article>
@@ -231,7 +231,7 @@ export function RoundStrip({
                           {words(d.title, 8)}
                         </Link>
                       </h6>
-                      <Meta byline={d.byline} light />
+                      <Meta light />
                     </div>
                   </article>
                 </li>
@@ -252,7 +252,6 @@ export function WideRow({
   category,
   title,
   standfirst,
-  byline,
   date,
   media,
 }: {
@@ -260,7 +259,6 @@ export function WideRow({
   category: string
   title: string
   standfirst?: string | null
-  byline?: string | null
   date?: string
   media?: any
 }) {
@@ -293,7 +291,7 @@ export function WideRow({
         {standfirst && (
           <p className="mb-4 line-clamp-2 text-[16px] leading-[1.65] text-ink-soft">{standfirst}</p>
         )}
-        <Meta byline={byline} date={date} />
+        <Meta date={date} />
       </div>
     </article>
   )
@@ -411,7 +409,7 @@ export function LatestStories({
             </Link>
           </h3>
           <div className="mt-4">
-            <Meta byline={featured.byline} />
+            <Meta />
           </div>
           {featured.standfirst && (
             <p className="mt-6 line-clamp-3 text-[16px] leading-[1.65] text-ink-soft">
@@ -447,7 +445,7 @@ export function LatestStories({
                   {words(d.title, 7)}
                 </Link>
               </h6>
-              <Meta byline={d.byline} />
+              <Meta />
             </article>
           ))}
         </div>
@@ -485,7 +483,7 @@ export function LatestStories({
                         {words(d.title, 7)}
                       </Link>
                     </h6>
-                    <Meta byline={d.byline} />
+                    <Meta />
                   </div>
                 </article>
               </li>
@@ -548,7 +546,7 @@ export function BigGroup({ lead, rest }: { lead: any; rest: any[] }) {
             </Link>
           </h3>
           <div className="mt-4">
-            <Meta byline={lead.byline} date={lead.date} light />
+            <Meta date={lead.date} light />
           </div>
         </div>
       </article>
@@ -588,7 +586,7 @@ export function BigGroup({ lead, rest }: { lead: any; rest: any[] }) {
                     {words(d.title, 6)}
                   </Link>
                 </h6>
-                <Meta byline={d.byline} light />
+                <Meta light />
               </div>
             </article>
           )

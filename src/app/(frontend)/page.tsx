@@ -58,7 +58,6 @@ export default async function Homepage() {
     ])
   const s: any = settings
   const docs = latest.docs
-  const byline = s.siteName
 
   // Middle of the hero: the three most recently published pieces from any
   // section, which is what the carousel is for.
@@ -111,7 +110,7 @@ export default async function Homepage() {
   const backdrop = pic(docs[docs.length - 1]) ?? pic(hero)
   const bannerPic = pic(docs[docs.length - 2]) ?? pic(hero)
 
-  const withMeta = (d: any) => ({ ...d, category: cat(d), byline })
+  const withMeta = (d: any) => ({ ...d, category: cat(d) })
 
   return (
     <>
@@ -129,7 +128,6 @@ export default async function Homepage() {
                   href={`/insight/${d.slug}`}
                   category={cat(d)}
                   title={d.title}
-                  byline={s.siteName}
                   media={d.featuredImage}
                 />
               ))}
@@ -141,7 +139,6 @@ export default async function Homepage() {
                   slug: d.slug,
                   category: cat(d),
                   title: heroTitle(d.title),
-                  byline: s.siteName,
                   date: shortDate(d.publishedAt),
                   image: d.featuredImage?.sizes?.wide?.url ?? d.featuredImage?.url ?? null,
                 }))}
@@ -155,7 +152,6 @@ export default async function Homepage() {
                   href={`/insight/${d.slug}`}
                   category={cat(d)}
                   title={d.title}
-                  byline={s.siteName}
                   media={d.featuredImage}
                 />
               ))}
@@ -224,7 +220,6 @@ export default async function Homepage() {
                   category={cat(d)}
                   title={d.title}
                   standfirst={d.standfirst}
-                  byline={byline}
                   date={shortDate(d.publishedAt)}
                   media={d.featuredImage}
                 />
@@ -261,7 +256,6 @@ export default async function Homepage() {
                 slug: d.slug,
                 category: cat(d),
                 title: d.title,
-                byline,
                 date: shortDate(d.publishedAt),
                 image: pic(d),
               }))}
@@ -326,7 +320,6 @@ export default async function Homepage() {
                   category={cardCategory(t.theme?.title ?? t.industry) || 'Sectoral Trends'}
                   title={t.title}
                   standfirst={t.standfirst}
-                  byline={s.siteName}
                   date={shortDate(t.publishedAt)}
                   media={t.featuredImage}
                 />

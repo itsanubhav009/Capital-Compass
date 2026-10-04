@@ -9,7 +9,6 @@ export type Slide = {
   slug: string
   category: string
   title: string
-  byline?: string | null
   date?: string
   image?: string | null
   alt?: string
@@ -87,12 +86,24 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
       {slides.map((s, i) => {
         const active = i === index
         return (
+          /**
+           * pointer-events-none on the hidden slides is what makes the
+           * visible one clickable at all. Every slide is stacked in the same
+           * place, so the last one in the DOM sits on top of the rest; at
+           * opacity 0 it is invisible but still catches the click, and the
+           * story underneath never opens. `inert` was meant to cover this,
+           * but React 19 treats the empty string it was given as falsy and
+           * drops the attribute, so nothing was ever inert. Both are fixed
+           * here — inert for assistive tech, pointer-events for the mouse.
+           */
           <div
             key={s.slug}
-            className="absolute inset-0 transition-opacity duration-500 ease-out"
+            className={`absolute inset-0 transition-opacity duration-500 ease-out ${
+              active ? '' : 'pointer-events-none'
+            }`}
             style={{ opacity: active ? 1 : 0 }}
             aria-hidden={!active}
-            {...(!active ? { inert: '' as any } : {})}
+            inert={!active}
           >
             {s.image && (
               <Image
@@ -112,18 +123,30 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
                 backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0) 18%, #121213 100%)',
               }}
             />
-            <div className="absolute inset-x-0 bottom-0 pb-[30px] pl-[35px] pr-[30px]">
+            {/* The whole slide opens the story, not just the headline — the
+                picture is the largest and most obvious target on the block,
+                and it was doing nothing. Hidden from assistive tech and from
+                the tab order because the headline link below already carries
+                the same destination under the story's own name. */}
+            <Link
+              href={`/insight/${s.slug}`}
+              aria-hidden
+              tabIndex={-1}
+              className="absolute inset-0 z-[1]"
+            />
+
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] pb-[30px] pl-[35px] pr-[30px]">
               <span className="kicker kicker-light">{s.category}</span>
               <h3 className="mt-3 line-clamp-3 max-w-[17ch] text-[24px] leading-[1.3] text-white sm:text-[28px]">
                 <Link
                   href={`/insight/${s.slug}`}
-                  className="transition-colors duration-300 hover:text-white/85"
+                  className="pointer-events-auto transition-colors duration-300 hover:text-white/85"
                 >
                   {s.title}
                 </Link>
               </h3>
               <div className="mt-4">
-                <Meta byline={s.byline} date={s.date} light />
+                <Meta date={s.date} light />
               </div>
             </div>
           </div>

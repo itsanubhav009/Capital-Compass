@@ -272,7 +272,6 @@ export function SiteFooter({
               ['Privacy', '/privacy'],
               ['Terms', '/terms'],
               ['Disclaimer', '/disclaimer'],
-              ['Editorial standards', '/editorial-standards'],
             ].map(([label, href]) => (
               <Link key={href} href={href} className="transition-colors hover:text-white">
                 {label}
