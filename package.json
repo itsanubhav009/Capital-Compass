@@ -20,7 +20,8 @@
     "seed": "tsx src/scripts/seed.ts",
     "search:setup": "tsx src/scripts/setup-vector.ts",
     "search:backfill": "tsx src/scripts/backfill-embeddings.ts",
-    "seed:dedupe": "tsx src/scripts/dedupe.ts"
+    "seed:dedupe": "tsx src/scripts/dedupe.ts",
+    "email:test": "tsx src/scripts/test-email.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.88.0",

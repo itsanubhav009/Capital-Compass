@@ -44,7 +44,40 @@ const useS3 = Boolean(process.env.S3_BUCKET)
 if (useS3 && !process.env.S3_PUBLIC_URL) {
   throw new Error('S3_BUCKET is set but S3_PUBLIC_URL is missing')
 }
+/**
+ * Email is on only when a host is named. Without it Payload falls back to
+ * writing messages to the server log, which is right for local work and
+ * quietly wrong in production — a contact enquiry or a password reset would
+ * vanish into Vercel's logs with nothing to show for it. Hence the warning
+ * below rather than silence.
+ */
 const useEmail = Boolean(process.env.SMTP_HOST)
+
+if (useEmail && !process.env.EMAIL_FROM) {
+  // Providers reject mail from an address they have not verified, so an
+  // unset From is a guaranteed bounce. Better to fail at boot than on the
+  // first enquiry.
+  throw new Error('SMTP_HOST is set but EMAIL_FROM is missing')
+}
+
+if (useEmail && process.env.EMAIL_FROM !== process.env.SMTP_USER) {
+  // Gmail will not let an arbitrary address through: it silently rewrites
+  // the From header to the account that authenticated, so the mail still
+  // arrives but not from who you intended. Worth saying out loud, because
+  // nothing in the delivered message reveals the substitution.
+  console.warn(
+    `[email] EMAIL_FROM (${process.env.EMAIL_FROM}) differs from SMTP_USER ` +
+      `(${process.env.SMTP_USER}). Gmail will send as SMTP_USER unless that ` +
+      'address is a verified alias under Gmail Settings → Accounts.',
+  )
+}
+
+if (!useEmail && process.env.NODE_ENV === 'production') {
+  console.warn(
+    '[email] SMTP_HOST is unset — contact notifications and password resets ' +
+      'will be written to the log instead of sent. See README: Email.',
+  )
+}
 
 const vercelHost = (v?: string) => (v ? `https://${v}` : '')
 
@@ -192,15 +225,20 @@ export default buildConfig({
   ...(useEmail
     ? {
         email: nodemailerAdapter({
-          defaultFromAddress: process.env.EMAIL_FROM || 'noreply@capitalcompass.com',
-          defaultFromName: 'SmartMoney',
+          // Guaranteed present: the boot check above refuses to start without it.
+          defaultFromAddress: process.env.EMAIL_FROM!,
+          defaultFromName: 'SmartMoney Express',
           transportOptions: {
             host: process.env.SMTP_HOST,
             port: Number(process.env.SMTP_PORT || 587),
             secure: Number(process.env.SMTP_PORT) === 465,
             auth: {
               user: process.env.SMTP_USER,
-              pass: process.env.SMTP_PASS,
+              // Google presents an app password as four space-separated
+              // groups ("abcd efgh ijkl mnop"). Pasted exactly as shown it
+              // fails authentication, with an error that says only that the
+              // password was not accepted — so the spaces come out here.
+              pass: process.env.SMTP_PASS?.replace(/\s+/g, ''),
             },
           },
         }),
