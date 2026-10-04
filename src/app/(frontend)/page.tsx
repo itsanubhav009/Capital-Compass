@@ -82,8 +82,30 @@ export default async function Homepage() {
   }
 
   const spoken = new Set<string>(heroSlides.map((d: any) => `${d.collection}-${d.id}`))
-  const leftCol = fill(india.docs, 4, spoken)
-  const rightCol = fill(intl.docs, 4, spoken)
+
+  /**
+   * Share what is left between the two rails instead of filling the left one
+   * first.
+   *
+   * The hero reserves eleven slots: three for the carousel and four for each
+   * rail. Below that the old order gave everything to the left and left the
+   * right column blank — not short, blank, which reads as a column that
+   * failed to load rather than as a design. Seven published pieces produced
+   * exactly that. An even split gives two and two instead.
+   */
+  const railKey = (d: any) => `${d.collection}-${d.id}`
+  const pool = new Set<string>(
+    [...india.docs, ...intl.docs, ...docs].map(railKey).filter((k) => !spoken.has(k)),
+  )
+  const perRail = Math.min(4, Math.ceil(pool.size / 2))
+
+  const leftCol = fill(india.docs, perRail, spoken)
+  const rightCol = fill(intl.docs, perRail, spoken)
+
+  // A rail only spreads to the full height of the carousel when it has
+  // enough cards to look deliberate. Two pinned to the top and bottom
+  // corners with a hole between them looks like something went missing.
+  const railFlow = (rows: any[]) => (rows.length >= 4 ? 'justify-between' : 'gap-[22px]')
 
   // Latest Stories, over the photograph: the last fortnight first, topped up
   // so the block is never half-built. See getRecentToppedUp.
@@ -120,8 +142,14 @@ export default async function Homepage() {
           {/* items-stretch is the default; every column then matches the
               tallest, which is what keeps the three-column block square
               rather than letting the side rails overhang the hero. */}
-          <div className="grid gap-[30px] lg:grid-cols-[29fr_42fr_29fr]">
-            <div className="order-2 flex h-full flex-col justify-between lg:order-1">
+          <div
+            className={`grid gap-[30px] ${
+              // With nothing for the right rail, a third column would just be
+              // a reserved gap. The carousel takes the room instead.
+              rightCol.length ? 'lg:grid-cols-[29fr_42fr_29fr]' : 'lg:grid-cols-[29fr_71fr]'
+            }`}
+          >
+            <div className={`order-2 flex h-full flex-col lg:order-1 ${railFlow(leftCol)}`}>
               {leftCol.map((d) => (
                 <ListRow
                   key={`${d.collection}-${d.id}`}
@@ -145,17 +173,19 @@ export default async function Homepage() {
               />
             </div>
 
-            <div className="order-3 flex h-full flex-col justify-between">
-              {rightCol.map((d) => (
-                <ListRow
-                  key={`${d.collection}-${d.id}`}
-                  href={`/insight/${d.slug}`}
-                  category={cat(d)}
-                  title={d.title}
-                  media={d.featuredImage}
-                />
-              ))}
-            </div>
+            {rightCol.length > 0 && (
+              <div className={`order-3 flex h-full flex-col ${railFlow(rightCol)}`}>
+                {rightCol.map((d) => (
+                  <ListRow
+                    key={`${d.collection}-${d.id}`}
+                    href={`/insight/${d.slug}`}
+                    category={cat(d)}
+                    title={d.title}
+                    media={d.featuredImage}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </Band>
       )}
