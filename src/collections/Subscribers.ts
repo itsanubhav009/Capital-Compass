@@ -63,6 +63,17 @@ export const Subscribers: CollectionConfig = {
       },
     },
     {
+      name: 'unsubscribedAt',
+      type: 'date',
+      label: 'Unsubscribed on',
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+        description:
+          'Set when someone uses the unsubscribe link in a newsletter. They are kept rather than deleted, so a later signup is not mistaken for a fresh one and the record of their choice survives. Anyone with a date here is skipped when an article is sent.',
+      },
+    },
+    {
       name: 'forwarded',
       type: 'checkbox',
       defaultValue: false,

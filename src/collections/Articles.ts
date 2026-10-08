@@ -105,6 +105,18 @@ export const Articles: CollectionConfig = {
       ],
     },
 
+    {
+      // Sits in the sidebar under the placement boxes: emailing a piece is
+      // the same kind of decision as deciding where it appears, and it is
+      // the one that cannot be undone.
+      name: 'sendNewsletter',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: { Field: '/admin/SendNewsletter#default' },
+      },
+    },
+
     ...heroFields(),
     {
       // Sits directly under Main image, which is the only place anyone wants

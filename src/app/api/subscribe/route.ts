@@ -89,6 +89,44 @@ export async function POST(req: Request) {
     )
   }
 
+  /**
+   * Tell the owner somebody signed up.
+   *
+   * After the address is stored, never before: a mail server having a bad
+   * minute must not cost a subscriber. Failures are logged and swallowed for
+   * the same reason, which is why /api/email-health exists to check the mail
+   * path separately. Goes to contactEmail under Site Settings, the same
+   * address the contact form and comment alerts use.
+   */
+  try {
+    const payload = await client()
+    const settings: any = await payload.findGlobal({ slug: 'site-settings' })
+    if (settings?.contactEmail) {
+      const total = await payload.find({
+        collection: 'subscribers',
+        limit: 0,
+        overrideAccess: true,
+      })
+      await payload.sendEmail({
+        to: settings.contactEmail,
+        replyTo: email,
+        subject: `New newsletter subscriber: ${email}`,
+        text: [
+          `${email} has subscribed to your newsletter.`,
+          '',
+          `Signed up from : ${source}`,
+          `Accepted the disclaimer : ${consent ? 'yes' : 'no'}`,
+          `Total subscribers now : ${total.totalDocs}`,
+          '',
+          '--',
+          'Sent automatically when someone subscribes. The full list is under Inbox → Subscribers in the admin panel.',
+        ].join('\n'),
+      })
+    }
+  } catch (err) {
+    console.error('[subscribe] stored, but the notification failed', err)
+  }
+
   const key = process.env.BEEHIIV_API_KEY
   const pub = process.env.BEEHIIV_PUBLICATION_ID
 
