@@ -57,9 +57,19 @@ export type ArticleEmail = { subject: string; html: string; text: string }
 /**
  * One article, as an email.
  *
- * Deliberately plain HTML with inline styles and a table for the button:
- * email clients strip stylesheets, ignore flexbox and disagree about almost
- * everything else. Anything cleverer looks broken in Outlook.
+ * Built as tables with inline styles, which is not how anyone would write a
+ * page today but is the only thing email clients agree on: stylesheets get
+ * stripped, flexbox and grid are ignored, and Outlook renders through Word.
+ * Anything cleverer looks broken somewhere that matters.
+ *
+ * The type follows the site — Newsreader for the words, falling back to
+ * Georgia, since no mail client will fetch a webfont; Inter falling back to
+ * the system stack for the small print. Both land on a serif and a sans that
+ * sit close enough to the site that the email reads as coming from it.
+ *
+ * The footer is not decoration. Bulk email has to say who sent it, give a
+ * postal address and offer a way out, and inbox providers treat a missing
+ * unsubscribe or address as a spam signal regardless of the law.
  */
 export function buildArticleEmail(opts: {
   title: string
@@ -69,62 +79,110 @@ export function buildArticleEmail(opts: {
   imageUrl?: string | null
   siteName: string
   unsubscribe: string
+  postalAddress?: string | null
+  date?: string | null
 }): ArticleEmail {
-  const { title, standfirst, category, url, imageUrl, siteName, unsubscribe } = opts
+  const { title, standfirst, category, url, imageUrl, siteName, unsubscribe, postalAddress, date } =
+    opts
+
+  const serif = `'Newsreader', Georgia, 'Times New Roman', serif`
+  const sans = `'Inter', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`
+
+  // The line inboxes show beside the subject. Without one they fall back to
+  // whatever text comes first, which is usually the word "View".
+  const preheader = standfirst ? standfirst.slice(0, 140) : `New from ${siteName}`
 
   const html = `<!doctype html>
-<html><body style="margin:0;padding:0;background:#f4f4f5;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:24px 12px;">
-    <tr><td align="center">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:10px;overflow:hidden;font-family:Georgia,'Times New Roman',serif;">
-        <tr><td style="background:#121213;padding:18px 28px;">
-          <span style="color:#ffffff;font-size:18px;font-weight:600;letter-spacing:0.2px;">${escape(siteName)}</span>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>${escape(title)}</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f5;-webkit-font-smoothing:antialiased;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escape(preheader)}</div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f5;">
+    <tr><td align="center" style="padding:24px 12px;">
+
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:10px;overflow:hidden;">
+
+        <tr><td style="background:#121213;padding:20px 32px;">
+          <a href="${escape(url)}" style="font-family:${serif};font-size:19px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:0.2px;">${escape(siteName)}</a>
         </td></tr>
+
         ${
           imageUrl
-            ? `<tr><td><img src="${escape(imageUrl)}" alt="" width="560" style="display:block;width:100%;max-width:560px;height:auto;border:0;"></td></tr>`
+            ? `<tr><td><a href="${escape(url)}"><img src="${escape(imageUrl)}" alt="" width="600" style="display:block;width:100%;max-width:600px;height:auto;border:0;"></a></td></tr>`
             : ''
         }
-        <tr><td style="padding:28px;">
+
+        <tr><td style="padding:32px 32px 28px;">
           ${
             category
-              ? `<p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#b4462f;">${escape(category)}</p>`
+              ? `<p style="margin:0 0 12px;font-family:${sans};font-size:11px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:#b4462f;">${escape(category)}</p>`
               : ''
           }
-          <h1 style="margin:0 0 14px;font-size:24px;line-height:1.3;color:#121213;font-weight:600;">${escape(title)}</h1>
+          <h1 style="margin:0 0 16px;font-family:${serif};font-size:28px;line-height:1.25;font-weight:600;color:#121213;">
+            <a href="${escape(url)}" style="color:#121213;text-decoration:none;">${escape(title)}</a>
+          </h1>
           ${
             standfirst
-              ? `<p style="margin:0 0 22px;font-size:16px;line-height:1.6;color:#4a4a4d;">${escape(standfirst)}</p>`
+              ? `<p style="margin:0 0 26px;font-family:${serif};font-size:17px;line-height:1.65;color:#4a4a4d;">${escape(standfirst)}</p>`
               : ''
           }
-          <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
             <td style="background:#b4462f;border-radius:4px;">
-              <a href="${escape(url)}" style="display:inline-block;padding:12px 24px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;">Read the full article</a>
+              <a href="${escape(url)}" style="display:inline-block;padding:13px 26px;font-family:${sans};font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;">Read the full article</a>
             </td>
           </tr></table>
+
+          ${
+            date
+              ? `<p style="margin:22px 0 0;font-family:${sans};font-size:13px;color:#8a8a8d;">Published ${escape(date)}</p>`
+              : ''
+          }
         </td></tr>
-        <tr><td style="padding:18px 28px 26px;border-top:1px solid #e5e5e5;">
-          <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#8a8a8d;">
+
+        <tr><td style="padding:22px 32px 28px;border-top:1px solid #e5e5e5;background:#fafafa;">
+          <p style="margin:0 0 10px;font-family:${sans};font-size:12px;line-height:1.65;color:#6a6a6d;">
             You are receiving this because you subscribed to ${escape(siteName)}.<br>
-            <a href="${escape(unsubscribe)}" style="color:#8a8a8d;text-decoration:underline;">Unsubscribe</a>
+            <a href="${escape(unsubscribe)}" style="color:#6a6a6d;text-decoration:underline;">Unsubscribe</a>
+            &nbsp;·&nbsp;
+            <a href="${escape(url)}" style="color:#6a6a6d;text-decoration:underline;">View in your browser</a>
+          </p>
+          ${
+            postalAddress
+              ? `<p style="margin:0 0 10px;font-family:${sans};font-size:12px;line-height:1.6;color:#8a8a8d;">${escape(postalAddress).replace(/\n/g, '<br>')}</p>`
+              : ''
+          }
+          <p style="margin:0;font-family:${sans};font-size:11.5px;line-height:1.6;color:#9a9a9d;">
+            ${escape(siteName)} publishes financial journalism, not investment advice. Nothing here is a
+            recommendation to buy or sell any security.
           </p>
         </td></tr>
+
       </table>
     </td></tr>
   </table>
 </body></html>`
 
   const text = [
-    category ? category.toUpperCase() : '',
+    category ? category.toUpperCase() : null,
     title,
     '',
-    standfirst ?? '',
+    standfirst ?? null,
     '',
     `Read it here: ${url}`,
+    date ? `Published ${date}` : null,
     '',
     '--',
     `You are receiving this because you subscribed to ${siteName}.`,
     `Unsubscribe: ${unsubscribe}`,
+    postalAddress ?? null,
+    '',
+    `${siteName} publishes financial journalism, not investment advice. Nothing here is a recommendation to buy or sell any security.`,
   ]
     .filter((l) => l !== null)
     .join('\n')

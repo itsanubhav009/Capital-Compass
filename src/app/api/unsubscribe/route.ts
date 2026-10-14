@@ -33,6 +33,51 @@ const page = (title: string, body: string, ok = true) =>
     { status: ok ? 200 : 400, headers: { 'Content-Type': 'text/html; charset=utf-8' } },
   )
 
+/** Marks the address as unsubscribed. Returns false only on a real failure. */
+async function unsubscribe(email: string): Promise<boolean> {
+  const payload = await client()
+  const found = await payload.find({
+    collection: 'subscribers',
+    where: { email: { equals: email } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (found.docs.length) {
+    await payload.update({
+      collection: 'subscribers',
+      id: (found.docs[0] as any).id,
+      data: { unsubscribedAt: new Date().toISOString() } as any,
+      overrideAccess: true,
+    })
+  }
+  return true
+}
+
+/**
+ * One-click unsubscribe, per RFC 8058.
+ *
+ * Gmail and Yahoo show their own unsubscribe button beside bulk mail and
+ * POST here when it is pressed; the reader never opens the message. It
+ * answers with a bare 200 because nobody sees the response — the mail client
+ * does. Same token check as the link, so a POST cannot unsubscribe an address
+ * its sender was not given.
+ */
+export async function POST(req: NextRequest) {
+  const email = (req.nextUrl.searchParams.get('email') ?? '').trim().toLowerCase()
+  const token = req.nextUrl.searchParams.get('token') ?? ''
+
+  if (!email || !token || !verifyUnsubscribeToken(email, token)) {
+    return new Response('Invalid unsubscribe token.', { status: 400 })
+  }
+  try {
+    await unsubscribe(email)
+    return new Response('Unsubscribed.', { status: 200 })
+  } catch (err) {
+    console.error('[unsubscribe] one-click failed', err)
+    return new Response('Could not process that just now.', { status: 500 })
+  }
+}
+
 export async function GET(req: NextRequest) {
   const email = (req.nextUrl.searchParams.get('email') ?? '').trim().toLowerCase()
   const token = req.nextUrl.searchParams.get('token') ?? ''
@@ -46,21 +91,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const payload = await client()
-    const found = await payload.find({
-      collection: 'subscribers',
-      where: { email: { equals: email } },
-      limit: 1,
-      overrideAccess: true,
-    })
-    if (found.docs.length) {
-      await payload.update({
-        collection: 'subscribers',
-        id: (found.docs[0] as any).id,
-        data: { unsubscribedAt: new Date().toISOString() } as any,
-        overrideAccess: true,
-      })
-    }
+    await unsubscribe(email)
     // Reports success even for an address that was never on the list: whether
     // a given address is subscribed is not something a stranger should be
     // able to probe, and the outcome the reader wanted is true either way.

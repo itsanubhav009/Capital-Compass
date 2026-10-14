@@ -107,7 +107,24 @@ export const SiteSettings: GlobalConfig = {
                 'Institutional flow analysis for HNI and NRI investors. Foreign and domestic fund activity, promoter moves, macro and sector themes — explained plainly.',
             },
             { name: 'ogImage', type: 'upload', relationTo: 'media' },
-            { name: 'contactEmail', type: 'email' },
+            {
+              name: 'contactEmail',
+              type: 'email',
+              label: 'Where enquiries go',
+              admin: {
+                description:
+                  'Contact-form messages, new-subscriber alerts and comments awaiting approval all arrive here.',
+              },
+            },
+            {
+              name: 'postalAddress',
+              type: 'textarea',
+              label: 'Postal address',
+              admin: {
+                description:
+                  'Printed at the foot of every newsletter. Anti-spam law in most countries requires a real postal address on bulk email, and inbox providers treat its absence as a spam signal. A registered office or a PO box is fine; it does not have to be where you work.',
+              },
+            },
           ],
         },
       ],

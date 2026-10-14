@@ -7,6 +7,7 @@ import * as migration_20260917_135936_remove_flows_and_summary from './20260917_
 import * as migration_20260919_053358_remove_company_tab from './20260919_053358_remove_company_tab';
 import * as migration_20260919_060447_add_articles from './20260919_060447_add_articles';
 import * as migration_20261008_091855_add_newsletter_sends from './20261008_091855_add_newsletter_sends';
+import * as migration_20261014_113040_add_postal_address from './20261014_113040_add_postal_address';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20261008_091855_add_newsletter_sends.up,
     down: migration_20261008_091855_add_newsletter_sends.down,
-    name: '20261008_091855_add_newsletter_sends'
+    name: '20261008_091855_add_newsletter_sends',
+  },
+  {
+    up: migration_20261014_113040_add_postal_address.up,
+    down: migration_20261014_113040_add_postal_address.down,
+    name: '20261014_113040_add_postal_address'
   },
 ];

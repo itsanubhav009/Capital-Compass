@@ -171,6 +171,14 @@ export async function POST(req: NextRequest) {
       imageUrl: image,
       siteName,
       unsubscribe: unsubscribeUrl(email),
+      postalAddress: settings?.postalAddress ?? null,
+      date: article.publishedAt
+        ? new Date(article.publishedAt).toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })
+        : null,
     })
     try {
       await payload.sendEmail({
@@ -180,7 +188,15 @@ export async function POST(req: NextRequest) {
         text: mail.text,
         // Lets Gmail and Outlook show their own unsubscribe button, which
         // keeps bulk mail out of the spam folder.
-        headers: { 'List-Unsubscribe': `<${unsubscribeUrl(email)}>` },
+        headers: {
+          'List-Unsubscribe': `<${unsubscribeUrl(email)}>`,
+          // RFC 8058. Gmail and Yahoo require bulk senders to offer an
+          // unsubscribe the reader can take in one click from the inbox
+          // itself, without opening the message. Without this header the
+          // link above still works, but the inbox button does not appear and
+          // the mail is likelier to be filtered.
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        },
       } as any)
       results.push({ email, status: 'delivered' })
     } catch (err: any) {
