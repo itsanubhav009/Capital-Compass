@@ -47,10 +47,20 @@ const img = (m: any, size: 'thumb' | 'card' | 'wide' = 'card') =>
  * rails, eight on the hero. Clamping by line instead leaves rows at uneven
  * heights whenever a long word forces an early wrap.
  */
-const words = (title: string, n: number) => {
-  const parts = title.trim().split(/\s+/)
-  return parts.length > n ? parts.slice(0, n).join(' ') : title
-}
+/**
+ * Headlines are no longer cut to a word count.
+ *
+ * They used to be, and the result was a headline that stopped mid-thought
+ * with nothing to show it had: "SBI MF, Invesco, Mirae and Motilal" reads as
+ * a finished sentence about four funds, when the piece is about them moving
+ * into Tenneco. A word count also cannot know how wide the card is, so on a
+ * phone it cut text that would have fitted and on a desktop it cut text that
+ * had room to spare.
+ *
+ * The line-clamp already on every headline does the job properly: it measures
+ * the real box, cuts at the real overflow, and leaves an ellipsis so a reader
+ * can see there is more.
+ */
 
 /**
  * Category label.
@@ -152,7 +162,7 @@ export function ListRow({
         <Kicker>{category}</Kicker>
         <h6 className="mb-[8px] mt-[5px] line-clamp-2 text-[16px] leading-[1.44] 2xl:text-[18px]">
           <Link href={href} className="transition-colors duration-300 group-hover:text-accent">
-            {words(title, 6)}
+            {title}
           </Link>
         </h6>
         <Meta />
@@ -204,7 +214,7 @@ export function HeroCard({
         <Kicker light>{category}</Kicker>
         <h3 className="mt-3 line-clamp-3 max-w-[17ch] text-[24px] leading-[1.3] text-white sm:text-[28px]">
           <Link href={href} className="transition-colors duration-300 hover:text-white/85">
-            {words(title, 8)}
+            {title}
           </Link>
         </h3>
         <div className="mt-4">
@@ -273,7 +283,7 @@ export function StackCard({
         <Kicker light={dark}>{category}</Kicker>
         <h5 className={`mb-[7px] mt-[9px] line-clamp-2 text-[20px] leading-[1.44] ${dark ? 'text-white' : ''}`}>
           <Link href={href} className="transition-colors duration-300 group-hover:text-accent">
-            {words(title, 8)}
+            {title}
           </Link>
         </h5>
         {standfirst && (

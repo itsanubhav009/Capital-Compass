@@ -88,7 +88,7 @@ export function HighlightSlider({ slides }: { slides: Slide[] }) {
                     href={`/insight/${s.slug}`}
                     className="transition-colors duration-300 hover:text-white/85"
                   >
-                    {words(s.title, 8)}
+                    {s.title}
                   </Link>
                 </h5>
                 <div className="mt-3.5">

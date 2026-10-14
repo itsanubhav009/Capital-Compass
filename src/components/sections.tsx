@@ -183,7 +183,7 @@ export function RoundStrip({
                   href={`/insight/${lead.slug}`}
                   className="transition-colors duration-300 hover:text-accent"
                 >
-                  {words(lead.title, 12)}
+                  {lead.title}
                 </Link>
               </h3>
               {lead.standfirst && (
@@ -228,7 +228,7 @@ export function RoundStrip({
                       </span>
                       <h6 className="mb-[6px] mt-[4px] line-clamp-2 text-[16px] leading-[1.44] text-white">
                         <Link href={href} className="transition-colors duration-300 group-hover:text-accent">
-                          {words(d.title, 8)}
+                          {d.title}
                         </Link>
                       </h6>
                       <Meta light />
@@ -405,7 +405,7 @@ export function LatestStories({
           <Kicker>{featured.category}</Kicker>
           <h3 className="mt-3 line-clamp-3 text-[24px] leading-[1.3] sm:text-[28px]">
             <Link href={href} className="transition-colors duration-300 group-hover:text-accent">
-              {words(featured.title, 7)}
+              {featured.title}
             </Link>
           </h3>
           <div className="mt-4">
@@ -442,7 +442,7 @@ export function LatestStories({
                   href={`/insight/${d.slug}`}
                   className="transition-colors duration-300 group-hover:text-accent"
                 >
-                  {words(d.title, 7)}
+                  {d.title}
                 </Link>
               </h6>
               <Meta />
@@ -480,7 +480,7 @@ export function LatestStories({
                     <Kicker>{d.category}</Kicker>
                     <h6 className="mb-[8px] mt-[5px] line-clamp-2 text-[16px] leading-[1.44] 2xl:text-[18px]">
                       <Link href={h} className="transition-colors duration-300 group-hover:text-accent">
-                        {words(d.title, 7)}
+                        {d.title}
                       </Link>
                     </h6>
                     <Meta />
@@ -542,7 +542,7 @@ export function BigGroup({ lead, rest }: { lead: any; rest: any[] }) {
           <Kicker tone="light">{lead.category}</Kicker>
           <h3 className="mt-3 line-clamp-3 max-w-[24ch] text-[24px] leading-[1.3] text-white sm:text-[28px]">
             <Link href={href} className="transition-colors duration-300 hover:text-white/85">
-              {words(lead.title, 10)}
+              {lead.title}
             </Link>
           </h3>
           <div className="mt-4">
@@ -583,7 +583,7 @@ export function BigGroup({ lead, rest }: { lead: any; rest: any[] }) {
                 </span>
                 <h6 className="mb-[8px] mt-[5px] line-clamp-2 text-[16px] leading-[1.44] text-white 2xl:text-[18px]">
                   <Link href={h} className="transition-colors duration-300 group-hover:text-accent">
-                    {words(d.title, 6)}
+                    {d.title}
                   </Link>
                 </h6>
                 <Meta light />

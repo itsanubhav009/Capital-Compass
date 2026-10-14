@@ -201,41 +201,185 @@
     color: var(--color-ink-soft);
   }
 
-  /* Article body */
+  /* ------------------------------------------------------- article body ---
+
+     Set for reading, the way Substack and Medium set a post.
+
+     The body used to run in Inter while every heading ran in Newsreader. On
+     a page where authors mark their own emphasis, that produced three
+     competing voices in a single column — a serif heading, a sans paragraph,
+     and a bold sans run standing in for a subheading — and the piece read as
+     though its formatting had failed. Body and headings now share Newsreader,
+     which is a text face, so the only thing that changes down the column is
+     size and weight.
+
+     Measure, size and leading follow the same reasoning the long-form sites
+     landed on: around 19px, line-height near 1.75, and a column capped at
+     68ch, which is roughly 75 characters and the width at which the eye
+     reliably finds the next line.                                          */
+
   .prose-cc {
-    font-size: 17px;
+    font-family: var(--font-display);
+    font-size: 19px;
     line-height: 1.75;
-    color: var(--color-ink-soft);
+    color: var(--color-ink);
+    letter-spacing: -0.002em;
   }
-  .prose-cc > * + * {
-    margin-top: 1.15em;
+
+  /* Spacing is set with bottom margins on the elements themselves, not with
+     a sibling selector on direct children.
+     
+     The renderer wraps the whole article in a single div, so `> * + *` had
+     exactly one element to match and no paragraph ever received any space at
+     all. The only gaps on the page came from a rule meant for bold runs,
+     which is why the spacing looked arbitrary: wide above a bold line, flush
+     everywhere else. Addressing the elements wherever they sit avoids
+     depending on how deeply the renderer nests them. */
+  .prose-cc :where(p, ul, ol, blockquote, figure, pre, table, .lexical-table-container) {
+    margin: 0 0 1.45em;
   }
-  .prose-cc h2 {
-    font-size: 1.5em;
-    margin-top: 1.9em;
+  .prose-cc :where(h2, h3, h4) {
+    color: var(--color-ink);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
   }
-  .prose-cc h3 {
-    font-size: 1.2em;
-    margin-top: 1.6em;
+  /* A heading belongs to what follows it, so it takes its space from above.
+     Equal space on both sides leaves it floating between two sections,
+     belonging to neither. */
+  .prose-cc :where(h2) {
+    font-size: 1.42em;
+    margin: 2.1em 0 0.55em;
   }
-  .prose-cc a {
-    color: var(--color-accent);
-    text-decoration: underline;
-    text-underline-offset: 3px;
+  .prose-cc :where(h3) {
+    font-size: 1.18em;
+    margin: 1.85em 0 0.5em;
   }
-  .prose-cc blockquote {
-    border-left: 3px solid var(--color-accent);
-    padding-left: 1.1em;
-    font-size: 1.1em;
+  .prose-cc :where(h4) {
+    font-size: 1.02em;
+    margin: 1.6em 0 0.45em;
+  }
+  /* No leading gap at the very top, no trailing one at the very bottom. */
+  .prose-cc > *:first-child,
+  .prose-cc > * > *:first-child {
+    margin-top: 0;
+  }
+  .prose-cc > *:last-child,
+  .prose-cc > * > *:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Soft line breaks. Writers pasting from a document use them for lists of
+     short statements — "Buy a good business. / Pay a sensible price. / Wait."
+     Left at their natural height those lines crowd together more tightly than
+     the lines of an ordinary paragraph, which is the opposite of what the
+     writer meant. */
+  .prose-cc p br {
+    content: '';
+    display: block;
+    margin-top: 0.45em;
+  }
+
+  /* A bold run alone on a line is how most writers mark a subheading. Given a
+     little air it reads as one rather than colliding with the text beneath. */
+  .prose-cc p > strong:only-child {
+    display: inline-block;
+    line-height: 1.35;
+  }
+  .prose-cc strong {
+    font-weight: 600;
     color: var(--color-ink);
   }
-  .prose-cc ul,
-  .prose-cc ol {
-    padding-left: 1.3em;
+
+  .prose-cc a {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.2s ease;
+  }
+  .prose-cc a:hover {
+    text-decoration-color: var(--color-accent);
+  }
+
+  .prose-cc blockquote {
+    border-left: 3px solid var(--color-accent);
+    padding-left: 1.15em;
+    font-size: 1.08em;
+    line-height: 1.6;
+    font-style: italic;
+    color: var(--color-ink);
+  }
+
+  .prose-cc :where(ul, ol) {
+    padding-left: 1.4em;
     list-style: disc;
   }
+  .prose-cc :where(ol) {
+    list-style: decimal;
+  }
   .prose-cc li + li {
-    margin-top: 0.35em;
+    margin-top: 0.45em;
+  }
+  .prose-cc li > :where(ul, ol) {
+    margin: 0.45em 0 0;
+  }
+
+  .prose-cc img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+  .prose-cc figcaption {
+    margin: 0.6em 0 0;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--color-ink-faint);
+  }
+
+  /* The archive uses horizontal rules as section breaks, sometimes several in
+     a row. Generous space either side is what makes them read as a pause
+     rather than a stray line. */
+  .prose-cc hr {
+    border: 0;
+    border-top: 1px solid var(--color-rule);
+    margin: 2.4em 0;
+  }
+  .prose-cc hr + hr {
+    display: none;
+  }
+
+  .prose-cc code {
+    font-size: 0.88em;
+    background: var(--color-sunken);
+    padding: 0.12em 0.36em;
+    border-radius: 3px;
+  }
+
+  /* On a phone the column is the screen, so measure stops mattering; what
+     counts is that the text is not cramped and stays comfortable in the hand. */
+  @media (max-width: 640px) {
+    .prose-cc {
+      font-size: 18px;
+      line-height: 1.72;
+    }
+    .prose-cc :where(p, ul, ol, blockquote, figure, pre, table) {
+      margin-bottom: 1.3em;
+    }
+    .prose-cc :where(h2) {
+      font-size: 1.3em;
+      margin-top: 1.8em;
+    }
+    .prose-cc :where(h3) {
+      font-size: 1.12em;
+      margin-top: 1.6em;
+    }
+    .prose-cc hr {
+      margin: 2em 0;
+    }
   }
 
   /* Tables.
