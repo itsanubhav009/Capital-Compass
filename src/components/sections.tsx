@@ -226,7 +226,7 @@ export function RoundStrip({
                       <span className="kicker text-[#adadad]">
                         <span className="truncate">{d.category}</span>
                       </span>
-                      <h6 className="mb-[6px] mt-[4px] line-clamp-2 text-[16px] leading-[1.44] text-white">
+                      <h6 className="mb-[6px] mt-[4px] text-[16px] leading-[1.44] text-white">
                         <Link href={href} className="transition-colors duration-300 group-hover:text-accent">
                           {d.title}
                         </Link>
@@ -283,7 +283,7 @@ export function WideRow({
       </Link>
       <div className="min-w-0 flex-1 sm:ml-[5px] sm:mr-5">
         <Kicker>{category}</Kicker>
-        <h4 className="mb-[14px] mt-[12px] line-clamp-2 text-[20px] leading-[1.2] sm:text-[22px]">
+        <h4 className="mb-[14px] mt-[12px] text-[20px] leading-[1.2] sm:text-[22px]">
           <Link href={href} className="transition-colors duration-300 group-hover:text-accent">
             {title}
           </Link>
@@ -403,7 +403,7 @@ export function LatestStories({
 
         <div className="min-w-0 flex-1 p-6 lg:py-8 lg:pl-[30px] lg:pr-6">
           <Kicker>{featured.category}</Kicker>
-          <h3 className="mt-3 line-clamp-3 text-[24px] leading-[1.3] sm:text-[28px]">
+          <h3 className="mt-3 text-[24px] leading-[1.3] sm:text-[28px]">
             <Link href={href} className="transition-colors duration-300 group-hover:text-accent">
               {featured.title}
             </Link>
@@ -437,7 +437,7 @@ export function LatestStories({
               }`}
             >
               <Kicker>{d.category}</Kicker>
-              <h6 className="mb-[8px] mt-[5px] line-clamp-3 text-[16px] leading-[1.44] 2xl:text-[18px]">
+              <h6 className="mb-[8px] mt-[5px] text-[16px] leading-[1.44] 2xl:text-[18px]">
                 <Link
                   href={`/insight/${d.slug}`}
                   className="transition-colors duration-300 group-hover:text-accent"
@@ -478,7 +478,7 @@ export function LatestStories({
                   </Link>
                   <div className="min-w-0 flex-1">
                     <Kicker>{d.category}</Kicker>
-                    <h6 className="mb-[8px] mt-[5px] line-clamp-2 text-[16px] leading-[1.44] 2xl:text-[18px]">
+                    <h6 className="mb-[8px] mt-[5px] text-[16px] leading-[1.44] 2xl:text-[18px]">
                       <Link href={h} className="transition-colors duration-300 group-hover:text-accent">
                         {d.title}
                       </Link>
@@ -540,7 +540,7 @@ export function BigGroup({ lead, rest }: { lead: any; rest: any[] }) {
         />
         <div className="absolute inset-x-0 bottom-0 px-[30px] pb-[27px]">
           <Kicker tone="light">{lead.category}</Kicker>
-          <h3 className="mt-3 line-clamp-3 max-w-[24ch] text-[24px] leading-[1.3] text-white sm:text-[28px]">
+          <h3 className="mt-3 line-clamp-4 max-w-[26ch] text-[24px] leading-[1.3] text-white sm:text-[28px]">
             <Link href={href} className="transition-colors duration-300 hover:text-white/85">
               {lead.title}
             </Link>
@@ -581,7 +581,7 @@ export function BigGroup({ lead, rest }: { lead: any; rest: any[] }) {
                 <span className="kicker text-[#adadad]">
                   <span className="truncate">{d.category}</span>
                 </span>
-                <h6 className="mb-[8px] mt-[5px] line-clamp-2 text-[16px] leading-[1.44] text-white 2xl:text-[18px]">
+                <h6 className="mb-[8px] mt-[5px] text-[16px] leading-[1.44] text-white 2xl:text-[18px]">
                   <Link href={h} className="transition-colors duration-300 group-hover:text-accent">
                     {d.title}
                   </Link>

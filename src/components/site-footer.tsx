@@ -210,7 +210,7 @@ export function SiteFooter({
                       )}
                     </span>
                     <span className="min-w-0">
-                      <span className="line-clamp-2 text-[15px] font-semibold leading-snug text-white/90 transition-colors group-hover:text-accent-soft">
+                      <span className="text-[15px] font-semibold leading-snug text-white/90 transition-colors group-hover:text-accent-soft">
                         {r.title}
                       </span>
                     </span>

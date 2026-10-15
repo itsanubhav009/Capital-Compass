@@ -254,7 +254,7 @@ function NavEntry({
                     {p.image && <Image src={p.image} alt="" fill sizes="80px" className="object-cover" />}
                   </span>
                   <span className="min-w-0">
-                    <span className="line-clamp-2 text-[14px] font-semibold leading-snug text-ink group-hover:text-accent">
+                    <span className="text-[14px] font-semibold leading-snug text-ink group-hover:text-accent">
                       {p.title}
                     </span>
                     {p.date && <span className="tnum mt-1 block text-[11px] text-ink-faint">{p.date}</span>}
@@ -365,18 +365,24 @@ export function SiteHeader({
       {/* ---------------------------------------------------- logo row --- */}
       <div className="bg-white">
         <div className="mx-auto flex max-w-[1430px] flex-col items-center gap-[10px] px-[10px] py-[10px] lg:flex-row">
-          <div className="flex w-full items-center gap-6 pl-[10px] lg:w-auto lg:shrink-0 lg:gap-[80px]">
+          {/* The masthead has to survive a 360px phone, which is the narrowest
+              screen in common use. At the old fixed sizes the button, the gap
+              and a 26px wordmark came to 354px inside a 350px content box, so
+              the name sat hard against the right edge and read as broken
+              rather than tight. Button, gap and type all step down below
+              640px so the row ends where the padding does. */}
+          <div className="flex w-full items-center gap-3 pl-[10px] sm:gap-6 lg:w-auto lg:shrink-0 lg:gap-[80px]">
             <button
               type="button"
               onClick={() => setOpen(true)}
               aria-label="Open menu"
-              className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-[5px] border border-rule bg-white text-ink transition-colors duration-300 hover:text-accent"
+              className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[5px] border border-rule bg-white text-ink transition-colors duration-300 hover:text-accent sm:h-[50px] sm:w-[50px]"
             >
               <BurgerIcon />
             </button>
 
-            <Link href="/" className="flex shrink-0 items-baseline gap-2">
-              <span className="text-[26px] font-bold tracking-tight text-ink sm:text-[30px]">
+            <Link href="/" className="flex min-w-0 items-baseline gap-2">
+              <span className="whitespace-nowrap text-[21px] font-bold tracking-tight text-ink min-[380px]:text-[24px] sm:text-[30px]">
                 {siteName}
               </span>
             </Link>

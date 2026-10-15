@@ -160,7 +160,7 @@ export function ListRow({
 
       <div className="min-w-0 flex-1">
         <Kicker>{category}</Kicker>
-        <h6 className="mb-[8px] mt-[5px] line-clamp-2 text-[16px] leading-[1.44] 2xl:text-[18px]">
+        <h6 className="mb-[8px] mt-[5px] text-[16px] leading-[1.44] 2xl:text-[18px]">
           <Link href={href} className="transition-colors duration-300 group-hover:text-accent">
             {title}
           </Link>
@@ -212,7 +212,7 @@ export function HeroCard({
 
       <div className="absolute inset-x-0 bottom-0 pb-[30px] pl-[35px] pr-[30px]">
         <Kicker light>{category}</Kicker>
-        <h3 className="mt-3 line-clamp-3 max-w-[17ch] text-[24px] leading-[1.3] text-white sm:text-[28px]">
+        <h3 className="mt-3 line-clamp-4 max-w-[20ch] text-[24px] leading-[1.3] text-white sm:text-[28px]">
           <Link href={href} className="transition-colors duration-300 hover:text-white/85">
             {title}
           </Link>
@@ -281,7 +281,7 @@ export function StackCard({
       </Link>
       <div className="pt-4">
         <Kicker light={dark}>{category}</Kicker>
-        <h5 className={`mb-[7px] mt-[9px] line-clamp-2 text-[20px] leading-[1.44] ${dark ? 'text-white' : ''}`}>
+        <h5 className={`mb-[7px] mt-[9px] text-[20px] leading-[1.44] ${dark ? 'text-white' : ''}`}>
           <Link href={href} className="transition-colors duration-300 group-hover:text-accent">
             {title}
           </Link>

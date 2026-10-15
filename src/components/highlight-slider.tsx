@@ -83,7 +83,7 @@ export function HighlightSlider({ slides }: { slides: Slide[] }) {
                 <span className="kicker kicker-light max-w-full">
                   <span className="truncate">{s.category}</span>
                 </span>
-                <h5 className="mt-3 line-clamp-3 text-[20px] leading-[1.44] text-white">
+                <h5 className="mt-3 line-clamp-4 text-[20px] leading-[1.44] text-white">
                   <Link
                     href={`/insight/${s.slug}`}
                     className="transition-colors duration-300 hover:text-white/85"

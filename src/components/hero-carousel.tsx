@@ -137,7 +137,7 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
 
             <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] pb-[30px] pl-[35px] pr-[30px]">
               <span className="kicker kicker-light">{s.category}</span>
-              <h3 className="mt-3 line-clamp-3 max-w-[17ch] text-[24px] leading-[1.3] text-white sm:text-[28px]">
+              <h3 className="mt-3 line-clamp-4 max-w-[20ch] text-[24px] leading-[1.3] text-white sm:text-[28px]">
                 <Link
                   href={`/insight/${s.slug}`}
                   className="pointer-events-auto transition-colors duration-300 hover:text-white/85"
