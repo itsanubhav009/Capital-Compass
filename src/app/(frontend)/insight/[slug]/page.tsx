@@ -15,6 +15,11 @@ export const revalidate = 300
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
+// The reading column, centred in the page. It is the measure of the body
+// text (~70ch of Newsreader at 19px), and the header, image and notes below
+// share it so every left edge lines up with the paragraphs.
+const COLUMN = 'mx-auto w-full max-w-[42rem]'
+
 export async function generateMetadata({
   params,
 }: {
@@ -72,49 +77,55 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
 
   const richText = doc.body ?? doc.commentary ?? doc.outlook
 
+  // wrap-break-word: writers paste runs with no break opportunity in them —
+  // "Users→Merchants→Payments→Data→Credit", a bare URL — and on a phone one
+  // of those is wider than the screen. Mobile Chrome then zooms the whole
+  // page out to fit it, which reads as every margin being wrong at once.
   return (
-    <article className="mx-auto max-w-6xl px-5 sm:px-8">
+    <article className="mx-auto max-w-6xl px-5 wrap-break-word sm:px-8">
       {/* ------------------------------------------------------ masthead --- */}
       <header className="border-b border-rule py-10 sm:py-14">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="eyebrow">{doc.section?.title ?? 'Analysis'}</span>
-          {doc.section && (
-            <>
-              <span aria-hidden className="text-rule-strong">
-                /
+        <div className={COLUMN}>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="eyebrow">{doc.section?.title ?? 'Analysis'}</span>
+            {doc.section && (
+              <>
+                <span aria-hidden className="text-rule-strong">
+                  /
+                </span>
+                <Link
+                  href={`/${doc.section.slug}`}
+                  className="text-[13px] text-ink-soft hover:text-deep"
+                >
+                  {doc.section.title}
+                </Link>
+              </>
+            )}
+          </div>
+
+          <h1 className="mt-4 text-[32px] leading-[1.1] sm:text-[46px]">{doc.title}</h1>
+
+          {doc.standfirst && (
+            <p className="mt-5 text-[19px] leading-relaxed text-ink-soft">
+              {doc.standfirst}
+            </p>
+          )}
+
+          <div className="tnum mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] uppercase tracking-wider text-ink-faint">
+            <span>{shortDate(doc.publishedAt)}</span>
+            {doc.readingMinutes && <span>{doc.readingMinutes} min read</span>}
+            {doc.region && (
+              <span>
+                {doc.region} · {doc.assetClass}
               </span>
-              <Link
-                href={`/${doc.section.slug}`}
-                className="text-[13px] text-ink-soft hover:text-deep"
-              >
-                {doc.section.title}
-              </Link>
-            </>
-          )}
-        </div>
-
-        <h1 className="mt-4 max-w-4xl text-[32px] leading-[1.1] sm:text-[46px]">{doc.title}</h1>
-
-        {doc.standfirst && (
-          <p className="mt-5 max-w-3xl text-[19px] leading-relaxed text-ink-soft">
-            {doc.standfirst}
-          </p>
-        )}
-
-        <div className="tnum mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] uppercase tracking-wider text-ink-faint">
-          <span>{shortDate(doc.publishedAt)}</span>
-          {doc.readingMinutes && <span>{doc.readingMinutes} min read</span>}
-          {doc.region && (
-            <span>
-              {doc.region} · {doc.assetClass}
-            </span>
-          )}
+            )}
+          </div>
         </div>
       </header>
 
       <div className="py-10">
         {/* --------------------------------------------------- the body --- */}
-        <div className="min-w-0">
+        <div className={`min-w-0 ${COLUMN}`}>
           {doc.featuredImage?.url && (
             <figure className="mb-9">
               <div className="relative aspect-16/9 w-full overflow-hidden bg-sunken">
@@ -122,7 +133,7 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
                   src={doc.featuredImage.sizes?.wide?.url ?? doc.featuredImage.url}
                   alt={doc.featuredImage.alt ?? ''}
                   fill
-                  sizes="(max-width: 1024px) 100vw, 760px"
+                  sizes="(max-width: 720px) 100vw, 672px"
                   className="object-cover"
                   priority
                 />
@@ -154,7 +165,7 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
           )}
 
           {richText && (
-            <div className="prose-cc max-w-[68ch]">
+            <div className="prose-cc">
               <RichText data={richText} />
             </div>
           )}
@@ -190,7 +201,7 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
                       alt={c.image.alt ?? c.caption ?? ''}
                       width={1600}
                       height={900}
-                      sizes="(max-width: 1024px) 100vw, 760px"
+                      sizes="(max-width: 720px) 100vw, 672px"
                       className="h-auto w-full bg-sunken"
                     />
                   )}
