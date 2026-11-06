@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Meta } from '@/components/cards'
+import { WholeImage } from '@/components/whole-image'
 
 /* --------------------------------------------------------------- shared */
 
@@ -140,9 +141,11 @@ export function RoundStrip({
   const leadImage = lead ? img(lead.featuredImage, 'wide') : null
 
   return (
-    <section className="relative bg-bar-2">
+    <section className="relative overflow-hidden bg-bar-2">
       {backdrop && (
-        <Image src={backdrop} alt="" fill sizes="100vw" className="object-cover object-bottom" />
+        // Blurred: these pictures are graphics with words set into them, and
+        // sharp they read through the heading and the headlines above them.
+        <Image src={backdrop} alt="" fill sizes="100vw" className="scale-110 object-cover object-bottom opacity-60 blur-2xl" />
       )}
       <span
         aria-hidden
@@ -161,12 +164,10 @@ export function RoundStrip({
               className="relative block h-[240px] overflow-hidden rounded-[10px] bg-white/10 sm:h-[320px] lg:h-[380px]"
             >
               {leadImage && (
-                <Image
+                <WholeImage
                   src={leadImage.url}
-                  alt=""
-                  fill
                   sizes="(max-width: 1024px) 100vw, 780px"
-                  className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                  className="transition-transform duration-300 ease-out group-hover:scale-105"
                 />
               )}
             </Link>
@@ -204,14 +205,14 @@ export function RoundStrip({
                       href={href}
                       tabIndex={-1}
                       aria-hidden
-                      className="relative block h-[86px] w-[86px] shrink-0 overflow-hidden rounded-full bg-white/10"
+                      className="relative block h-[73px] w-[110px] shrink-0 overflow-hidden rounded-[8px] bg-white/10"
                     >
                       {image && (
                         <Image
                           src={image.url}
                           alt=""
                           fill
-                          sizes="86px"
+                          sizes="110px"
                           className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
                         />
                       )}
@@ -339,7 +340,7 @@ export function SubscribeBanner({
           className="absolute inset-0"
           style={{
             backgroundImage:
-              'linear-gradient(90deg, #171a1e 0%, rgba(23,26,30,0.92) 45%, rgba(23,26,30,0.25) 100%)',
+              'linear-gradient(90deg, #171a1e 0%, rgba(23,26,30,0.97) 52%, rgba(23,26,30,0.3) 100%)',
           }}
         />
         <div className="relative z-10 lg:w-[43%]">
@@ -377,7 +378,12 @@ export function LatestStories({
   return (
     <div className="flex flex-wrap items-start justify-between gap-x-[30px] gap-y-5">
       {/* ------------------------------------------------ featured --- */}
-      <article className="group flex w-full flex-col-reverse overflow-hidden rounded-[8px] bg-sunken lg:w-[calc(76%-15px)] lg:flex-row-reverse lg:items-center">
+      <article
+        className={`group flex w-full flex-col-reverse overflow-hidden rounded-[8px] bg-sunken lg:flex-row-reverse lg:items-center ${
+          // With no rail beside it, take the row rather than leave a quarter empty.
+          rail.length ? 'lg:w-[calc(76%-15px)]' : ''
+        }`}
+      >
         <Link
           href={href}
           tabIndex={-1}
@@ -385,12 +391,10 @@ export function LatestStories({
           className="relative block h-[260px] w-full shrink-0 overflow-hidden bg-sunken sm:h-[340px] lg:h-[445px] lg:w-[54%]"
         >
           {image && (
-            <Image
+            <WholeImage
               src={image.url}
-              alt=""
-              fill
               sizes="(max-width: 1024px) 100vw, 610px"
-              className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+              className="transition-transform duration-300 ease-out group-hover:scale-105"
             />
           )}
         </Link>
@@ -515,15 +519,18 @@ export function BigGroup({ lead, rest }: { lead: any; rest: any[] }) {
 
   return (
     <div className="grid gap-[30px] lg:grid-cols-12">
-      <article className="group relative col-span-full min-h-[380px] overflow-hidden rounded-[10px] bg-bar lg:col-span-8 lg:row-span-3 lg:min-h-[535px]">
+      <article
+        className={`group relative col-span-full min-h-[380px] overflow-hidden rounded-[10px] bg-bar lg:row-span-3 lg:min-h-[535px] ${
+          // Alone, the lead is centred rather than leaving four columns empty.
+          rest.length ? 'lg:col-span-8' : 'lg:col-span-8 lg:col-start-3'
+        }`}
+      >
         <Link href={href} tabIndex={-1} aria-hidden className="absolute inset-0 block">
           {image && (
-            <Image
+            <WholeImage
               src={image.url}
-              alt=""
-              fill
               sizes="(max-width: 1024px) 100vw, 900px"
-              className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+              className="object-top origin-top transition-transform duration-300 ease-out group-hover:scale-105"
             />
           )}
         </Link>
@@ -545,6 +552,7 @@ export function BigGroup({ lead, rest }: { lead: any; rest: any[] }) {
         </div>
       </article>
 
+      {rest.length > 0 && (
       <div className="col-span-full lg:col-span-4">
         {rest.map((d) => {
           const t = img(d.featuredImage, 'thumb')
@@ -586,6 +594,7 @@ export function BigGroup({ lead, rest }: { lead: any; rest: any[] }) {
           )
         })}
       </div>
+      )}
     </div>
   )
 }

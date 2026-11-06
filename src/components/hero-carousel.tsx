@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Meta } from '@/components/cards'
+import { WholeImage } from '@/components/whole-image'
 
 export type Slide = {
   slug: string
@@ -106,21 +106,22 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
             inert={!active}
           >
             {s.image && (
-              <Image
+              <WholeImage
                 src={s.image}
-                alt=""
-                fill
                 sizes="(max-width: 1024px) 100vw, 760px"
                 priority={i === 0}
-                className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+                className="object-top origin-top transition-transform duration-300 ease-out group-hover:scale-105"
               />
             )}
-            {/* .thumb-overlay: transparent to #121213, starting at 18%. */}
+            {/* .thumb-overlay, darker sooner: the picture is shown whole at the
+                top now, and on a wide screen its bottom edge meets the
+                kicker, which needs dark ground to read on. */}
             <div
               aria-hidden
               className="absolute inset-0"
               style={{
-                backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0) 18%, #121213 100%)',
+                backgroundImage:
+                  'linear-gradient(180deg, rgba(18,18,19,0) 45%, rgba(18,18,19,0.88) 64%, #121213 100%)',
               }}
             />
             {/* The whole slide opens the story, not just the headline — the
@@ -156,12 +157,14 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
       {slides.length > 1 && (
         <>
           {/* .fpg-unique-slider arrows: 50px circles, hairline white border,
-              hidden until the slider is hovered. */}
+              hidden until the slider is hovered. A touch screen has no hover,
+              so there they always show, on a dark disc that reads over any
+              photograph. */}
           <button
             type="button"
             onClick={() => go(index - 1)}
             aria-label="Previous story"
-            className="absolute left-[10px] top-1/2 z-10 grid h-[50px] w-[50px] -translate-y-1/2 place-items-center rounded-full border border-white/10 text-white opacity-0 transition-all duration-300 hover:border-accent hover:bg-accent focus-visible:opacity-100 group-hover:opacity-100"
+            className="absolute left-[10px] top-1/2 z-10 grid h-[50px] w-[50px] -translate-y-1/2 place-items-center rounded-full border border-white/10 text-white opacity-0 transition-all duration-300 hover:border-accent hover:bg-accent focus-visible:opacity-100 group-hover:opacity-100 pointer-coarse:bg-black/45 pointer-coarse:opacity-100"
           >
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
               <path d="M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z" />
@@ -172,7 +175,7 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
             type="button"
             onClick={() => go(index + 1)}
             aria-label="Next story"
-            className="absolute right-[10px] top-1/2 z-10 grid h-[50px] w-[50px] -translate-y-1/2 place-items-center rounded-full border border-white/10 text-white opacity-0 transition-all duration-300 hover:border-accent hover:bg-accent focus-visible:opacity-100 group-hover:opacity-100"
+            className="absolute right-[10px] top-1/2 z-10 grid h-[50px] w-[50px] -translate-y-1/2 place-items-center rounded-full border border-white/10 text-white opacity-0 transition-all duration-300 hover:border-accent hover:bg-accent focus-visible:opacity-100 group-hover:opacity-100 pointer-coarse:bg-black/45 pointer-coarse:opacity-100"
           >
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
               <path d="M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z" />

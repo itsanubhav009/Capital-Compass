@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useCallback, useRef, useState } from 'react'
 import { Meta } from '@/components/cards'
+import { WholeImage } from '@/components/whole-image'
 
 export type Slide = {
   slug: string
@@ -58,12 +58,10 @@ export function HighlightSlider({ slides }: { slides: Slide[] }) {
             <article className="group relative h-[400px] overflow-hidden rounded-[10px] bg-bar lg:h-[535px]">
               <Link href={`/insight/${s.slug}`} tabIndex={-1} aria-hidden className="absolute inset-0 block">
                 {s.image && (
-                  <Image
+                  <WholeImage
                     src={s.image}
-                    alt=""
-                    fill
                     sizes="(max-width: 1024px) 100vw, 460px"
-                    className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+                    className="object-top origin-top transition-transform duration-300 ease-out group-hover:scale-105"
                   />
                 )}
               </Link>
@@ -102,7 +100,7 @@ export function HighlightSlider({ slides }: { slides: Slide[] }) {
             onClick={() => page(-1)}
             aria-label="Previous stories"
             disabled={atStart}
-            className="absolute left-[10px] top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-rule/30 bg-bar/70 text-white opacity-0 transition-all duration-300 hover:border-accent hover:bg-accent disabled:cursor-default disabled:opacity-0 focus-visible:opacity-100 group-hover/slider:opacity-100"
+            className="absolute left-[10px] top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-rule/30 bg-bar/70 text-white opacity-0 transition-all duration-300 hover:border-accent hover:bg-accent disabled:cursor-default disabled:opacity-0 focus-visible:opacity-100 group-hover/slider:opacity-100 pointer-coarse:enabled:opacity-100"
           >
             <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden>
               <path d="M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z" />
@@ -113,7 +111,7 @@ export function HighlightSlider({ slides }: { slides: Slide[] }) {
             onClick={() => page(1)}
             aria-label="Next stories"
             disabled={atEnd}
-            className="absolute right-[10px] top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-rule/30 bg-bar/70 text-white opacity-0 transition-all duration-300 hover:border-accent hover:bg-accent disabled:cursor-default disabled:opacity-0 focus-visible:opacity-100 group-hover/slider:opacity-100"
+            className="absolute right-[10px] top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-rule/30 bg-bar/70 text-white opacity-0 transition-all duration-300 hover:border-accent hover:bg-accent disabled:cursor-default disabled:opacity-0 focus-visible:opacity-100 group-hover/slider:opacity-100 pointer-coarse:enabled:opacity-100"
           >
             <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden>
               <path d="M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z" />

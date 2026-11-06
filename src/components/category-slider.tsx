@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { WholeImage } from '@/components/whole-image'
 
 export type Tile = {
   id: any
@@ -23,6 +23,10 @@ const SPEED = 500
  * how the reference's swiper is configured. The track is duplicated so the
  * wrap-around never shows a gap: when the first copy runs out the transition
  * is switched off, the offset jumps back a full set, and it resumes.
+ *
+ * Arrows sit over the picture band, translucent so they do not cover the
+ * tile beneath. Always shown on a touch screen, which has no hover to reveal
+ * them; on a desktop they appear when the rail is hovered.
  */
 export function CategorySlider({ tiles }: { tiles: Tile[] }) {
   const [perView, setPerView] = useState(5)
@@ -56,6 +60,24 @@ export function CategorySlider({ tiles }: { tiles: Tile[] }) {
     setI((n) => n + 1)
   }, [])
 
+  // Backwards from the first tile, jump silently to the same frame in the
+  // second copy first, then animate one step back from there.
+  const back = () => {
+    if (i > 0) {
+      setAnimate(true)
+      setI((n) => n - 1)
+      return
+    }
+    setAnimate(false)
+    setI(tiles.length)
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        setAnimate(true)
+        setI(tiles.length - 1)
+      }),
+    )
+  }
+
   useEffect(() => {
     if (!loops || paused || reduced) return
     const t = setInterval(advance, INTERVAL)
@@ -84,12 +106,19 @@ export function CategorySlider({ tiles }: { tiles: Tile[] }) {
   const shown = loops ? [...tiles, ...tiles] : tiles
   const step = 100 / perView
 
+  // Centred on the picture band: 12px of tile padding, then half of a 16:9
+  // picture as wide as one tile less its padding, less half the button.
+  const arrowTop = `calc(12px + ((100cqw - ${GAP * (perView - 1)}px) / ${perView} - 24px) * 9 / 32 - 20px)`
+  const arrow =
+    'absolute z-10 grid h-10 w-10 place-items-center rounded-full border border-white/40 bg-white/55 text-ink shadow-sm backdrop-blur-md transition-all duration-300 hover:bg-white/85 focus-visible:opacity-100 opacity-0 group-hover/rail:opacity-100 pointer-coarse:opacity-100'
+
   return (
     <div
-      className="overflow-hidden"
+      className="group/rail relative @container"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
+    <div className="overflow-hidden">
       <div
         className="flex"
         style={{
@@ -107,14 +136,14 @@ export function CategorySlider({ tiles }: { tiles: Tile[] }) {
             className="group flex shrink-0 flex-col gap-3.5 rounded-[10px] border border-rule p-3 transition-colors hover:border-ink"
             style={{ width: `calc(${step}% - ${(GAP * (perView - 1)) / perView}px)` }}
           >
-            <span className="relative block h-[148px] w-full overflow-hidden rounded-[6px] bg-sunken">
+            {/* 16:9, the shape most article pictures are made in, shown
+                whole — a fixed 148px strip cut the sides off every graphic. */}
+            <span className="relative block aspect-video w-full overflow-hidden rounded-[6px] bg-bar">
               {t.image && (
-                <Image
+                <WholeImage
                   src={t.image}
-                  alt=""
-                  fill
-                  sizes="280px"
-                  className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+                  sizes="(max-width: 640px) 100vw, 320px"
+                  className="transition-transform duration-300 ease-out group-hover:scale-105"
                 />
               )}
             </span>
@@ -136,6 +165,34 @@ export function CategorySlider({ tiles }: { tiles: Tile[] }) {
           </Link>
         ))}
       </div>
+    </div>
+
+      {loops && (
+        <>
+          <button
+            type="button"
+            onClick={back}
+            aria-label="Previous categories"
+            className={`${arrow} left-2`}
+            style={{ top: arrowTop }}
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
+              <path d="M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={advance}
+            aria-label="Next categories"
+            className={`${arrow} right-2`}
+            style={{ top: arrowTop }}
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
+              <path d="M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z" />
+            </svg>
+          </button>
+        </>
+      )}
     </div>
   )
 }
