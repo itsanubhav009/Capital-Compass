@@ -140,7 +140,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
             /* The top banner: advertising across the width of the masthead,
                with the email-alert signup pinned to its right-hand corner.
                Both are 100px tall so the row keeps one clean baseline. */
-            <div className="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:gap-4">
+            <div className="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:justify-end sm:gap-4">
               <AdSlot variant="leaderboard" className="flex-1" />
               <EmailAlertsButton
                 heading={s.newsletterHeading}

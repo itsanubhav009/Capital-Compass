@@ -181,7 +181,7 @@ export function SiteFooter({
 
           {/* ------------------------------------------------- recent --- */}
           <div>
-            <FooterHead>Recent Post</FooterHead>
+            <FooterHead>Recent Posts</FooterHead>
             <ul className="mt-6 divide-y divide-white/10">
               {recent.slice(0, 3).map((r) => (
                 <li key={r.slug} className="py-4 first:pt-0">

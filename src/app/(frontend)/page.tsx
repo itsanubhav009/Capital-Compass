@@ -32,6 +32,9 @@ import { KIND_LABEL, cardCategory, dayMonth, shortDate } from '@/lib/format'
 
 export const revalidate = 300
 
+/** The Global Macro sidebar advert. Null hides the column. */
+const RAIL_AD: { image: string; href: string } | null = null
+
 const cat = (d: any) => cardCategory(d.section?.title) || KIND_LABEL[d.collection] || 'Analysis'
 
 export default async function Homepage() {
@@ -192,7 +195,8 @@ export default async function Homepage() {
           <Head id="explore" title="Explore Categories" />
           <Reveal>
             <CategorySlider
-              tiles={tiles.map((t) => ({ ...t, href: `/${t.slug}` }))}
+              // An empty section is a blank tile leading to an empty page.
+              tiles={tiles.filter((t) => t.count > 0).map((t) => ({ ...t, href: `/${t.slug}` }))}
             />
           </Reveal>
         </Band>
@@ -313,18 +317,18 @@ export default async function Homepage() {
               />
             </Reveal>
 
-            {/* The right-hand rail. The ad banner takes the position the
-                Explore Categories panel used to hold; that block still runs
-                full width higher up the page, so nothing is lost by giving
-                the slot to advertising. Sticky below the menu bar, which is
-                57px tall plus breathing room. */}
-            <Reveal
-              direction="right"
-              delay={80}
-              className="flex w-full flex-col gap-[30px] lg:sticky lg:top-[125px] lg:w-[350px] xl:w-[400px]"
-            >
-              <AdSlot variant="rail" />
-            </Reveal>
+            {/* The right-hand rail, for the sidebar advert. Rendered only
+                once there is one: an empty 400px column beside the stories
+                read as a hole in the page. Set RAIL_AD to bring it back. */}
+            {RAIL_AD && (
+              <Reveal
+                direction="right"
+                delay={80}
+                className="flex w-full flex-col gap-[30px] lg:sticky lg:top-[125px] lg:w-[350px] xl:w-[400px]"
+              >
+                <AdSlot variant="rail" image={RAIL_AD.image} href={RAIL_AD.href} />
+              </Reveal>
+            )}
           </div>
         </Band>
       )}

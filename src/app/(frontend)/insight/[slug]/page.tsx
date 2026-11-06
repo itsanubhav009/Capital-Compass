@@ -84,24 +84,20 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
   return (
     <article className="mx-auto max-w-6xl px-5 wrap-break-word sm:px-8">
       {/* ------------------------------------------------------ masthead --- */}
-      <header className="border-b border-rule py-10 sm:py-14">
-        <div className={COLUMN}>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <span className="eyebrow">{doc.section?.title ?? 'Analysis'}</span>
-            {doc.section && (
-              <>
-                <span aria-hidden className="text-rule-strong">
-                  /
-                </span>
-                <Link
-                  href={`/${doc.section.slug}`}
-                  className="text-[13px] text-ink-soft hover:text-deep"
-                >
-                  {doc.section.title}
-                </Link>
-              </>
-            )}
-          </div>
+      <header className="pt-10 sm:pt-14">
+        {/* The rule sits on the column, not the page, so it ends where the
+            text does. */}
+        <div className={`${COLUMN} border-b border-rule pb-10 sm:pb-14`}>
+          {/* The section once appeared twice here — as a label and again as a
+              link beside it, reading "Capital Flow – India / Capital Flow –
+              India". Once, as the link. */}
+          {doc.section ? (
+            <Link href={`/${doc.section.slug}`} className="eyebrow transition-colors hover:text-deep">
+              {doc.section.title}
+            </Link>
+          ) : (
+            <span className="eyebrow">Analysis</span>
+          )}
 
           <h1 className="mt-4 text-[32px] leading-[1.1] sm:text-[46px]">{doc.title}</h1>
 

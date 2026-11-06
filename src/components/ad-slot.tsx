@@ -9,8 +9,13 @@ import Image from 'next/image'
  * jumping under the reader once advertising goes live.
  *
  * To fill one, pass `image` + `href` (a house ad or a directly sold banner),
- * or replace the placeholder body with the network's script tag. Until then
- * it is labelled as reserved space rather than pretending to be an advert.
+ * or replace the placeholder body with the network's script tag.
+ *
+ * Without one it renders nothing on the live site. A dashed "Banner · 728 ×
+ * 90" box at the top of every page told readers the site was unfinished; the
+ * reflow it saves is a one-off on the day advertising starts. The labelled
+ * placeholder still shows in development, so the space stays visible to
+ * whoever is laying the page out.
  */
 export function AdSlot({
   variant = 'leaderboard',
@@ -30,6 +35,8 @@ export function AdSlot({
   alt?: string
   className?: string
 }) {
+  if (!image && process.env.NODE_ENV === 'production') return null
+
   const box =
     variant === 'leaderboard'
       ? 'h-[100px] min-w-0'
