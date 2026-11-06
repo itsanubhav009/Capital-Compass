@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server'
 import { resolveMx } from 'dns/promises'
 import { client } from '@/lib/queries'
-import { buildArticleEmail, siteUrl, unsubscribeUrl } from '@/lib/newsletter'
+import { buildArticleEmail, digestFor, unsubscribeUrl } from '@/lib/newsletter'
 
 export const dynamic = 'force-dynamic'
 // Each address is a separate SMTP conversation, so the whole run is roughly
@@ -141,15 +141,7 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const settings: any = await payload.findGlobal({ slug: 'site-settings' })
-  const siteName = settings?.siteName || 'SmartMoney Express'
-  const url = `${siteUrl()}/insight/${article.slug}`
-  const image =
-    article?.featuredImage?.sizes?.og?.url ??
-    article?.featuredImage?.sizes?.wide?.url ??
-    article?.featuredImage?.url ??
-    null
-  const category = article?.section?.title ?? null
+  const digest = await digestFor(payload, article)
 
   const results: { email: string; status: 'delivered' | 'failed'; error?: string }[] = []
 
@@ -164,21 +156,9 @@ export async function POST(req: NextRequest) {
     }
 
     const mail = buildArticleEmail({
-      title: article.title,
-      standfirst: article.standfirst,
-      category,
-      url,
-      imageUrl: image,
-      siteName,
+      ...digest,
+      recipient: email,
       unsubscribe: unsubscribeUrl(email),
-      postalAddress: settings?.postalAddress ?? null,
-      date: article.publishedAt
-        ? new Date(article.publishedAt).toLocaleDateString('en-GB', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })
-        : null,
     })
     try {
       await payload.sendEmail({
