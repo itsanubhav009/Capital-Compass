@@ -7,12 +7,6 @@ import { Meta } from '@/components/cards'
 const img = (m: any, size: 'thumb' | 'card' | 'wide' = 'card') =>
   m?.url ? { url: m.sizes?.[size]?.url ?? m.url, alt: m.alt ?? '' } : null
 
-/** Card headlines clip by word count in the reference, not by line. */
-const words = (title: string, n: number) => {
-  const parts = title.trim().split(/\s+/)
-  return parts.length > n ? parts.slice(0, n).join(' ') : title
-}
-
 function Kicker({ children, tone = 'dark' }: { children: React.ReactNode; tone?: 'dark' | 'light' }) {
   return (
     <span className={`kicker max-w-full ${tone === 'light' ? 'kicker-light' : ''}`}>

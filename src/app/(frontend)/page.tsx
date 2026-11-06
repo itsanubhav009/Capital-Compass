@@ -34,12 +34,6 @@ export const revalidate = 300
 
 const cat = (d: any) => cardCategory(d.section?.title) || KIND_LABEL[d.collection] || 'Analysis'
 
-// The theme clips hero headlines at eight words; the rails clip at six.
-const heroTitle = (t: string) => {
-  const parts = t.trim().split(/\s+/)
-  return parts.length > 8 ? parts.slice(0, 8).join(' ') : t
-}
-
 export default async function Homepage() {
   const [settings, themes, latest, india, intl, insights, macro, recent, tiles] =
     await Promise.all([
@@ -166,7 +160,7 @@ export default async function Homepage() {
                 slides={heroSlides.map((d) => ({
                   slug: d.slug,
                   category: cat(d),
-                  title: heroTitle(d.title),
+                  title: d.title,
                   date: shortDate(d.publishedAt),
                   image: d.featuredImage?.sizes?.wide?.url ?? d.featuredImage?.url ?? null,
                 }))}

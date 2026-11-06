@@ -13,11 +13,6 @@ export type Slide = {
   image?: string | null
 }
 
-const words = (title: string, n: number) => {
-  const parts = title.trim().split(/\s+/)
-  return parts.length > n ? parts.slice(0, n).join(' ') : title
-}
-
 /**
  * Highlight Stories.
  *
