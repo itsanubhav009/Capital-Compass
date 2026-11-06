@@ -85,15 +85,15 @@ export const SiteSettings: GlobalConfig = {
               type: 'textarea',
               required: true,
               defaultValue:
-                'SmartMoney publishes financial journalism, not investment advice. Nothing here is a recommendation to buy or sell any security. Flow indicators describe observed institutional activity over a stated period; they are not ratings and carry no view on future prices. Do your own research or speak to a registered adviser.',
+                'Smart Money Express publishes financial journalism, not investment advice. Nothing here is a recommendation to buy or sell any security. Flow indicators describe observed institutional activity over a stated period; they are not ratings and carry no view on future prices. Do your own research or speak to a registered adviser.',
             },
-            { name: 'footerLegalName', type: 'text', defaultValue: 'SmartMoney Express' },
+            { name: 'footerLegalName', type: 'text', defaultValue: 'Smart Money Express' },
           ],
         },
         {
           label: 'Brand & SEO',
           fields: [
-            { name: 'siteName', type: 'text', required: true, defaultValue: 'SmartMoney Express' },
+            { name: 'siteName', type: 'text', required: true, defaultValue: 'Smart Money Express' },
             {
               name: 'tagline',
               type: 'text',

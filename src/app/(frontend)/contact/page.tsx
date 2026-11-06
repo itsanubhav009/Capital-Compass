@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Contact',
-  description: 'Get in touch with SmartMoney — corrections, enquiries and partnerships.',
+  description: 'Get in touch with Smart Money Express — corrections, enquiries and partnerships.',
   alternates: { canonical: '/contact' },
 }
 

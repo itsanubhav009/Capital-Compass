@@ -115,9 +115,9 @@ const run = async () => {
   try {
     await payload.sendEmail({
       to: target,
-      subject: `SmartMoney Express — test email (${stamp})`,
+      subject: `Smart Money Express — test email (${stamp})`,
       text: [
-        'This is a test from the SmartMoney Express site.',
+        'This is a test from the Smart Money Express site.',
         '',
         'If it reached you, three things now work:',
         '  - the contact form will notify you of new enquiries',

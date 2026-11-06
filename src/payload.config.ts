@@ -105,7 +105,7 @@ export default buildConfig({
     // Sidebar order. Payload lists groups in the order their collections are
     // registered, so this is set by the `collections` array below rather than
     // here — the grouping is: Content, Library, Taxonomy, Inbox, Settings.
-    meta: { titleSuffix: ' · SmartMoney' },
+    meta: { titleSuffix: ' · Smart Money Express' },
     // Component paths above are resolved from here. Without it they resolve
     // from the project root and the generated import map cannot find them.
     importMap: { baseDir: path.resolve(dirname) },
@@ -181,7 +181,7 @@ export default buildConfig({
     seoPlugin({
       collections: [...CONTENT_COLLECTIONS, 'pages'],
       uploadsCollection: 'media',
-      generateTitle: ({ doc }) => `${doc?.title} · SmartMoney`,
+      generateTitle: ({ doc }) => `${doc?.title} · Smart Money Express`,
       generateDescription: ({ doc }) =>
         doc?.standfirst || doc?.summary || '',
       generateURL: ({ doc, collectionSlug }) =>
@@ -229,7 +229,7 @@ export default buildConfig({
         email: nodemailerAdapter({
           // Guaranteed present: the boot check above refuses to start without it.
           defaultFromAddress: process.env.EMAIL_FROM!,
-          defaultFromName: 'SmartMoney Express',
+          defaultFromName: 'Smart Money Express',
           transportOptions: {
             host: process.env.SMTP_HOST,
             port: Number(process.env.SMTP_PORT || 587),

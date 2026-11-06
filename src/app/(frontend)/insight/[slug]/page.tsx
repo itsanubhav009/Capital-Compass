@@ -255,7 +255,7 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
       {related.docs.length > 0 && (
         <section className="border-t border-rule py-12" aria-labelledby="related">
           <h2 id="related" className="eyebrow">
-            More from {doc.section?.title ?? 'SmartMoney'}
+            More from {doc.section?.title ?? 'Smart Money Express'}
           </h2>
           <ul className="mt-6 grid gap-x-10 gap-y-8 sm:grid-cols-3">
             {related.docs.map((d) => (
