@@ -16,18 +16,21 @@ import Image from 'next/image'
  *
  * `className` goes on the sharp layer. Pass `object-top` where a headline is
  * laid over the bottom of the box, so the picture sits above the words
- * rather than under them.
+ * rather than under them. `backdropClassName` goes on the blurred one — to
+ * hide it where the space below the picture should read as a solid panel.
  */
 export function WholeImage({
   src,
   sizes,
   priority,
   className = '',
+  backdropClassName = '',
 }: {
   src: string
   sizes: string
   priority?: boolean
   className?: string
+  backdropClassName?: string
 }) {
   return (
     <>
@@ -38,7 +41,7 @@ export function WholeImage({
         fill
         sizes={sizes}
         priority={priority}
-        className="scale-125 object-cover blur-2xl brightness-[0.55]"
+        className={`scale-125 object-cover blur-2xl brightness-[0.55] ${backdropClassName}`}
       />
       <Image src={src} alt="" fill sizes={sizes} priority={priority} className={`object-contain ${className}`} />
     </>

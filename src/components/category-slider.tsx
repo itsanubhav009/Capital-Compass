@@ -112,11 +112,12 @@ export function CategorySlider({ tiles }: { tiles: Tile[] }) {
   // Centred on the picture band: 12px of tile padding, then half of a 16:9
   // picture as wide as one tile less its padding, less half the button.
   const arrowTop = `calc(12px + ((100cqw - ${GAP * (perView - 1)}px) / ${perView} - 24px) * 9 / 32 - 20px)`
-  // Frosted glass, out of sight until the rail is hovered, then easing in
-  // from its own edge; it lifts a little under the pointer. A touch screen
-  // has no hover, so there they simply stay.
+  // See-through until touched: a faint dark tint and a white chevron, so the
+  // picture under it still reads, turning solid white only under the
+  // pointer. Out of sight until the rail is hovered, then easing in from its
+  // own edge. A touch screen has no hover, so there they simply stay.
   const arrow =
-    'absolute z-10 grid h-11 w-11 place-items-center rounded-full border border-white/50 bg-white/60 text-ink shadow-[0_6px_20px_rgba(16,26,36,0.18)] backdrop-blur-md opacity-0 transition-all duration-300 ease-out hover:scale-110 hover:bg-white/90 focus-visible:translate-x-0 focus-visible:opacity-100 group-hover/rail:translate-x-0 group-hover/rail:opacity-100 pointer-coarse:translate-x-0 pointer-coarse:opacity-100'
+    'absolute z-10 grid h-10 w-10 place-items-center rounded-full border border-white/45 bg-black/15 text-white shadow-[0_4px_14px_rgba(0,0,0,0.18)] backdrop-blur-[2px] opacity-0 transition-all duration-300 ease-out hover:scale-110 hover:border-white hover:bg-white hover:text-ink active:scale-95 focus-visible:translate-x-0 focus-visible:opacity-100 group-hover/rail:translate-x-0 group-hover/rail:opacity-100 pointer-coarse:translate-x-0 pointer-coarse:opacity-100'
 
   return (
     <div
