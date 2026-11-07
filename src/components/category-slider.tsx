@@ -43,7 +43,10 @@ export function CategorySlider({ tiles }: { tiles: Tile[] }) {
 
     const fit = () => {
       const w = window.innerWidth
-      setPerView(w < 640 ? 1 : w < 1024 ? 2 : w < 1280 ? 3 : w < 1536 ? 4 : 5)
+      // Three at most. There are four sections with articles; showing four
+      // or five across put every tile on screen at once, so the rail never
+      // moved and its arrows had nothing to do.
+      setPerView(w < 640 ? 1 : w < 1024 ? 2 : 3)
     }
     fit()
     window.addEventListener('resize', fit)
@@ -109,8 +112,11 @@ export function CategorySlider({ tiles }: { tiles: Tile[] }) {
   // Centred on the picture band: 12px of tile padding, then half of a 16:9
   // picture as wide as one tile less its padding, less half the button.
   const arrowTop = `calc(12px + ((100cqw - ${GAP * (perView - 1)}px) / ${perView} - 24px) * 9 / 32 - 20px)`
+  // Frosted glass, out of sight until the rail is hovered, then easing in
+  // from its own edge; it lifts a little under the pointer. A touch screen
+  // has no hover, so there they simply stay.
   const arrow =
-    'absolute z-10 grid h-10 w-10 place-items-center rounded-full border border-white/40 bg-white/55 text-ink shadow-sm backdrop-blur-md transition-all duration-300 hover:bg-white/85 focus-visible:opacity-100 opacity-0 group-hover/rail:opacity-100 pointer-coarse:opacity-100'
+    'absolute z-10 grid h-11 w-11 place-items-center rounded-full border border-white/50 bg-white/60 text-ink shadow-[0_6px_20px_rgba(16,26,36,0.18)] backdrop-blur-md opacity-0 transition-all duration-300 ease-out hover:scale-110 hover:bg-white/90 focus-visible:translate-x-0 focus-visible:opacity-100 group-hover/rail:translate-x-0 group-hover/rail:opacity-100 pointer-coarse:translate-x-0 pointer-coarse:opacity-100'
 
   return (
     <div
@@ -173,7 +179,7 @@ export function CategorySlider({ tiles }: { tiles: Tile[] }) {
             type="button"
             onClick={back}
             aria-label="Previous categories"
-            className={`${arrow} left-2`}
+            className={`${arrow} left-3 -translate-x-4`}
             style={{ top: arrowTop }}
           >
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
@@ -184,7 +190,7 @@ export function CategorySlider({ tiles }: { tiles: Tile[] }) {
             type="button"
             onClick={advance}
             aria-label="Next categories"
-            className={`${arrow} right-2`}
+            className={`${arrow} right-3 translate-x-4`}
             style={{ top: arrowTop }}
           >
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
