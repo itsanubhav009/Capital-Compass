@@ -3,6 +3,7 @@ import { resolveMx } from 'dns/promises'
 import { client } from '@/lib/queries'
 import { buildArticleEmail, digestFor, unsubscribeUrl } from '@/lib/newsletter'
 import { resendEnabled, sendAll, type OutgoingEmail } from '@/lib/resend'
+import { seeds } from '@/lib/placement'
 
 export const dynamic = 'force-dynamic'
 // Each address is a separate SMTP conversation, so the whole run is roughly
@@ -121,15 +122,30 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const subs = await payload.find({
-    collection: 'subscribers',
-    where: { unsubscribedAt: { equals: null } },
-    limit: CEILING() + 1,
-    depth: 0,
-    overrideAccess: true,
-    sort: 'createdAt',
-  })
-  const recipients = (subs.docs as any[]).map((d) => d.email).filter(Boolean)
+  // A seed test goes only to the seed inboxes, to see where it lands before
+  // the list gets it. They are the owner's own accounts, so no subscriber
+  // record is needed.
+  const seedTest = body?.seedsOnly === true
+  let recipients: string[]
+  if (seedTest) {
+    recipients = seeds().map((s) => s.email)
+    if (!recipients.length) {
+      return Response.json(
+        { error: 'No seed inboxes are set up. Add SEED_INBOXES to the environment.' },
+        { status: 400 },
+      )
+    }
+  } else {
+    const subs = await payload.find({
+      collection: 'subscribers',
+      where: { unsubscribedAt: { equals: null } },
+      limit: CEILING() + 1,
+      depth: 0,
+      overrideAccess: true,
+      sort: 'createdAt',
+    })
+    recipients = (subs.docs as any[]).map((d) => d.email).filter(Boolean)
+  }
 
   if (!recipients.length) {
     return Response.json(
@@ -202,7 +218,7 @@ export async function POST(req: NextRequest) {
     const doc = await payload.create({
       collection: 'newsletter-sends',
       data: {
-        summary: `${article.title} — accepted for ${delivered} of ${results.length}`,
+        summary: `${seedTest ? 'Seed test: ' : ''}${article.title} — accepted for ${delivered} of ${results.length}`,
         article: article.id,
         articleTitle: article.title,
         sentAt,

@@ -125,7 +125,9 @@ export default function SendNewsletter() {
     load()
   }, [load])
 
-  const send = async () => {
+  // seedsOnly: the owner's seed inboxes alone, to see which tab it lands in
+  // before the whole list gets it.
+  const send = async (seedsOnly = false) => {
     setConfirming(false)
     setState('sending')
     setMessage('')
@@ -134,7 +136,7 @@ export default function SendNewsletter() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ articleId: id }),
+        body: JSON.stringify({ articleId: id, seedsOnly }),
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) {
@@ -143,6 +145,13 @@ export default function SendNewsletter() {
         return
       }
       setState('done')
+      if (seedsOnly) {
+        setMessage(
+          `Test sent to ${json.delivered} seed inbox${json.delivered === 1 ? '' : 'es'}. Where it landed appears below in a minute — open the send and press Refresh.`,
+        )
+        load()
+        return
+      }
       setMessage(
         json.failed === 0
           ? json.provider === 'resend'
@@ -207,6 +216,26 @@ export default function SendNewsletter() {
           </p>
 
           {!confirming ? (
+            <>
+            <button
+              type="button"
+              onClick={() => send(true)}
+              disabled={state === 'sending'}
+              title="Sends this article only to the seed inboxes, then reports which Gmail tab it landed in"
+              style={{
+                padding: '8px 14px',
+                fontSize: 13,
+                borderRadius: 4,
+                border: '1px solid var(--theme-elevation-200)',
+                background: 'transparent',
+                color: 'var(--theme-elevation-800)',
+                cursor: state === 'sending' ? 'default' : 'pointer',
+                marginRight: 8,
+                marginBottom: 8,
+              }}
+            >
+              Test inbox placement
+            </button>
             <button
               type="button"
               onClick={() => setConfirming(true)}
@@ -224,6 +253,7 @@ export default function SendNewsletter() {
             >
               {state === 'sending' ? 'Sending…' : 'Send to subscribers'}
             </button>
+            </>
           ) : (
             <div
               style={{
@@ -238,7 +268,7 @@ export default function SendNewsletter() {
               </p>
               <button
                 type="button"
-                onClick={send}
+                onClick={() => send()}
                 style={{
                   padding: '7px 14px',
                   fontSize: 13,
