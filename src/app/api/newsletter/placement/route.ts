@@ -41,7 +41,12 @@ export async function POST(req: NextRequest) {
   const targets = list.filter((s) => sentTo.has(s.email))
   if (!targets.length) {
     return Response.json(
-      { error: 'None of the seed inboxes were on this send. Subscribe them first.' },
+      {
+        // Addresses only, never the passwords: enough to spot a typo.
+        error: `None of the seed inboxes were on this send. Seeds configured: ${list
+          .map((s) => s.email)
+          .join(', ')}. Each must be subscribed, spelled exactly as on the list.`,
+      },
       { status: 400 },
     )
   }

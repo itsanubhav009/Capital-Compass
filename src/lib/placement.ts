@@ -20,9 +20,13 @@ import { ImapFlow } from 'imapflow'
 export type Seed = { email: string; pass: string }
 
 export function seeds(): Seed[] {
+  // Forgiving about how the value was pasted: quotes around it or around a
+  // pair, spaces, and semicolons or new lines between pairs all happen.
   return (process.env.SEED_INBOXES ?? '')
-    .split(',')
-    .map((pair) => {
+    .replace(/["']/g, '')
+    .split(/[,;\n]/)
+    .map((raw) => {
+      const pair = raw.trim()
       const i = pair.indexOf(':')
       return i > 0
         ? { email: pair.slice(0, i).trim().toLowerCase(), pass: pair.slice(i + 1).replace(/\s+/g, '') }
