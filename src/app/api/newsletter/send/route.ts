@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server'
 import { resolveMx } from 'dns/promises'
 import { client } from '@/lib/queries'
 import { buildArticleEmail, digestFor, unsubscribeUrl } from '@/lib/newsletter'
+import { resendEnabled, sendAll, type OutgoingEmail } from '@/lib/resend'
 
 export const dynamic = 'force-dynamic'
 // Each address is a separate SMTP conversation, so the whole run is roughly
@@ -25,8 +26,12 @@ export const maxDuration = 60
  * Requires a logged-in user: it puts mail in other people's inboxes.
  */
 
-/** Gmail's daily ceiling is ~500 on a free account, ~2,000 on Workspace. */
-const CEILING = 400
+/**
+ * Most addresses one run will take. Gmail's daily ceiling is ~500 on a free
+ * account, so 400 there; Resend sends a hundred per request, so the limit is
+ * the plan's, not the function's.
+ */
+const CEILING = () => (resendEnabled() ? 5000 : 400)
 
 /**
  * Does this address's domain accept mail at all?
@@ -83,7 +88,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Sign in to the admin panel first.' }, { status: 403 })
   }
 
-  if (!process.env.SMTP_HOST) {
+  if (!process.env.SMTP_HOST && !resendEnabled()) {
     return Response.json(
       {
         error:
@@ -119,7 +124,7 @@ export async function POST(req: NextRequest) {
   const subs = await payload.find({
     collection: 'subscribers',
     where: { unsubscribedAt: { equals: null } },
-    limit: CEILING + 1,
+    limit: CEILING() + 1,
     depth: 0,
     overrideAccess: true,
     sort: 'createdAt',
@@ -132,10 +137,12 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     )
   }
-  if (recipients.length > CEILING) {
+  if (recipients.length > CEILING()) {
     return Response.json(
       {
-        error: `${recipients.length} subscribers is past the ${CEILING} this sends in one run. Gmail caps a free account near 500 a day; a list this size needs a dedicated sending service.`,
+        error: resendEnabled()
+          ? `${recipients.length} subscribers is past the ${CEILING()} this sends in one run.`
+          : `${recipients.length} subscribers is past the ${CEILING()} this sends in one run. Gmail caps a free account near 500 a day; set RESEND_FROM to send through Resend instead.`,
       },
       { status: 400 },
     )
@@ -143,44 +150,46 @@ export async function POST(req: NextRequest) {
 
   const digest = await digestFor(payload, article)
 
-  const results: { email: string; status: 'delivered' | 'failed'; error?: string }[] = []
+  type Row = { email: string; status: 'delivered' | 'failed'; error?: string; resendId?: string; lastEvent?: string }
+  const results: Row[] = []
+  const provider = resendEnabled() ? 'resend' : 'gmail'
 
+  // Lets Gmail and Outlook show their own unsubscribe button, which keeps
+  // bulk mail out of the spam folder. The Post header is RFC 8058: Gmail and
+  // Yahoo require bulk senders to offer an unsubscribe the reader can take
+  // in one click from the inbox itself, without opening the message.
+  const listHeaders = (email: string) => ({
+    'List-Unsubscribe': `<${unsubscribeUrl(email)}>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+  })
+
+  const outgoing: OutgoingEmail[] = []
   for (const email of recipients) {
     if (!(await domainAcceptsMail(email))) {
-      results.push({
-        email,
-        status: 'failed',
-        error: 'No mail server for that domain',
-      })
+      results.push({ email, status: 'failed', error: 'No mail server for that domain' })
       continue
     }
+    const mail = buildArticleEmail({ ...digest, recipient: email, unsubscribe: unsubscribeUrl(email) })
+    outgoing.push({ to: email, subject: mail.subject, html: mail.html, text: mail.text, headers: listHeaders(email) })
+  }
 
-    const mail = buildArticleEmail({
-      ...digest,
-      recipient: email,
-      unsubscribe: unsubscribeUrl(email),
-    })
-    try {
-      await payload.sendEmail({
-        to: email,
-        subject: mail.subject,
-        html: mail.html,
-        text: mail.text,
-        // Lets Gmail and Outlook show their own unsubscribe button, which
-        // keeps bulk mail out of the spam folder.
-        headers: {
-          'List-Unsubscribe': `<${unsubscribeUrl(email)}>`,
-          // RFC 8058. Gmail and Yahoo require bulk senders to offer an
-          // unsubscribe the reader can take in one click from the inbox
-          // itself, without opening the message. Without this header the
-          // link above still works, but the inbox button does not appear and
-          // the mail is likelier to be filtered.
-          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-        },
-      } as any)
-      results.push({ email, status: 'delivered' })
-    } catch (err: any) {
-      results.push({ email, status: 'failed', error: reason(err) })
+  if (provider === 'resend') {
+    // "sent" until Resend's webhook says how far each copy got.
+    for (const r of await sendAll(outgoing)) {
+      results.push(
+        r.id
+          ? { email: r.email, status: 'delivered', resendId: r.id, lastEvent: 'sent' }
+          : { email: r.email, status: 'failed', error: r.error },
+      )
+    }
+  } else {
+    for (const m of outgoing) {
+      try {
+        await payload.sendEmail({ ...m } as any)
+        results.push({ email: m.to, status: 'delivered' })
+      } catch (err: any) {
+        results.push({ email: m.to, status: 'failed', error: reason(err) })
+      }
     }
   }
 
@@ -197,6 +206,7 @@ export async function POST(req: NextRequest) {
         article: article.id,
         articleTitle: article.title,
         sentAt,
+        provider,
         sentBy: (user as any).id,
         delivered,
         failed,
@@ -212,5 +222,5 @@ export async function POST(req: NextRequest) {
     console.error('[newsletter] sent, but the log could not be written', err)
   }
 
-  return Response.json({ ok: true, delivered, failed, total: results.length, sentAt, logId, results })
+  return Response.json({ ok: true, provider, delivered, failed, total: results.length, sentAt, logId, results })
 }

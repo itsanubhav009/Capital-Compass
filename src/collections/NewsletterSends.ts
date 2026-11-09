@@ -53,6 +53,15 @@ export const NewsletterSends: CollectionConfig = {
     },
     { name: 'sentAt', type: 'date', admin: { readOnly: true } },
     {
+      name: 'provider',
+      type: 'text',
+      admin: {
+        readOnly: true,
+        description:
+          'What carried the mail. Resend reports back what happened to each copy; Gmail does not.',
+      },
+    },
+    {
       name: 'sentBy',
       type: 'relationship',
       relationTo: 'users',
@@ -89,7 +98,7 @@ export const NewsletterSends: CollectionConfig = {
       admin: {
         readOnly: true,
         description:
-          'What happened to each address. "Accepted" means the mail server took the message — if a mailbox rejects it afterwards, that bounce arrives separately and cannot be shown here.',
+          'What happened to each address. Sent through Resend, each row is updated as the receiving server reports back — delivered, bounced, marked as spam, opened, clicked. Sent through Gmail, "Accepted" is the last thing known.',
       },
       fields: [
         {
@@ -112,6 +121,33 @@ export const NewsletterSends: CollectionConfig = {
               admin: { readOnly: true, width: '35%' },
             },
           ],
+        },
+        {
+          type: 'row',
+          fields: [
+            // Resend's id for this copy. Its webhooks name the copy by it,
+            // which is how a "bounced" finds its way back to this row.
+            { name: 'resendId', type: 'text', admin: { readOnly: true, width: '30%' } },
+            {
+              // The furthest it got: sent, delivered, opened, clicked — or
+              // bounced, complained (marked as spam), delayed. Plain text,
+              // not a select, so a new event type from Resend is recorded
+              // rather than rejected.
+              name: 'lastEvent',
+              type: 'text',
+              admin: { readOnly: true, width: '20%' },
+            },
+            { name: 'openedAt', type: 'date', admin: { readOnly: true, width: '25%' } },
+            { name: 'clickedAt', type: 'date', admin: { readOnly: true, width: '25%' } },
+          ],
+        },
+        {
+          // Primary, Promotions, Updates, Social or Spam. Known only for the
+          // seed inboxes this site can sign in to; Gmail tells no sender
+          // which tab a stranger's copy went to.
+          name: 'placement',
+          type: 'text',
+          admin: { readOnly: true },
         },
       ],
     },

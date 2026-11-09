@@ -8,6 +8,7 @@ import * as migration_20260919_053358_remove_company_tab from './20260919_053358
 import * as migration_20260919_060447_add_articles from './20260919_060447_add_articles';
 import * as migration_20261008_091855_add_newsletter_sends from './20261008_091855_add_newsletter_sends';
 import * as migration_20261014_113040_add_postal_address from './20261014_113040_add_postal_address';
+import * as migration_20261107_084701_resend_tracking from './20261107_084701_resend_tracking';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261014_113040_add_postal_address.up,
     down: migration_20261014_113040_add_postal_address.down,
-    name: '20261014_113040_add_postal_address'
+    name: '20261014_113040_add_postal_address',
+  },
+  {
+    up: migration_20261107_084701_resend_tracking.up,
+    down: migration_20261107_084701_resend_tracking.down,
+    name: '20261107_084701_resend_tracking'
   },
 ];

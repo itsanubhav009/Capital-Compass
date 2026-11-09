@@ -74,6 +74,17 @@ export const Subscribers: CollectionConfig = {
       },
     },
     {
+      name: 'suppressedReason',
+      type: 'text',
+      label: 'Removed because',
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+        description:
+          'Set when the mail service reports this address bounced permanently or the reader marked a newsletter as spam. Sending to either again damages the reputation that decides whether everyone else\'s copy reaches the inbox, so they are skipped from then on.',
+      },
+    },
+    {
       name: 'forwarded',
       type: 'checkbox',
       defaultValue: false,

@@ -18,10 +18,17 @@ import { useDocumentInfo } from '@payloadcms/ui'
  * address that did not.
  */
 
-type Recipient = { email: string; status: 'delivered' | 'failed'; error?: string }
+type Recipient = {
+  email: string
+  status: 'delivered' | 'failed'
+  error?: string
+  lastEvent?: string | null
+  placement?: string | null
+}
 type SendLog = {
   id: string | number
   sentAt: string
+  provider?: string | null
   delivered: number
   failed: number
   total: number
@@ -34,6 +41,36 @@ const card: React.CSSProperties = {
   padding: '16px 18px',
   marginBottom: 22,
 }
+
+/**
+ * What became of one copy, in words. Sent through Resend the row moves on as
+ * the receiving server reports back; through Gmail, "Accepted" is all there
+ * ever is.
+ */
+const outcome = (r: Recipient): { text: string; tone: 'good' | 'bad' | 'wait' } => {
+  if (r.lastEvent === 'complained') return { text: 'Marked as spam — removed from the list', tone: 'bad' }
+  if (r.status === 'failed') return { text: r.error || 'Not sent', tone: 'bad' }
+  switch (r.lastEvent) {
+    case 'clicked':
+      return { text: 'Opened and clicked', tone: 'good' }
+    case 'opened':
+      return { text: 'Opened', tone: 'good' }
+    case 'delivered':
+      return { text: 'Delivered', tone: 'good' }
+    case 'delivery_delayed':
+      return { text: 'Delayed — still trying', tone: 'wait' }
+    case 'sent':
+      return { text: 'Sent — waiting for the receiving server', tone: 'wait' }
+    default:
+      return { text: 'Accepted', tone: 'good' }
+  }
+}
+
+const TONE = { good: '#1d7a55', bad: '#b4462f', wait: 'var(--theme-elevation-600)' }
+
+/** Primary is the aim; anything else is worth noticing. */
+const placementTone = (p: string) =>
+  p === 'Primary' || p.startsWith('Inbox') ? '#1d7a55' : p === 'Spam' ? '#b4462f' : '#a86a00'
 
 const when = (iso: string) => {
   try {
@@ -58,6 +95,8 @@ export default function SendNewsletter() {
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
   const [message, setMessage] = useState('')
   const [confirming, setConfirming] = useState(false)
+  const [checking, setChecking] = useState<string | number | null>(null)
+  const [checkMsg, setCheckMsg] = useState('')
 
   const published = savedDocumentData?._status === 'published'
 
@@ -106,13 +145,35 @@ export default function SendNewsletter() {
       setState('done')
       setMessage(
         json.failed === 0
-          ? `Sent. The mail server accepted all ${json.delivered}.`
+          ? json.provider === 'resend'
+            ? `Sent through Resend to all ${json.delivered}. Each address below updates as it is delivered or opened.`
+            : `Sent. The mail server accepted all ${json.delivered}.`
           : `Accepted for ${json.delivered} of ${json.total}. ${json.failed} could not be sent — see below for which, and why.`,
       )
       load()
     } catch {
       setState('error')
       setMessage('Could not reach the server. Check your connection and try again.')
+    }
+  }
+
+  const checkPlacement = async (sendId: string | number) => {
+    setChecking(sendId)
+    setCheckMsg('')
+    try {
+      const res = await fetch('/api/newsletter/placement', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ sendId }),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) setCheckMsg(json?.error || `That did not work (${res.status}).`)
+      await load()
+    } catch {
+      setCheckMsg('Could not reach the server.')
+    } finally {
+      setChecking(null)
     }
   }
 
@@ -220,13 +281,21 @@ export default function SendNewsletter() {
 
       {logs.length > 0 && (
         <div style={{ marginTop: 18, borderTop: '1px solid var(--theme-elevation-100)', paddingTop: 14 }}>
-          <strong style={{ fontSize: 13, display: 'block', marginBottom: 4 }}>
-            Previously sent
-          </strong>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <strong style={{ fontSize: 13, display: 'block', marginBottom: 4 }}>Previously sent</strong>
+            <button
+              type="button"
+              onClick={load}
+              style={{ border: 0, background: 'none', padding: 0, fontSize: 12, color: '#0073ff', cursor: 'pointer' }}
+            >
+              Refresh
+            </button>
+          </div>
           <p style={{ margin: '0 0 10px', fontSize: 12, color: 'var(--theme-elevation-500)' }}>
-            “Accepted” means the mail server took the message. A mailbox that rejects it
-            afterwards bounces hours later, and that bounce cannot be shown here — addresses whose
-            domain has no mail server at all are caught before sending and listed as not sent.
+            Sent through Resend, each address updates as its mail server reports back —
+            delivered, opened, bounced, marked as spam. Which Gmail tab it landed in is known only
+            for the seed inboxes: open a send and use “Check inbox placement” a minute or two after
+            sending.
           </p>
 
           {logs.map((log) => {
@@ -249,6 +318,9 @@ export default function SendNewsletter() {
                   }}
                 >
                   <span style={{ fontWeight: 500 }}>{when(log.sentAt)}</span>
+                  {log.provider === 'resend' && (
+                    <span style={{ color: 'var(--theme-elevation-500)' }}> · Resend</span>
+                  )}
                   {' — '}
                   <span style={{ color: '#1d7a55' }}>{log.delivered} accepted</span>
                   {log.failed > 0 && (
@@ -279,26 +351,57 @@ export default function SendNewsletter() {
                         <span
                           aria-hidden
                           style={{
-                            color: r.status === 'delivered' ? '#1d7a55' : '#b4462f',
+                            color: TONE[outcome(r).tone],
                             fontWeight: 700,
                           }}
                         >
-                          {r.status === 'delivered' ? '✓' : '✕'}
+                          {outcome(r).tone === 'bad' ? '✕' : '✓'}
                         </span>
                         <span style={{ flex: '1 1 auto', minWidth: 0, wordBreak: 'break-all' }}>
                           {r.email}
                         </span>
-                        <span
-                          style={{
-                            color:
-                              r.status === 'delivered' ? '#1d7a55' : 'var(--theme-elevation-600)',
-                            textAlign: 'right',
-                          }}
-                        >
-                          {r.status === 'delivered' ? 'Accepted' : r.error || 'Not sent'}
+                        <span style={{ color: TONE[outcome(r).tone], textAlign: 'right' }}>
+                          {outcome(r).text}
+                          {r.placement && (
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                marginLeft: 8,
+                                padding: '1px 7px',
+                                borderRadius: 10,
+                                fontSize: 11.5,
+                                fontWeight: 600,
+                                color: '#fff',
+                                background: placementTone(r.placement),
+                              }}
+                            >
+                              {r.placement}
+                            </span>
+                          )}
                         </span>
                       </li>
                     ))}
+                    <li style={{ padding: '10px 12px 4px' }}>
+                      <button
+                        type="button"
+                        onClick={() => checkPlacement(log.id)}
+                        disabled={checking !== null}
+                        style={{
+                          padding: '6px 12px',
+                          fontSize: 12.5,
+                          borderRadius: 4,
+                          border: '1px solid var(--theme-elevation-200)',
+                          background: 'transparent',
+                          color: 'var(--theme-elevation-800)',
+                          cursor: checking !== null ? 'default' : 'pointer',
+                        }}
+                      >
+                        {checking === log.id ? 'Checking the seed inboxes…' : 'Check inbox placement'}
+                      </button>
+                      {checkMsg && checking === null && (
+                        <span style={{ marginLeft: 10, fontSize: 12, color: '#b4462f' }}>{checkMsg}</span>
+                      )}
+                    </li>
                   </ul>
                 )}
               </div>
