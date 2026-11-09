@@ -1,5 +1,6 @@
 import 'server-only'
 import { createHmac, timingSafeEqual } from 'crypto'
+import { siteUrl } from './site-url'
 
 /**
  * Shared pieces for sending an article to the subscriber list.
@@ -10,14 +11,7 @@ import { createHmac, timingSafeEqual } from 'crypto'
  */
 
 /** Absolute base for links in an email, where a relative path is useless. */
-export function siteUrl(): string {
-  const candidates = [
-    process.env.NEXT_PUBLIC_SITE_URL,
-    process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
-    process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
-  ].filter(Boolean) as string[]
-  return (candidates[0] ?? 'http://localhost:3000').replace(/\/$/, '')
-}
+export { siteUrl }
 
 /**
  * Unsubscribe tokens are derived, not stored.

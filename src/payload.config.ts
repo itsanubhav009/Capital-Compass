@@ -21,6 +21,7 @@ import { Comments } from './collections/Comments'
 import { Media } from './collections/Media'
 import { Users } from './collections/Users'
 import { SiteSettings } from './globals/SiteSettings'
+import { siteUrl } from './lib/site-url'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -86,6 +87,8 @@ const allowedOrigins = Array.from(
   new Set(
     [
       process.env.NEXT_PUBLIC_SITE_URL || '',
+      // The real domain, which the variable may not name yet.
+      siteUrl(),
       vercelHost(process.env.VERCEL_PROJECT_PRODUCTION_URL),
       vercelHost(process.env.VERCEL_URL),
       vercelHost(process.env.VERCEL_BRANCH_URL),
@@ -186,8 +189,8 @@ export default buildConfig({
         doc?.standfirst || doc?.summary || '',
       generateURL: ({ doc, collectionSlug }) =>
         collectionSlug === 'pages'
-          ? `${process.env.NEXT_PUBLIC_SITE_URL}/${doc?.slug}`
-          : `${process.env.NEXT_PUBLIC_SITE_URL}/insight/${doc?.slug}`,
+          ? `${siteUrl()}/${doc?.slug}`
+          : `${siteUrl()}/insight/${doc?.slug}`,
       tabbedUI: true,
     }),
 

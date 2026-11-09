@@ -8,12 +8,13 @@ import { ImpactMark, TrendMark } from '@/components/flow'
 import { InsightCard } from '@/components/site'
 import { Comments } from '@/components/comments'
 import { KIND_LABEL, crore, shortDate } from '@/lib/format'
+import { absolute, siteUrl } from '@/lib/site-url'
 
 // Rendered per request, cached at the edge. Keeps the build independent
 // of database availability.
 export const revalidate = 300
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const SITE = siteUrl()
 
 // The reading column, centred in the page. It is the measure of the body
 // text (~70ch of Newsreader at 19px), and the header, image and notes below
@@ -72,7 +73,8 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
     dateModified: doc.updatedAt ?? doc.publishedAt,
     mainEntityOfPage: `${SITE}/insight/${doc.slug}`,
     publisher: { '@type': 'Organization', name: s.siteName },
-    ...(doc.featuredImage?.url ? { image: [`${SITE}${doc.featuredImage.url}`] } : {}),
+    // Media lives on R2 with absolute URLs; prefixing the site broke them.
+    ...(doc.featuredImage?.url ? { image: [absolute(doc.featuredImage.url)] } : {}),
   }
 
   const richText = doc.body ?? doc.commentary ?? doc.outlook

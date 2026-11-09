@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next'
 import { client, getPages, getSections } from '@/lib/queries'
 import { CONTENT_COLLECTIONS } from '@/payload.config'
+import { siteUrl } from '@/lib/site-url'
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const SITE = siteUrl()
 
 // Rendered per request, cached at the edge. Keeps the build independent
 // of database availability.

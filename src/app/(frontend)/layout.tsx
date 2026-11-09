@@ -14,6 +14,7 @@ import { ServiceWorker, InstallPrompt } from '@/components/pwa'
 import { PreviewBridge } from '@/components/preview-bridge'
 import { PreviewBar } from '@/components/preview-bar'
 import './globals.css'
+import { absolute, siteUrl } from '@/lib/site-url'
 
 /**
  * Headlines are Newsreader; everything else is Inter.
@@ -42,7 +43,7 @@ const sans = Inter({
   fallback: ['system-ui', 'sans-serif'],
 })
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const SITE = siteUrl()
 
 // themeColor must be a separate viewport export in the App Router. Inside
 // generateMetadata it is deprecated and silently ignored.
@@ -111,7 +112,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
     name: s.siteName,
     url: SITE,
     description: s.defaultMetaDescription,
-    ...(s.ogImage?.url ? { logo: `${SITE}${s.ogImage.url}` } : {}),
+    ...(s.ogImage?.url ? { logo: absolute(s.ogImage.url) } : {}),
   }
 
   return (
