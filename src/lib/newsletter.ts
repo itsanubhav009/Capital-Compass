@@ -341,6 +341,24 @@ export function buildArticleEmail(opts: {
   return { subject: title, html, text }
 }
 
+/**
+ * An image address an email client will actually fetch.
+ *
+ * Media keeps its uploaded filename, spaces and all —
+ * "LIFECYCLE ACCUMULATION STRATEGY-800x533.png". A browser quietly encodes
+ * the space; Gmail's image proxy does not, and showed a broken square. The
+ * URL parser encodes what needs encoding and leaves an existing %20 alone,
+ * so an address is never encoded twice.
+ */
+const safeUrl = (u?: string | null): string | null => {
+  if (!u) return null
+  try {
+    return new URL(u).href
+  } catch {
+    return null
+  }
+}
+
 const day = (iso?: string | null, style: 'header' | 'item' = 'item') => {
   if (!iso) return null
   const d = new Date(iso)
@@ -377,7 +395,7 @@ export async function digestFor(payload: any, article: any) {
     url: `${base}/insight/${d.slug}`,
     byline: d.section?.title ?? null,
     date: day(d.publishedAt),
-    thumbUrl: d.featuredImage?.sizes?.thumb?.url ?? d.featuredImage?.url ?? null,
+    thumbUrl: safeUrl(d.featuredImage?.sizes?.thumb?.url ?? d.featuredImage?.url),
   })
   const docs = (others.docs as any[]).map(item)
 
@@ -386,11 +404,14 @@ export async function digestFor(payload: any, article: any) {
     standfirst: (article.standfirst as string) ?? null,
     bodyText: lexicalToText(article.body),
     url: `${base}/insight/${article.slug}`,
-    imageUrl:
-      article?.featuredImage?.sizes?.og?.url ??
-      article?.featuredImage?.sizes?.wide?.url ??
-      article?.featuredImage?.url ??
-      null,
+    // The card size: 800px wide at the picture's own shape. The og size is
+    // cropped to 1200×630, which cut the edges off graphics, and was half as
+    // heavy again for an image shown at 536px.
+    imageUrl: safeUrl(
+      article?.featuredImage?.sizes?.card?.url ??
+        article?.featuredImage?.sizes?.wide?.url ??
+        article?.featuredImage?.url,
+    ),
     siteName: (settings?.siteName as string) || 'Smart Money Express',
     tagline: (settings?.tagline as string) ?? null,
     postalAddress: (settings?.postalAddress as string) ?? null,
