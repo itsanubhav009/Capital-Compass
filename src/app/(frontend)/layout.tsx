@@ -7,6 +7,7 @@ import { SiteHeader } from '@/components/site-header'
 import { SiteFooter, RouteProgress, ScrollTop } from '@/components/site-footer'
 import { NewsletterForm, ExitIntent } from '@/components/site'
 import { Analytics, ConsentBanner } from '@/components/analytics'
+import { VisitorTracker } from '@/components/visitor-tracker'
 import { AdSlot } from '@/components/ad-slot'
 import { EmailAlertsButton } from '@/components/email-alerts'
 import { DisclaimerGate } from '@/components/legal-gate'
@@ -182,6 +183,9 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         {!preview && <DisclaimerGate siteName={s.siteName} disclaimer={s.articleDisclaimer} />}
 
         <Analytics />
+        {/* Unique-visitor counting, ours rather than GA's. Not shown while
+            previewing drafts, which are not readers. */}
+        {!preview && <VisitorTracker />}
         <ConsentBanner />
         <ServiceWorker />
         <InstallPrompt />

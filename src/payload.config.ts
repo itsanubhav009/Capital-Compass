@@ -109,6 +109,8 @@ export default buildConfig({
     // registered, so this is set by the `collections` array below rather than
     // here — the grouping is: Content, Library, Taxonomy, Inbox, Settings.
     meta: { titleSuffix: ' · Smart Money Express' },
+    // Unique visitors, first thing on the dashboard.
+    components: { beforeDashboard: ['/admin/AudienceStats#default'] },
     // Component paths above are resolved from here. Without it they resolve
     // from the project root and the generated import map cannot find them.
     importMap: { baseDir: path.resolve(dirname) },
