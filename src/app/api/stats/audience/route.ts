@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server'
 import { client } from '@/lib/queries'
 import { vectorPool } from '@/lib/embeddings'
+import { budget, fingerprintConfig } from '@/lib/fingerprint'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,7 +25,8 @@ export async function GET(req: NextRequest) {
   const today = `date_trunc('day', now() AT TIME ZONE '${TZ}') AT TIME ZONE '${TZ}'`
 
   try {
-    const [totals, daily, articles] = await Promise.all([
+    const cfg = fingerprintConfig()
+    const [totals, daily, articles, sources, fp] = await Promise.all([
       db.query(`
         SELECT
           (SELECT count(*) FROM visitors)::int                                              AS all_time,
@@ -48,8 +50,24 @@ export async function GET(req: NextRequest) {
          WHERE r.at >= now() - interval '30 days'
          GROUP BY r.article_slug, a.title
          ORDER BY readers DESC LIMIT 8`),
+      // How the 30 days' visitors were identified, so the count can be read
+      // knowing what it rests on: each new visitor by how they were first
+      // known, plus every returning reader Fingerprint recognised — the
+      // double counts a cookie alone would have made.
+      db.query(`
+        SELECT id_source AS source, count(*)::int AS visitors
+          FROM page_views
+         WHERE (new_visitor OR id_source = 'fingerprint-match') AND at >= now() - interval '30 days'
+         GROUP BY 1 ORDER BY 2 DESC`),
+      cfg ? budget() : Promise.resolve(null),
     ])
-    return Response.json({ totals: totals.rows[0], daily: daily.rows, articles: articles.rows })
+    return Response.json({
+      totals: totals.rows[0],
+      daily: daily.rows,
+      articles: articles.rows,
+      sources: sources.rows,
+      fingerprint: fp ? { used: fp.used, limit: fp.limit, requireConsent: cfg!.requireConsent } : null,
+    })
   } catch (err: any) {
     // Before the migration has run, the tables do not exist yet.
     if (/relation .* does not exist/.test(String(err?.message))) {

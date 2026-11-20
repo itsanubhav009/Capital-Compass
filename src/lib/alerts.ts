@@ -90,3 +90,16 @@ async function alertAddress(): Promise<string | null> {
     return null
   }
 }
+
+/** A plain notice to the owner, for things other than a newsletter copy. */
+export async function notifyOwner(subject: string, text: string) {
+  const to = await alertAddress()
+  const from = process.env.RESEND_FROM
+  if (!to || !from || !process.env.RESEND_API_KEY) return
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from, to: [to], subject: `⚠ ${subject}`, text: `${text}\n\n— Sent automatically by smartmoneyexpress.com.` }),
+    signal: AbortSignal.timeout(15_000),
+  }).catch((err) => console.error('[alerts] could not send', err))
+}

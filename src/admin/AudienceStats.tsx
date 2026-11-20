@@ -23,6 +23,19 @@ type Stats = {
   }
   daily: { day: string; visitors: number; views: number }[]
   articles: { slug: string; title: string | null; readers: number }[]
+  sources: { source: string; visitors: number }[]
+  fingerprint: { used: number; limit: number; requireConsent: boolean } | null
+}
+
+/** What each way of knowing a visitor means, for someone reading the panel. */
+const SOURCE: Record<string, string> = {
+  cookie: 'Our ID (cookie)',
+  fingerprint: 'Identified by Fingerprint',
+  'fingerprint-match': 'Returning, recognised by Fingerprint (not counted again)',
+  'no-consent': 'No consent: new cookie ID',
+  blocked: 'Fingerprint blocked: new cookie ID',
+  'over-limit': 'Over the monthly limit: new cookie ID',
+  unverified: 'Fingerprint not verified: new cookie ID',
 }
 
 const box: React.CSSProperties = {
@@ -125,6 +138,58 @@ export default function AudienceStats() {
           </div>
         </div>
       )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 18, marginBottom: 18 }}>
+        <div>
+          <div style={{ fontSize: 12, color: 'var(--theme-elevation-600)', marginBottom: 6 }}>
+            How visitors were identified, 30 days
+          </div>
+          {stats.sources.length === 0 ? (
+            <p style={{ margin: 0, fontSize: 13, color: 'var(--theme-elevation-500)' }}>None yet.</p>
+          ) : (
+            <ul style={{ margin: 0, padding: 0, listStyle: 'none', fontSize: 13 }}>
+              {stats.sources.map((s) => (
+                <li key={s.source} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
+                  <span>{SOURCE[s.source] ?? s.source}</span>
+                  <span style={{ color: 'var(--theme-elevation-600)' }}>{n(s.visitors)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div>
+          <div style={{ fontSize: 12, color: 'var(--theme-elevation-600)', marginBottom: 6 }}>
+            Fingerprint, this month
+          </div>
+          {!stats.fingerprint ? (
+            <p style={{ margin: 0, fontSize: 13, color: 'var(--theme-elevation-500)' }}>
+              Not set up. Visitors are counted by our own ID alone.
+            </p>
+          ) : (
+            <>
+              <div style={{ fontSize: 13 }}>
+                {n(stats.fingerprint.used)} of {n(stats.fingerprint.limit)} calls used
+              </div>
+              <div style={{ height: 6, background: 'var(--theme-elevation-100)', borderRadius: 3, marginTop: 6 }}>
+                <div
+                  style={{
+                    height: '100%',
+                    width: `${Math.min(100, (stats.fingerprint.used / Math.max(1, stats.fingerprint.limit)) * 100)}%`,
+                    background: stats.fingerprint.used >= stats.fingerprint.limit * 0.7 ? '#b4462f' : '#1d7a55',
+                    borderRadius: 3,
+                  }}
+                />
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--theme-elevation-500)', marginTop: 6 }}>
+                {stats.fingerprint.requireConsent
+                  ? 'Used only for readers who accepted analytics.'
+                  : 'Used for every visitor with no ID.'}{' '}
+                An email goes to the contact address at 70%.
+              </div>
+            </>
+          )}
+        </div>
+      </div>
 
       <div style={{ fontSize: 12, color: 'var(--theme-elevation-600)', marginBottom: 6 }}>
         Most-read articles, 30 days (unique readers)

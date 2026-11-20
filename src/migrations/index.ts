@@ -10,6 +10,7 @@ import * as migration_20261008_091855_add_newsletter_sends from './20261008_0918
 import * as migration_20261014_113040_add_postal_address from './20261014_113040_add_postal_address';
 import * as migration_20261107_084701_resend_tracking from './20261107_084701_resend_tracking';
 import * as migration_20261119_090000_unique_views from './20261119_090000_unique_views';
+import * as migration_20261121_090000_fingerprint from './20261121_090000_fingerprint';
 
 export const migrations = [
   {
@@ -71,5 +72,10 @@ export const migrations = [
     up: migration_20261119_090000_unique_views.up,
     down: migration_20261119_090000_unique_views.down,
     name: '20261119_090000_unique_views',
+  },
+  {
+    up: migration_20261121_090000_fingerprint.up,
+    down: migration_20261121_090000_fingerprint.down,
+    name: '20261121_090000_fingerprint',
   },
 ];
